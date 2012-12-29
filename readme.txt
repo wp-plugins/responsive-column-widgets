@@ -58,7 +58,7 @@ where 3 indicates the number of columns in the first row, 2 indicates 2 colums i
 == Frequently Asked Questions ==
 
 = How do I customize the style? =
-You can add your rules to the classes named `.responsive_column_widget_area .widget`. It's defined in *responsive-column-widgets/css/responsive_column_widgets.css* but simply you can define it in your theme's *style.css* as well.
+You can add your rules to the classes named **.responsive_column_widget_area .widget**. It's defined in *responsive-column-widgets/css/responsive_column_widgets.css* but simply you can define it in your theme's *style.css* as well.
 e.g. 
 `.responsive_column_widget_area .widget {
 	padding: 4px;
@@ -68,8 +68,9 @@ e.g.
 == Screenshots ==
 
 1. ***Three-Two-Five Colums Combination Example***
-2. ***Four Columns Example***
+2. ***Four Column Example***
 3. ***Responsiveness***
+4. ***Adding Widgets***
 
 == Changelog ==
 
