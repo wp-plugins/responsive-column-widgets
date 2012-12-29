@@ -38,10 +38,10 @@ Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-wi
 1. Go to Appearance > Widgets. You'll see a new custom sidebar box named **Responsive Custom Widgets**.,
 2. Add widgtes to it.,
 3. Add the following code: 
-* **in a theme** - PHP code. e.g.
+**in a theme** - PHP code. e.g.
 `<?php if ( function_exists( 'ResponsiveColumnWidgets' ) ) ResponsiveColumnWidgets(array('columns' => 5 )); ?>` 
 where 5 indicates the number of columns.
-* **in a page/post** - Shortcode e.g.
+**in a page/post** - Shortcode e.g.
 `[responsive_column_widgets columns="3,2,5"]` 
 where 3 indicates the number of columns in the first row, 2 indicates 2 colums in the second, and 5 to the third.
 
