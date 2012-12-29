@@ -19,7 +19,7 @@ When you want to display widgets horizontally, I know it’s such a headache to 
 * **Responsive Design** - when the browser width is less than 600 px, it automatically adjusts the layout. This is for tablet and mobile visitors.
 * **Up to 12 columns** - for example, if you have 24 registered widgets, you can displays 12 items in two rows.
 * **Works in Posts/Pages** - with the shortcode, you can embed the responsive widgets in post and pages.
-* **PHP code and Shortcode** - use them to display the widgtes in thene template or in posts/pages.
+* **PHP code and Shortcode** - use them to display the widgtes in theme template or in posts/pages.
 * **Default Sidebars Integration** - The sidebars defined by your theme also can be displayed in columns.
 * and [more](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/).
   
@@ -41,11 +41,11 @@ Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-wi
 
 **in a theme** - PHP code. e.g.
 `<?php if ( function_exists( 'ResponsiveColumnWidgets' ) ) ResponsiveColumnWidgets(array('columns' => 5 )); ?>` 
-where 5 indicates the number of columns.
+where 5 indicates the number of columns. Change the number accordingly for your need.
 
 **in a page/post** - Shortcode e.g.
 `[responsive_column_widgets columns="3,2,5"]` 
-where 3 indicates the number of columns in the first row, 2 indicates 2 colums in the second, and 5 to the third.
+where 3 indicates the number of columns in the first row, 2 indicates 2 colums in the second, and 5 to the third. Change the numbers accordingly for your need.
 
 = Parameters = 
 * **columns** - the number of columns to show. Default: 1. If you want to specify the number of columns in each row, put the numbers separated by commas. e.g. 3, 2, 4. would display 3 columns in first row and 2 columns in the second row and four columns in the third row and so on. The rest rows fill follow the last set number.
