@@ -1,7 +1,7 @@
 ﻿=== Responsive Column Widgets ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://michaeluno.jp/en/donate
-Tags: miunosoft, widget, widgets, sidebar, columns, responsive, post, posts, page, pages, plugin
+Tags: widget, widgets, sidebar, columns, responsive, post, posts, page, pages, plugin, miunosoft
 Requires at least: 3.0
 Tested up to: 3.5
 Stable tag: 1.0.1
@@ -59,11 +59,12 @@ where 3 indicates the number of columns in the first row, 2 indicates 2 colums i
 
 = How do I customize the style? =
 You can add your rules to the classes named **.responsive_column_widget_area .widget**. It's defined in *responsive-column-widgets/css/responsive_column_widgets.css* but simply you can define it in your theme's *style.css* as well.
+
 e.g. 
 `.responsive_column_widget_area .widget {
     padding: 4px;
     line-height: 1.5em;
-	background-color: #EEE;
+    background-color: #EEE;
 }`
 
 == Screenshots ==
