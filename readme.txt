@@ -1,4 +1,4 @@
-﻿=== Responsive Columns Widgets ===
+﻿=== Responsive Column Widgets ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://michaeluno.jp/en/donate
 Tags: miunosoft, widget, widgets, sidebar, columns, responsive, post, posts, page, pages, plugin
@@ -16,7 +16,7 @@ When you want to display widgets horizontally, I know it’s such a headache to 
 <h4>Features</h4>
 * **Displays widgets in clolums** - the main feature of this plugin.
 * **Set Number of Columns per Row** - flexibily set numbers of clolumns in each row.
-* **Responsive Design** - when the browser width is less than 600 px, it automatically adjusts the layout.
+* **Responsive Design** - when the browser width is less than 600 px, it automatically adjusts the layout. This is for tablet and mobile visitors.
 * **Upto 12 columns** - for example, if you have 24 registered widgets, you can displays 12 items in two rows.
 * **Work in Posts/Pages** - with the shortcode, you can embed the responsive widgets in post and pages.
 * **PHP code and Shortcode** - use them to display the widgtes in thene template or in posts/pages.
