@@ -67,10 +67,10 @@ e.g.
 
 == Screenshots ==
 
-1. ***Three-Two-Five Colums Combination Example***
-2. ***Four Column Example***
-3. ***Responsiveness***
-4. ***Adding Widgets***
+1. ***Adding Widgets***
+2. ***Three-Two-Five Colums Combination Example***
+3. ***Four Column Example***
+4. ***Responsiveness***
 
 == Changelog ==
 
