@@ -21,7 +21,7 @@ When you want to display widgets horizontally, I know it’s such a headache to 
 * **Work in Posts/Pages** - with the shortcode, you can embed the responsive widgets in post and pages.
 * **PHP code and Shortcode** - use them to display the widgtes in thene template or in posts/pages.
 * **Default Sidebars Integration** - The sidebars defined by your theme also can be displayed in columns.
-* and more.
+* and [more](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/).
   
 == Installation ==
 
@@ -38,9 +38,11 @@ Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-wi
 1. Go to Appearance > Widgets. You'll see a new custom sidebar box named **Responsive Custom Widgets**.,
 2. Add widgtes to it.,
 3. Add the following code: 
+
 **in a theme** - PHP code. e.g.
 `<?php if ( function_exists( 'ResponsiveColumnWidgets' ) ) ResponsiveColumnWidgets(array('columns' => 5 )); ?>` 
 where 5 indicates the number of columns.
+
 **in a page/post** - Shortcode e.g.
 `[responsive_column_widgets columns="3,2,5"]` 
 where 3 indicates the number of columns in the first row, 2 indicates 2 colums in the second, and 5 to the third.
