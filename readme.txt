@@ -18,7 +18,7 @@ When you want to display widgets horizontally, I know it’s such a headache to 
 * **Set Number of Columns per Row** - flexibily set numbers of clolumns in each row.
 * **Responsive Design** - when the browser width is less than 600 px, it automatically adjusts the layout. This is for tablet and mobile visitors.
 * **Upto 12 columns** - for example, if you have 24 registered widgets, you can displays 12 items in two rows.
-* **Work in Posts/Pages** - with the shortcode, you can embed the responsive widgets in post and pages.
+* **Works in Posts/Pages** - with the shortcode, you can embed the responsive widgets in post and pages.
 * **PHP code and Shortcode** - use them to display the widgtes in thene template or in posts/pages.
 * **Default Sidebars Integration** - The sidebars defined by your theme also can be displayed in columns.
 * and [more](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/).
