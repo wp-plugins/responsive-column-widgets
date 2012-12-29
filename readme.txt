@@ -21,7 +21,7 @@ When you want to display widgets horizontally, I know it’s such a headache to 
 * **Work in Posts/Pages** - with the shortcode, you can embed the responsive widgets in post and pages.
 * **PHP code and Shortcode** - use them to display the widgtes in thene template or in posts/pages.
 * **Default Sidebars Integration** - The sidebars defined by your theme also can be displayed in columns.
-* and more.
+* and [more](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/).
   
 == Installation ==
 
