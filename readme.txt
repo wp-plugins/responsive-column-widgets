@@ -68,8 +68,9 @@ e.g.
 == Screenshots ==
 
 1. ***Three-Two-Five Colums Combination Example***
-2. ***Four Columns Example***
+2. ***Four Column Example***
 3. ***Responsiveness***
+4. ***Adding Widgets***
 
 == Changelog ==
 
