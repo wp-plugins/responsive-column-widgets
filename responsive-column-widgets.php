@@ -3,7 +3,7 @@
 	Plugin Name: Responsive Column Widgets
 	Plugin URI: http://en.michaeluno.jp/responsive-column-widgets
 	Description: Creates a widget box which displays widgets in columns with a responsive design.
-	Version: 1.0.1
+	Version: 1.0.2
 	Author: miunosoft
 	Author URI: http://michaeluno.jp
 	Requirements: This plugin requires WordPress >= 3.0 and PHP >= 5.1.2
@@ -35,7 +35,7 @@ class ResponsiveColumnWidgets_AddStyleToHeaderByShortCode {
 		'omit' => '',
 		'showonly' => '',
 	);
-	private $strClassAttrBox ='responsive_column_widget_area responsive_column_widgets_box';
+	private $strClassAttrBox ='responsive_column_widget_area responsive_column_widgets_box widget-area';
 	
 	function __construct( $strShortCode ) {
 		
@@ -67,8 +67,8 @@ class ResponsiveColumnWidgets_AddStyleToHeaderByShortCode {
 				'name' => 'Responsive Column Widgets',
 				'id' => 'responsive_column_widgets',		// must be all lowercase
 				'description' => 'Displays widgets in responsive columns',
-				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-				'after_widget' => '</aside>',
+				'before_widget' => '<aside id="%1$s" class="%2$s"><div class="widget">',
+				'after_widget' => '</div></aside>',
 				'before_title' => '<h3 class="widget-title">',
 				'after_title' => '</h3>',
 			));	
@@ -205,7 +205,7 @@ class ResponsiveColumnWidgets_AddStyleToHeaderByShortCode {
 		$numColPosInRow = 0;	// number of the widgets loaded in a row, zero base.
 		$numRowPos = 0;			// stores the iterating row, zero base.
 		$strNewColClassAttr = 'responsive_column_widgets_firstcol';
-		$bIsRowTagClosed = False;
+		$bIsRowTagClosed = False;	
 		foreach ( $arrWidgetBuffer as $nIndex => $strItem ) {
 			
 			// check if the number of rendered widgtes reached the limit
@@ -213,8 +213,7 @@ class ResponsiveColumnWidgets_AddStyleToHeaderByShortCode {
 
 			// if the number of allowed rows reached the limit
 			if ( ( $maxrows != 0 && $numRowPos >= $maxrows ) ) break;
-			
-			$numMaxCols	= ( isset( $arrMaxCols[$numRowPos] ) ) ? $arrMaxCols[$numRowPos] :  $numMaxCols;	// set the column number of this row			
+			$numMaxCols	= ( isset( $arrMaxCols[$numRowPos] ) ) ? $arrMaxCols[$numRowPos] :  $numMaxCols;	// set the column number of this row		
 			$strItem = ( $numColPosInRow == 0  ? '<div class="responsive_column_widgets_row">' : '' )
 				. '<div class="col element_of_' . $numMaxCols . ' ' 
 				. ( ( $numColPosInRow == 0 ) ? $strNewColClassAttr : '' ) 	// if it's in the first col.
@@ -235,33 +234,7 @@ class ResponsiveColumnWidgets_AddStyleToHeaderByShortCode {
 			}
 			
 			// add the item 
-			$strBuffer .= $strItem;		
-			
-/*
-			// if the widget is the first item in a row
-				$strNewRowClass = ( $numColPosInRow == 0 || ( $numColPosInRow % $numMaxCols ) == 0 ) ? 'responsive_column_widgets_firstcol' : '';	
-				if ( $numColPosInRow == 0 || ( $numColPosInRow % $numMaxCols ) == 0 ) {
-					
-					// check if the nubmer of rows has reached the limit
-					if ( ( $maxrows != 0 && $numRowPos >= $maxrows ) ) { ob_end_clean(); break; }
-					$numMaxCols	= ( isset( $arrMaxCols[$numRowPos] ) ) ? $arrMaxCols[$numRowPos] :  $numMaxCols;	// set the column number of this row			
-					$bTagClosed = false;
-					$strBuffer .= '<div class="responsive_column_widgets_row"><div class="col element_of_' . $numMaxCols . ' ' . $strNewRowClass . '">' . ob_get_contents() . '</div>';
-					$numRowPos++;		// increment the row number
-					$numColPosInRow = 0;	// reset the count 
-				} else
-					$strBuffer .= '<div class="col element_of_' . $numMaxCols . '">' . $strItem . '</div>';
-
-				// close the section(row) div tag
-				if ( ( ( 1 + $numColPosInRow ) % $numMaxCols ) == 0 ) { $bTagClosed = True; $strBuffer .= '</div>'; } 
-					
-				// check if the number of rendered widgtes reached the limit
-				if ( (  $maxwidgets != 0 &&  $nIndex >= $maxwidgets ) ) { ob_end_clean(); break;	}				
-				
-				// the number of rendered widgets
-				$numColPosInRow++;		
-*/	
-			
+			$strBuffer .= $strItem;			
 		}
 		
 		// close the section(row) div tag in case it is ended prior to closing it

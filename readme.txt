@@ -77,6 +77,9 @@ e.g.
 == Changelog ==
 
 = 1.0.2 = 
+* Added: an additional class attribute to the enclosing div tag named "widget-area," which helps to match the site's sidebar style.
+* Added: an enclosing div tag with the class attribute named "widget," which helps to match the site's sidebar style.
+* Cleaned: some code.
 * Changed: the misleading class attribute name, responsive_column_widgets_newrow, to responsive_column_widgets_firstcol.
 
 = 1.0.1 =
