@@ -1,6 +1,6 @@
 ﻿=== Responsive Column Widgets ===
 Contributors: Michael Uno, miunosoft
-Donate link: http://michaeluno.jp/en/donate
+Donate link: http://en.michaeluno.jp/donate
 Tags: widget, widgets, sidebar, columns, responsive, post, posts, page, pages, plugin, miunosoft
 Requires at least: 3.0
 Tested up to: 3.5
