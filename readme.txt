@@ -76,6 +76,9 @@ e.g.
 
 == Changelog ==
 
+= 1.0.2 = 
+* Changed: the misleading class attribute name, responsive_column_widgets_newrow, to responsive_column_widgets_firstcol.
+
 = 1.0.1 =
 * Fixed a minor issue in the stylesheet.
 * Added the parameter options including, maxwidgets, maxrows, omit, showonly.
