@@ -4,7 +4,7 @@ Donate link: http://michaeluno.jp/en/donate
 Tags: widget, widgets, sidebar, columns, responsive, post, posts, page, pages, plugin, miunosoft
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Creates a custom responsive column widget box.
@@ -76,7 +76,7 @@ e.g.
 
 == Changelog ==
 
-= 1.0.2 = 
+= 1.0.2 - 02/23/2013 = 
 * Added: an additional class attribute to the enclosing div tag named "widget-area," which helps to match the site's sidebar style.
 * Added: an enclosing div tag with the class attribute named "widget," which helps to match the site's sidebar style.
 * Cleaned: some code.
