@@ -54,6 +54,8 @@ where 3 indicates the number of columns in the first row, 2 indicates 2 colums i
 * **maxrows** - the allowed number of rows to display. Set 0 for no limitation. Default: 0.
 * **omit** - the numbers of the widget order of the items to omit, separated by commas. e.g. **3, 5** would skip the third and fifth registered widgtes.
 * **showonly** - the numbers of the widget order of the items to show, separated by commas. e.g. **2, 7** would only show the second and seventh registered widtges. Other items will be skipped.
+* **offsets** - the offsets of width percentage applied to each columns. This is for the level of increase/decreae of the column number in the specified pixel width. The format is "*pixel*:*offset*, *pixel*:*offset*, ...". The offsets can be set by pixel, separated by commas. For example, "600:4" will shift 4 column levels when the browser width is 600px and the higher the offset level gets, it takes less number of columns. Default: '1280: 0, 1024: 1, 960: 2, 800: 3, 600:4, 480:5, 320: 6, 240:7'.
+
 
 == Frequently Asked Questions ==
 
@@ -75,6 +77,11 @@ e.g.
 4. ***Responsiveness***
 
 == Changelog ==
+
+= 1.0.3 - 02/28/2013 =
+* Notes: **THIS UPDATE INCLUDES POSSIBLE BREAKING CHANGES. PLEASE TEST IT FIRST ON A LOCAL SERVER BEFORE UPDATING.**
+* **Changed: the default number of columns to 3 from 1.**
+* Added: the ability to flexibly set the number of columns by pixel width with the offsets parameter.
 
 = 1.0.2 - 02/23/2013 = 
 * Added: an additional class attribute to the enclosing div tag named "widget-area," which helps to match the site's sidebar style.

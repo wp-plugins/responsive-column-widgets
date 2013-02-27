@@ -3,7 +3,7 @@
 	Plugin Name: Responsive Column Widgets
 	Plugin URI: http://en.michaeluno.jp/responsive-column-widgets
 	Description: Creates a widget box which displays widgets in columns with a responsive design.
-	Version: 1.0.2
+	Version: 1.0.3
 	Author: miunosoft
 	Author URI: http://michaeluno.jp
 	Requirements: This plugin requires WordPress >= 3.0 and PHP >= 5.1.2
@@ -28,20 +28,40 @@ class ResponsiveColumnWidgets_AddStyleToHeaderByShortCode {
 	private $strShortCode;
 	private $strCSSDirURL;
 	private $arrDefaultParams = array(	
-		'columns' => 1,
+		'columns' => 3,		// set the default to 3 since 1.0.3
 		'sidebar' => 'responsive_column_widgets',
 		'maxwidgets' => 0,
 		'maxrows' => 0,
 		'omit' => '',
 		'showonly' => '',
+		'offsets' => '1280: 0, 1024: 1, 960: 2, 800: 3, 600:4, 480:5, 320: 6, 240:7',	// added since 1.0.3
 	);
-	private $strClassAttrBox ='responsive_column_widget_area responsive_column_widgets_box widget-area';
+	private $strColPercentages = array(
+		1 => '100%',
+		2 => '49.2%',
+		3 => '32.2%',
+		4 => '23.8%',
+		5 => '18.72%',
+		6 => '15.33%',
+		7 => '12.91%',
+		8 => '11.1%',
+		9 => '9.68%',
+		10 => '8.56%',
+		11 => '7.63%',
+		12 => '6.86%',
+	);		
+	private $strClassAttrBox ='responsive_column_widget_area responsive_column_widgets_box widget-area responsive_column_widgets';
+	private $strClassAttrNewCol = 'responsive_column_widgets_firstcol';
+	private $strClassAttrRow = 'responsive_column_widgets_row';
+	private $strClassAttrMaxColsByPixel = '';
+	private $bIsStyleAddedMaxColsByPixel = False;	// flag to indicate whether the style rule for max cols by pixel is added or not
 	
 	function __construct( $strShortCode ) {
 		
 		// properties
 		$this->strShortCode = $strShortCode;
 		$this->strCSSDirURL = plugins_url( '' ,  __FILE__ )  . '/css/';
+		$this->strClassAttrMaxColsByPixel = get_class( $this );
 
 		// register this plugin sidebar; if already registered, it will do nothing
 		$this->RegisterSidebar();
@@ -141,6 +161,15 @@ class ResponsiveColumnWidgets_AddStyleToHeaderByShortCode {
 		if ( empty( $sidebars_widgets[$index] ) ) return false;
 		return true;
 	}
+	function GetMaxColsByPixelArray( $offsets ) {
+		// added since 1.0.3
+		// e.g. 740:3, 600: 2, 300: 1 -- converts --> array( array( 740, 3 ), array( 600, 2 ), array( 300, 1 ) )
+		$arrElems = preg_split( '/[,]\s+/', $offsets, -1, PREG_SPLIT_NO_EMPTY );
+		$arrOffsetsByPixel = array();
+		foreach( $arrElems as $numIndex => $strElem ) 
+			$arrOffsetsByPixel[$numIndex] = preg_split( '/[: ]+/', trim( $strElem ), 0, PREG_SPLIT_NO_EMPTY );
+		return $arrOffsetsByPixel;
+	}
 	function RenderWidgets( $index = 1, $arrParams ) {
 
 		global $wp_registered_sidebars, $wp_registered_widgets;
@@ -150,6 +179,7 @@ class ResponsiveColumnWidgets_AddStyleToHeaderByShortCode {
 		$arrMaxCols = preg_split( '/[, ]+/', $columns, -1, PREG_SPLIT_NO_EMPTY );
 		$arrOmits = preg_split( '/[, ]+/', $omit, -1, PREG_SPLIT_NO_EMPTY );
 		$arrShowOnlys = preg_split( '/[, ]+/', $showonly, -1, PREG_SPLIT_NO_EMPTY );
+		$arrOffsetsByPixel = $this->GetMaxColsByPixelArray( $offsets );
 		
 		$index = $this->GetIndex( $index );
 		$sidebars_widgets = wp_get_sidebars_widgets();
@@ -199,12 +229,11 @@ class ResponsiveColumnWidgets_AddStyleToHeaderByShortCode {
 			}
 			ob_end_clean();
 		}
-
+			
 		// Now $arrWidgetBuffer contains the necessary data for output.
 		$strBuffer = '';		// stores the buffer output
 		$numColPosInRow = 0;	// number of the widgets loaded in a row, zero base.
 		$numRowPos = 0;			// stores the iterating row, zero base.
-		$strNewColClassAttr = 'responsive_column_widgets_firstcol';
 		$bIsRowTagClosed = False;	
 		foreach ( $arrWidgetBuffer as $nIndex => $strItem ) {
 			
@@ -214,9 +243,9 @@ class ResponsiveColumnWidgets_AddStyleToHeaderByShortCode {
 			// if the number of allowed rows reached the limit
 			if ( ( $maxrows != 0 && $numRowPos >= $maxrows ) ) break;
 			$numMaxCols	= ( isset( $arrMaxCols[$numRowPos] ) ) ? $arrMaxCols[$numRowPos] :  $numMaxCols;	// set the column number of this row		
-			$strItem = ( $numColPosInRow == 0  ? '<div class="responsive_column_widgets_row">' : '' )
+			$strItem = ( $numColPosInRow == 0  ? '<div class="' . $this->strClassAttrRow . '">' : '' )
 				. '<div class="col element_of_' . $numMaxCols . ' ' 
-				. ( ( $numColPosInRow == 0 ) ? $strNewColClassAttr : '' ) 	// if it's in the first col.
+				. ( ( $numColPosInRow == 0 ) ? $this->strClassAttrNewCol : '' ) 	// if it's in the first col.
 				. ' ">' 
 				. $strItem
 				. '</div>';
@@ -239,8 +268,44 @@ class ResponsiveColumnWidgets_AddStyleToHeaderByShortCode {
 		
 		// close the section(row) div tag in case it is ended prior to closing it
 		if ( empty( $bIsRowTagClosed ) ) $strBuffer .= '</div>';
-		
+	
+		// If the style for max cols by pixel has not been added, add it. ( since 1.0.3 )
+		if ( ! $this->bIsStyleAddedMaxColsByPixel )
+			$strBuffer .= $this->AddStyleForMaxColsByPixel( $arrOffsetsByPixel );
+
+	
 		return $strBuffer;
 	}
+	function AddStyleForMaxColsByPixel( $arrOffsetsByPixel ) {
+		// added since 1.0.3
+		$strStyleRules = '<style type="text/css" scoped>';
+		
+		if ( count( $arrOffsetsByPixel ) == 0 ) { $arrOffsetsByPixel = array( array( 480, 12 ) ); }
+		foreach( $arrOffsetsByPixel as $arrOffsetByPixel ) {
+			// e.g. array( 740, 3)  
+			$numPixel = $arrOffsetByPixel[0];
+			$numOffset = $arrOffsetByPixel[1];
+			if ( $numPixel == 0 ) continue;
+			
+			$strStyleRules .= '@media only screen and (max-width: ' . $numPixel . 'px) { ';
+			$num=1; 
+			// the class attribute has to be .{the sidebar ID} + .element_of_
+			for ( $i = 2; $i <= 12; $i++ ) {
+				if ( $i <= $numOffset )
+					$strStyleRules .= ' .responsive_column_widgets .element_of_' . $i . ' { width: ' . $this->strColPercentages[1] . ' } ';
+				else  {
+					++$num;
+					$strPercent = isset( $this->strColPercentages[$num] ) ? $this->strColPercentages[$num] : '100%';
+					$strStyleRules .= ' .responsive_column_widgets .element_of_' . $i . ' { width: ' . $strPercent . ' } ';
+				}
+			}
+			$strStyleRules .= ' }' . PHP_EOL;
 	
+		}
+
+		$strStyleRules .= '</style>';
+		$this->bIsStyleAddedMaxColsByPixel = true;
+		return $strStyleRules;
+	}
+
 }
