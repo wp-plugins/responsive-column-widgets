@@ -54,7 +54,7 @@ where 3 indicates the number of columns in the first row, 2 indicates 2 colums i
 * **maxrows** - the allowed number of rows to display. Set 0 for no limitation. Default: 0.
 * **omit** - the numbers of the widget order of the items to omit, separated by commas. e.g. **3, 5** would skip the third and fifth registered widgtes.
 * **showonly** - the numbers of the widget order of the items to show, separated by commas. e.g. **2, 7** would only show the second and seventh registered widtges. Other items will be skipped.
-* **offsets** - the offsets of width percentage applied to each columns. This is for the level of increase/decreae of the column number in the specified pixel width. The format is "*pixel*:*offset*, *pixel*:*offset*, ...". The offsets can be set by pixel, separated by commas. For example, "600:4" will shift 4 column levels when the browser width is 600px and the higher the offset level gets, it takes less number of columns. Default: '1280: 0, 1024: 1, 960: 2, 800: 3, 600:4, 480:5, 320: 6, 240:7'.
+* **offsets** - the offsets of width percentage applied to each columns. This is for the level of increase/decreae of the column number in the specified pixel width. The format is "*pixel*:*offset*, *pixel*:*offset*, ...". The offsets can be set by pixel, separated by commas. For example, "600:4" will shift 4 column levels when the browser width is 600px and the higher the offset level gets, it takes less number of columns. e.g."800: 1, 600: 2, 480: 3, 320: 4, 240: 5".
 
 
 == Frequently Asked Questions ==

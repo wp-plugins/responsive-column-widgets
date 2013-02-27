@@ -34,7 +34,7 @@ class ResponsiveColumnWidgets_AddStyleToHeaderByShortCode {
 		'maxrows' => 0,
 		'omit' => '',
 		'showonly' => '',
-		'offsets' => '1280: 0, 1024: 1, 960: 2, 800: 3, 600:4, 480:5, 320: 6, 240:7',	// added since 1.0.3
+		'offsets' => '800: 1, 600: 2, 480: 3, 320: 4, 240: 5',	// added since 1.0.3
 	);
 	private $strColPercentages = array(
 		1 => '100%',
