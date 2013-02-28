@@ -48,13 +48,13 @@ where 5 indicates the number of columns. Change the number accordingly for your 
 where 3 indicates the number of columns in the first row, 2 indicates 2 colums in the second, and 5 to the third. Change the numbers accordingly for your need.
 
 = Parameters = 
-* **columns** - the number of columns to show. Default: 1. If you want to specify the number of columns in each row, put the numbers separated by commas. e.g. 3, 2, 4. would display 3 columns in first row and 2 columns in the second row and four columns in the third row and so on. The rest rows fill follow the last set number.
+* **columns** - the number of columns to show. Default: 3. If you want to specify the number of columns in each row, put the numbers separated by commas. e.g. 3, 2, 4. would display 3 columns in first row and 2 columns in the second row and four columns in the third row and so on. The rest rows fill follow the last set number.
 * **sidebar** - the ID of the sidebar to show. Default: responsive_column_widgets. For the twenty-twelve theme, sidebar-1, would show the default first sidebar contents. 
 * **maxwidgets** - the allowed number of widgets to display. Set 0 for no limitation. Default: 0.
 * **maxrows** - the allowed number of rows to display. Set 0 for no limitation. Default: 0.
 * **omit** - the numbers of the widget order of the items to omit, separated by commas. e.g. **3, 5** would skip the third and fifth registered widgtes.
 * **showonly** - the numbers of the widget order of the items to show, separated by commas. e.g. **2, 7** would only show the second and seventh registered widtges. Other items will be skipped.
-* **offsets** - the offsets of width percentage applied to each columns. This is for the level of increase/decreae of the column number in the specified pixel width. The format is "*pixel*:*offset*, *pixel*:*offset*, ...". The offsets can be set by pixel, separated by commas. For example, "600:4" will shift 4 column levels when the browser width is 600px and the higher the offset level gets, it takes less number of columns. e.g."800: 1, 600: 2, 480: 3, 320: 4, 240: 5".
+* **offsets** - the offsets of width percentage applied to each column. This is for the level of increase/decrease of the column number in the specified pixel width. The format is "*pixel*:*offset*, *pixel*:*offset*, ...". They consist of key-value pairs of pixel width and offset delimited by colon and separated by commas. For example, "600:4" will shift 4 column levels when the browser width is 600px and the higher the offset level gets, it takes less number of columns. e.g."800: 1, 600: 2, 480: 3, 320: 4, 240: 5".
 
 
 == Frequently Asked Questions ==
@@ -81,7 +81,7 @@ e.g.
 = 1.0.3 - 02/28/2013 =
 * Notes: **THIS UPDATE INCLUDES POSSIBLE BREAKING CHANGES. PLEASE TEST IT FIRST ON A LOCAL SERVER BEFORE UPDATING.**
 * **Changed: the default number of columns to 3 from 1.**
-* Added: the ability to flexibly set the number of columns by pixel width with the offsets parameter.
+* Added: the ability to flexibly change the number of columns by pixel width with the offsets parameter.
 
 = 1.0.2 - 02/23/2013 = 
 * Added: an additional class attribute to the enclosing div tag named "widget-area," which helps to match the site's sidebar style.
