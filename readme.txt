@@ -55,7 +55,7 @@ where 3 indicates the number of columns in the first row, 2 indicates 2 colums i
 * **omit** - the numbers of the widget order of the items to omit, separated by commas. e.g. **3, 5** would skip the third and fifth registered widgtes.
 * **showonly** - the numbers of the widget order of the items to show, separated by commas. e.g. **2, 7** would only show the second and seventh registered widtges. Other items will be skipped.
 * **offsets** - the offsets of width percentage applied to each column. This is for the level of increase/decrease of the column number in the specified pixel width. The format is "*pixel*:*offset*, *pixel*:*offset*, ...". They consist of key-value pairs of pixel width and offset delimited by colon and separated by commas. For example, "600:4" will shift 4 column levels when the browser width is 600px and the higher the offset level gets, it takes less number of columns. e.g."800: 1, 600: 2, 480: 3, 320: 4, 240: 5".
-
+* **label** - the label name of the widget box. Default: Responsive Column Widget.
 
 == Frequently Asked Questions ==
 
@@ -77,6 +77,17 @@ e.g.
 4. ***Responsiveness***
 
 == Changelog ==
+
+= 1.0.4 - 03/03/2013 =
+* Added: the ability to reset all saved option values.
+* Added: the ability to set custom HTML tags to be posted in the setting page.
+* Added: the Access Rights option in the setting pages.
+* Changed: the default value of the offsets paramter to 600:12, which is 100% compatible with the versions prior to 1.0.3.
+* Added: the ability to set the options without the parameters; the saved option values in the setting page will be used.
+* Added: the ability to set a custom message when no widget is added.
+* Added: the ability to set opening/closing HTML code in front of the widget output and title.
+* Added: the ability to specify the widget box by label name.
+* Added: the setting pages under the Appearance menu.
 
 = 1.0.3 - 02/28/2013 =
 * Notes: **THIS UPDATE INCLUDES POSSIBLE BREAKING CHANGES. PLEASE TEST IT FIRST ON A LOCAL SERVER BEFORE UPDATING.**
