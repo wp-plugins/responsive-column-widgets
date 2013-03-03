@@ -78,6 +78,9 @@ e.g.
 
 == Changelog ==
 
+= 1.0.4.3 - 03/03/2013 =
+* Fixed: an issue that the server below PHP 5.3 got Fatal error: Call to undefined function array_replace_recursive().
+
 = 1.0.4.2 - 03/03/2013 =
 * FIxed: the version number in the main file.
 

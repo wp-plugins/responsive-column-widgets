@@ -41,7 +41,7 @@ class ResponsiveColumnWidgets_Core_ {
 		$this->oOption = $oOption;
 		
 		// properties
-		$this->arrDefaultParams = $oOption->arrDefaultParams;
+		$this->arrDefaultParams = $oOption->arrDefaultParams + $oOption->arrDefaultSidebarArgs;
 		
 		$this->strShortCode = $strShortCode;
 		$this->strCSSDirURL = RESPONSIVECOLUMNWIDGETSURL . '/css/';

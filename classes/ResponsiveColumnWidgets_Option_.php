@@ -41,15 +41,13 @@ class ResponsiveColumnWidgets_Option_ {
 		// Merge with the default values.
 		$this->arrDefaultSidebarArgs['description'] = __( 'The default widget box of Responsive Column Widgets.', 'responsive-column-windgets' );	// cannot be declared as the default property because it needs to use a custom function.
 		
-		$this->arrOptions = array_replace_recursive( $this->arrDefaultOptionStructure, $this->arrOptions );	// $this->arrOptions = $this->arrOptions + $this->arrDefaultOptionStructure;
-		// $this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] = isset( $this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] ) ? $this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] : ( $this->arrDefaultSidebarArgs + $this->arrDefaultParams );
-		if ( isset( $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] ) ) {
-			$this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] = array_replace_recursive( 
-				$this->arrDefaultSidebarArgs + $this->arrDefaultParams,			// the default values
-				$this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']]	// the uder-modified values
-			);	
-		} else 
-			$this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] = $this->arrDefaultSidebarArgs + $this->arrDefaultParams;
+		
+		// $this->arrOptions = $this->arrOptions + $this->arrDefaultOptionStructure;	// $this->arrOptions = $this->array_replace_recursive( $this->arrDefaultOptionStructure, $this->arrOptions );
+		$this->arrOptions = wp_parse_args( $this->arrOptions, $this->arrDefaultOptionStructure );	// $this->arrOptions = $this->array_replace_recursive( $this->arrDefaultOptionStructure, $this->arrOptions );
+		
+		$arrDefaultBoxParams = $this->arrDefaultSidebarArgs + $this->arrDefaultParams;
+		// $this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] = isset( $this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] ) ? $this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] + $arrDefaultBoxParams : $arrDefaultBoxParams;
+		$this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] = wp_parse_args( $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ], $arrDefaultBoxParams );
 	
 		// store plugin data
 		if ( !function_exists( 'get_plugin_data' )  ) require_once( ABSPATH . 'wp-admin/includes/plugin.php' );	
@@ -70,4 +68,5 @@ class ResponsiveColumnWidgets_Option_ {
 		$this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] = $arrBoxOptions;
 		
 	}
+		
 }
