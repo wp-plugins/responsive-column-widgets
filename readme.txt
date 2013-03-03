@@ -78,6 +78,9 @@ e.g.
 
 == Changelog ==
 
+= 1.0.4.2 - 03/03/2013 =
+* FIxed: the version number in the main file.
+
 = 1.0.4.1 - 03/03/2013 =
 * Fixed: a bug in the file name which contains case-mismatch with the include/require statement, which caused a fatal error during the activation.
 
