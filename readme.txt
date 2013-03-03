@@ -78,6 +78,9 @@ e.g.
 
 == Changelog ==
 
+= 1.0.4.1 - 03/03/2013 =
+* Fixed: a bug in the file name which contains case-mismatch with the include/require statement, which caused a fatal error during the activation.
+
 = 1.0.4 - 03/03/2013 =
 * Added: the ability to reset all saved option values.
 * Added: the ability to set custom HTML tags to be posted in the setting page.
