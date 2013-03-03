@@ -879,7 +879,8 @@
 			// Do not cast array here either. Let the validation callback return non array and make it consider as delete the option.
 			$arrInput = $this->AddAndApplyFilter( $strFilter, $arrInput );	
 								
-			return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? array_replace_recursive( $arrOriginal, $arrInput ) : $arrInput;		// merge them so that options saved in the other page slug keys will be saved as well.
+			return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? wp_parse_args( $arrInput, $arrOriginal ) : $arrInput;		// merge them so that options saved in the other page slug keys will be saved as well.
+			// return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? array_replace_recursive( $arrOriginal, $arrInput ) : $arrInput;		// merge them so that options saved in the other page slug keys will be saved as well.
 		}
 		function __Call( $strMethodName, $arrArgs=null ) {		
 			
