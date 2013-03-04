@@ -151,7 +151,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						),
 						array(
 							'id' => 'field_after_title',
-							'title' => __( 'Starting Tag for Box Title', 'responsive-column-widgets' ),
+							'title' => __( 'Ending Tag for Box Title', 'responsive-column-widgets' ),
 							'tip' => __( 'Set the after_title html opening tag.', 'responsive-column-widgets' ),
 							'description' => __( 'Set the after_title html opening tag.', 'responsive-column-widgets' ),
 							'type' => 'text',
@@ -162,8 +162,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(
 							'id' => 'field_message_no_widget',
 							'title' => __( 'Message for No Widget', 'responsive-column-widgets' ),
-							'tip' => __( 'Set the message which appears when no widget is added so that nothing can be rendered.', 'responsive-column-widgets' ),
-							'description' => __( 'Set the message which appears when no widget is added so that nothing can be rendered.', 'responsive-column-widgets' ),
+							'tip' => __( 'Set the message which appears when no widget is added; thus, nothing can be rendered.', 'responsive-column-widgets' ),
+							'description' => __( 'Set the message which appears when no widget is added; thus, nothing can be rendered.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'size' => 80,
 							'value' => $bIsNew ? __( 'No widgetd is added yet.', 'responsive-column-widgets' ) : $this->oOption->arrOptions['boxes'][$strSidebarID]['message_no_widget'],
@@ -175,7 +175,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'pageslug' => $this->strPluginSlug,
 					'tabslug' => 'neworedit',
 					'id' => 'section_params',
-					'title' => __( 'Widget Box Options', 'responsive-column-widgets' ), 
+					'title' => __( 'Widget Box Parameter Values', 'responsive-column-widgets' ), 
 					'fields' => array(
 						array(
 							'id' => 'field_columns',
@@ -463,9 +463,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		<h3><?php _e( 'Exchanges', 'responsive-column-widgets' ); ?></h4>
 		<p><?php _e( 'You may receive a discount or a copy of the plugin by contributing one of the followings. A contribution does not have to be for this plugin. It can be for any product of miunosoft. Please just ask.', 'responsive-column-widgets' ); ?></p>
 		<ul>
-			<li><?php _e( 'Translation - submitting a localization file for an untranslated languge.', 'responsive-column-widgets' )?></li>
+			<li><?php _e( 'Translation - submitting a localization file for an untranslated languge. With a plugin called <a href="http://wordpress.org/extend/plugins/codestyling-localization/stats/">Codestyling Localization</a> no programming skill is required to create a language file.', 'responsive-column-widgets' )?></li>
 			<li><?php _e( 'Testimonial - with your photo, comments, and a link to your SNS page will be on the plugin site.', 'responsive-column-widgets' )?></li>
-			<li><?php _e( 'Graphic Design - icons or banners for the plugin.', 'responsive-column-widgets' )?></li>
+			<li><?php _e( 'Graphic Design - icons, banners etc. for the plugin.', 'responsive-column-widgets' )?></li>
 			<li><?php _e( 'Review Article - requires Google PageRank 3 or higher and the link to the product page.', 'responsive-column-widgets' )?></li>
 			<li><?php _e( 'Video Tutorial - a brief instruction video tutorial with your narration.', 'responsive-column-widgets' )?></li>
 			<li><?php _e( 'Something else - please ask for something else for the exchange.', 'responsive-column-widgets' )?></li>

@@ -3,7 +3,7 @@ Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
 Tags: widget, widgets, sidebar, columns, responsive, post, posts, page, pages, plugin, miunosoft
 Requires at least: 3.0
-Tested up to: 3.5
+Tested up to: 3.5.1
 Stable tag: 1.0.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -39,11 +39,11 @@ Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-wi
 2. Add widgtes to it.,
 3. Add the following code: 
 
-**in a theme** - PHP code. e.g.
+**For a theme** - PHP code. e.g.
 `<?php if ( function_exists( 'ResponsiveColumnWidgets' ) ) ResponsiveColumnWidgets(array('columns' => 5 )); ?>` 
 where 5 indicates the number of columns. Change the number accordingly for your need.
 
-**in a page/post** - Shortcode e.g.
+**For a page/post** - Shortcode e.g.
 `[responsive_column_widgets columns="3,2,5"]` 
 where 3 indicates the number of columns in the first row, 2 indicates 2 colums in the second, and 5 to the third. Change the numbers accordingly for your need.
 
@@ -77,6 +77,9 @@ e.g.
 4. ***Responsiveness***
 
 == Changelog ==
+
+= 1.0.4.5 - 03/04/2013 =
+* Fixed: typos and applied minor description changes to the parts not clear enough.
 
 = 1.0.4.4 - 03/03/2013 = 
 * Fixed: the parts using array_replace_recursive() which is incompatible with below PHP 5.3.

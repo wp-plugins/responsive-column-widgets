@@ -6,12 +6,8 @@
  * @since		1.0.4
  * @description	Creates links for the user.
 */
-class ResponsiveColumnWidgets_UserAds_
-{
-	/*
-		Used Option Key: amazonautolinks_userads
-	*/
-	
+class ResponsiveColumnWidgets_UserAds_ {
+
 	// properties
 	private $oTextFeed;
 	private $oSkyscraperFeed;
@@ -20,6 +16,17 @@ class ResponsiveColumnWidgets_UserAds_
 	protected $strURLFeedText = 'http://feeds.feedburner.com/GANLinkTextRandom40';
 	protected $strURLFeed60x468 = 'http://feeds.feedburner.com/GANBanner60x468';
 		
+	function __construct( &$oOption=null ) {
+		
+		global $arrResponsiveColumnWidgetsClasses;
+		$this->oOption = isset( $oOption ) ? $oOption : $arrResponsiveColumnWidgetsClasses;
+	
+	}
+	function SetOptionObj( &$oOption ) {
+		
+		$this->oOption = $oOption;
+		
+	}
 	function GetTextAd( $numItems=1 ) {
 
 		if ( ! is_object( $this->oTextFeed ) ) {
