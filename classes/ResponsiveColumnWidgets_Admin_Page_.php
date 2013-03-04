@@ -720,12 +720,12 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		return $arrInput;
 	}
 	function validation_responsive_column_widgets_general( $arrInput ) {
-		add_settings_error( $_POST['pageslug'], 
-			'can_be_any_string',  
-			'<h3>Submitted Values</h3>' .
-			'<h4>$arrInput</h4><pre>' . htmlspecialchars( print_r( $arrInput, true ) ) . '</pre>'
-			,'updated'
-		);	
+		// add_settings_error( $_POST['pageslug'], 
+			// 'can_be_any_string',  
+			// '<h3>Submitted Values</h3>' .
+			// '<h4>$arrInput</h4><pre>' . htmlspecialchars( print_r( $arrInput, true ) ) . '</pre>'
+			// ,'updated'
+		// );	
 			
 		/*
 		 * Danger Zone
