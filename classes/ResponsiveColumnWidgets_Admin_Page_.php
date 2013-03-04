@@ -426,6 +426,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		// debug
 		// $sidebars_widgets = get_option('sidebars_widgets', array());		
 		// echo '<pre>' . htmlspecialchars( print_r( $sidebars_widgets, true ) ). '</pre>';
+		// echo '<pre>' . htmlspecialchars( print_r( $this->arrCallerInfo, true ) ). '</pre>';
+		
     }
 	function GetAddNewBoxButton() {
 		return '<div class="submit-buttons" style="margin-bottom:20px; margin-top: 10px;"><span title="' . $this->strGetPro . '">'

@@ -79,6 +79,9 @@ e.g.
 
 == Changelog ==
 
+= 1.0.4.9 - 03/04/2013 =
+* Changed: the Access Rights option not to appear for members other than administrators. 
+
 = 1.0.4.8 - 03/04/2013 =
 * Added: some base files for plugin extensions.
 * Added: an action hook for plugin extensions.
