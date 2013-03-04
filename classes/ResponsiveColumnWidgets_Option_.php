@@ -47,10 +47,15 @@ class ResponsiveColumnWidgets_Option_ {
 		// $this->arrOptions = wp_parse_args( $this->arrOptions, $this->arrDefaultOptionStructure );	// $this->arrOptions = $this->array_replace_recursive( $this->arrDefaultOptionStructure, $this->arrOptions );
 		$this->arrOptions = $this->UniteArraysRecursive( $this->arrOptions, $this->arrDefaultOptionStructure );	// $this->arrOptions = $this->array_replace_recursive( $this->arrDefaultOptionStructure, $this->arrOptions );
 		
-		$arrDefaultBoxParams = $this->arrDefaultSidebarArgs + $this->arrDefaultParams;
 		// $this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] = isset( $this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] ) ? $this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] + $arrDefaultBoxParams : $arrDefaultBoxParams;
 		// $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] = wp_parse_args( $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ], $arrDefaultBoxParams );
-		$this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] = $this->UniteArraysRecursive( $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ], $arrDefaultBoxParams );
+		
+		$arrDefaultBoxParams = $this->arrDefaultSidebarArgs + $this->arrDefaultParams;
+		$arrCurrentDefaultBoxParams = isset( $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] ) ? $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] : array();
+		$this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] = $this->UniteArraysRecursive( 
+			$arrCurrentDefaultBoxParams, 
+			$arrDefaultBoxParams 
+		);
 	
 		// store plugin data
 		if ( !function_exists( 'get_plugin_data' )  ) require_once( ABSPATH . 'wp-admin/includes/plugin.php' );	
