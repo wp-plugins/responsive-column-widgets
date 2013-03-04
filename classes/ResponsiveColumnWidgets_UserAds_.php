@@ -9,9 +9,9 @@
 class ResponsiveColumnWidgets_UserAds_ {
 
 	// properties
-	private $oTextFeed;
-	private $oSkyscraperFeed;
-	private $oTopBannerFeed;
+	protected $oTextFeed;
+	protected $oSkyscraperFeed;
+	protected $oTopBannerFeed;
 	protected $strURLFeed160x600 = 'http://feeds.feedburner.com/GANLinkBanner160x600Random40';
 	protected $strURLFeedText = 'http://feeds.feedburner.com/GANLinkTextRandom40';
 	protected $strURLFeed60x468 = 'http://feeds.feedburner.com/GANBanner60x468';
