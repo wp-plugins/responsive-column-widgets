@@ -31,6 +31,7 @@ class ResponsiveColumnWidgets_Option_ {
 		'general' => array(
 			'capability' => 0,
 			'allowedhtmltags' =>'',
+			'license' =>'',
 		),
 	);
 	function __construct( $strOptionKey ) {
