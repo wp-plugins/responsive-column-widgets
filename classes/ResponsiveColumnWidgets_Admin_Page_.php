@@ -249,6 +249,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					// 'description' => __( '', 'responsive-column-widgets' ),
 					'fields' => array( 	// Field Arrays
 						// Dropdown List
+						current_user_can( 'manage_options' ) ?
 						array(  
 							'id' => 'field_capability',
 							'title' => __( 'Access Rights', 'responsive-column-widgets' ),
@@ -263,7 +264,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 								__( 'Contributor', 'responsive-column-widgets' ),
 								__( 'Subscriber', 'responsive-column-widgets' ),
 							)
-						),
+						) : null,
 						array(
 							'id' => 'field_allowedhtmltags',
 							'title' => __( 'Additional Allowed HTML Tags', 'responsive-column-widgets' ),
