@@ -80,7 +80,7 @@ e.g.
 == Changelog ==
 
 = 1.0.4.7 - 03/04/2013 =
-* Fixed: a bug that when settings are in one of the pages and the other pages settings get erased introduced since supporting the alternatives of array_replace_recursive().
+* Fixed: a bug that when settings are saved in one of the pages and the other pages settings get erased introduced since supporting the alternatives of array_replace_recursive().
 
 = 1.0.4.6 - 03/04/2013 =
 * Fixed: a bug that debug output appeared after submitting the form in General Options page.
