@@ -78,6 +78,9 @@ e.g.
 
 == Changelog ==
 
+= 1.0.4.6 - 03/04/2013 =
+* Fixed: a bug that debug output appeared after submitting the form in General Options page.
+
 = 1.0.4.5 - 03/04/2013 =
 * Fixed: typos and applied minor description changes to the parts not clear enough.
 
