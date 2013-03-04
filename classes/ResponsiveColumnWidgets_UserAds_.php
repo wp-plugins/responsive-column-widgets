@@ -18,8 +18,8 @@ class ResponsiveColumnWidgets_UserAds_ {
 		
 	function __construct( &$oOption=null ) {
 		
-		global $arrResponsiveColumnWidgetsClasses;
-		$this->oOption = isset( $oOption ) ? $oOption : $arrResponsiveColumnWidgetsClasses;
+		global $oResponsiveColumnWidgets_Options;
+		$this->oOption = isset( $oOption ) ? $oOption : $oResponsiveColumnWidgets_Options;
 	
 	}
 	function SetOptionObj( &$oOption ) {
