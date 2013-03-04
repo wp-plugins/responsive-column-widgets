@@ -883,7 +883,10 @@
 			// return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? array_replace_recursive( $arrOriginal, $arrInput ) : $arrInput;		// <-- incompatible with PHP below 5.3
 			return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? $this->UniteArraysRecursive( $arrInput, $arrOriginal ) : $arrInput;		// merge them so that options saved in the other page slug keys will be saved as well.
 		}
-		function UniteArraysRecursive( &$arrPrecedence, &$arrDefault ) {
+		function UniteArraysRecursive( $arrPrecedence, $arrDefault ) {
+			
+			if ( is_null( $arrPrecedence ) )
+				$arrPrecedence = array();
 			
 			if ( !is_array( $arrDefault ) || !is_array( $arrPrecedence ) ) return $arrPrecedence;
 				

@@ -77,7 +77,10 @@ class ResponsiveColumnWidgets_Option_ {
 		
 	}
 	
-	function UniteArraysRecursive( &$arrPrecedence, &$arrDefault ) {
+	function UniteArraysRecursive( $arrPrecedence, $arrDefault ) {
+		
+		if ( is_null( $arrPrecedence ) )
+			$arrPrecedence = array();
 		
 		if ( !is_array( $arrDefault ) || !is_array( $arrPrecedence ) ) return $arrPrecedence;
 			
