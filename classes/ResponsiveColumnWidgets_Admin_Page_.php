@@ -749,7 +749,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			$this->oOption->Update();
 			
 			// Delete the admin page options as well.
-			return null;	
+			return null;
+			
 		}	
 		
 		// Do some validation and sanitization here.
@@ -839,14 +840,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			<?php echo '<td align="center" class="check-column first-col" style="padding: 8px 0 8px" ></td>'; ?>
 			<td>
 				<ul style="margin:0;">
-					<li><b><?php echo $this->oOption->arrOptions['boxes'][$this->oOption->arrDefaultParams['sidebar']]['label']; ?></b></li>
-					<li><?php echo $this->oOption->arrOptions['boxes'][$this->oOption->arrDefaultParams['sidebar']]['description']; ?></li>
+					<li><b><?php echo $this->oOption->arrOptions['boxes'][ $this->oOption->arrDefaultParams['sidebar'] ]['label']; ?></b></li>
+					<li><?php echo $this->oOption->arrOptions['boxes'][ $this->oOption->arrDefaultParams['sidebar'] ]['description']; ?></li>
 				</ul>
 			</td>
 			<td>responsive_column_widgets</td>
 			<td>
 				<ul style="margin:0;">
-					<li>[<?php echo $this->oOption->arrOptions['boxes'][$this->oOption->arrDefaultParams['sidebar']]['sidebar']; ?>]</li>
+					<li>[<?php echo $this->oOption->arrOptions['boxes'][ $this->oOption->arrDefaultParams['sidebar'] ]['sidebar']; ?>]</li>
 					<li>&lt;?php ResponsiveColumnWidgets(); ?&gt;</li>
 				</ul>
 			</td>

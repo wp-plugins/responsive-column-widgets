@@ -79,6 +79,11 @@ e.g.
 
 == Changelog ==
 
+= 1.0.4.8 - 03/04/2013 =
+* Added: some base files for plugin extensions.
+* Added: an action hook for plugin extensions.
+* Fixed: a bug that the default widget box options could not be retrieved properly in the table of the Manage tab page when the option initialization was performed.
+
 = 1.0.4.7 - 03/04/2013 =
 * Fixed: a bug that when settings are saved in one of the pages and the other pages settings get erased introduced since supporting the alternatives of array_replace_recursive().
 
