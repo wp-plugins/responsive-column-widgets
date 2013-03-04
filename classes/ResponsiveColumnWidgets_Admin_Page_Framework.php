@@ -879,9 +879,31 @@
 			// Do not cast array here either. Let the validation callback return non array and make it consider as delete the option.
 			$arrInput = $this->AddAndApplyFilter( $strFilter, $arrInput );	
 								
-			return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? wp_parse_args( $arrInput, $arrOriginal ) : $arrInput;		// merge them so that options saved in the other page slug keys will be saved as well.
-			// return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? array_replace_recursive( $arrOriginal, $arrInput ) : $arrInput;		// merge them so that options saved in the other page slug keys will be saved as well.
+			// return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? wp_parse_args( $arrInput, $arrOriginal ) : $arrInput;		// <-- causes the settings get cleared in other pages
+			// return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? array_replace_recursive( $arrOriginal, $arrInput ) : $arrInput;		// <-- incompatible with PHP below 5.3
+			return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? $this->UniteArraysRecursive( $arrInput, $arrOriginal ) : $arrInput;		// merge them so that options saved in the other page slug keys will be saved as well.
 		}
+		function UniteArraysRecursive( &$arrPrecedence, &$arrDefault ) {
+			
+			if ( !is_array( $arrDefault ) || !is_array( $arrPrecedence ) ) return $arrPrecedence;
+				
+			foreach( $arrDefault as $strKey => $v ) {
+				
+				// If the precedence does not have the key, assign the default's value.
+				if ( ! array_key_exists( $strKey, $arrPrecedence ) )
+					$arrPrecedence[ $strKey ] = $v;
+				else {
+					
+					// if the both are arrays, do the recursive process.
+					if ( is_array( $arrPrecedence[ $strKey ] ) && is_array( $v ) ) 
+						$arrPrecedence[ $strKey ] = $this->UniteArraysRecursive( $arrPrecedence[ $strKey ], $v );			
+				
+				}
+			}
+			
+			return $arrPrecedence;
+			
+		}		
 		function __Call( $strMethodName, $arrArgs=null ) {		
 			
 			/*

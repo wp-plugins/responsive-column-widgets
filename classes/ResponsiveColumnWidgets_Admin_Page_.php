@@ -768,8 +768,10 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		// $arrDisallowedTags : e.g. array( 'table', 'tbody', 'thoot', 'thead', 'th', 'tr' );
 
 		global $allowedposttags;
-		$arrAllowedHTML = wp_parse_args( $arrAllowedTags, $allowedposttags );	// the first parameter takes over the second.
 		// $arrAllowedHTML = array_replace_recursive( $allowedposttags, $arrAllowedTags );	// the second parameter takes over the first.
+		// $arrAllowedHTML = wp_parse_args( $arrAllowedTags, $allowedposttags );	// the first parameter takes over the second.
+		$arrAllowedHTML = $this->UniteArraysRecursive( $arrAllowedTags, $allowedposttags );	// the first parameter takes over the second.
+	
 		foreach ( $arrDisallowedTags as $strTag ) 		
 			if ( isset( $arrAllowedHTML[$strTag] ) ) unset( $arrAllowedHTML[$strTag] );
 		
