@@ -29,9 +29,9 @@ class ResponsiveColumnWidgets_UserAds_ {
 	}
 	function GetTextAd( $numItems=1 ) {
 
-		if ( ! is_object( $this->oTextFeed ) ) {
+		if ( ! is_object( $this->oTextFeed ) ) 
 			$this->oTextFeed = $this->GetFeedObj( $this->strURLFeedText );
-		}
+
 		$strOut = '';
 		foreach ( $this->oTextFeed->get_items( 0, $numItems ) as $item ) 
 			$strOut .= $item->get_content();
@@ -64,22 +64,22 @@ class ResponsiveColumnWidgets_UserAds_ {
 	function InitializeTextFeed( $arrUrls='' ) {
 	
 		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeedText : $arrUrls;
-		$this->oTextFeed = $this->GetFeedObj( $arrUrls, False );
+		$this->oTextFeed = $this->GetFeedObj( $arrUrls, True, 0 );
 		
 	}	
 	function InitializeTopBannerFeed( $arrUrls='' ) {
 
 		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeed60x468 : $arrUrls;
-		$this->oTopBannerFeed = $this->GetFeedObj( $arrUrls, False );
+		$this->oTopBannerFeed = $this->GetFeedObj( $arrUrls, True, 0 );
 
 	}	
 	function InitializeBannerFeed( $arrUrls='' ) {
 		
 		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeed160x600 : $arrUrls;
-		$this->oSkyscraperFeed = $this->GetFeedObj( $arrUrls, False );
+		$this->oSkyscraperFeed = $this->GetFeedObj( $arrUrls, True, 0 );
 		
 	}		
-	function GetFeedObj( $arrUrls, $bEnableCache=True ) {
+	function GetFeedObj( $arrUrls, $bEnableCache=True, $numCacheDuration=3600 ) {
 		
 		$oFeed = new ResponsiveColumnWidgets_SimplePie();
 		
@@ -97,7 +97,7 @@ class ResponsiveColumnWidgets_UserAds_ {
 		$oFeed->set_item_limit( 1 );
 		
 		// this should be set after defineing $urls
-		$oFeed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 3600, $arrUrls ) );	
+		$oFeed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', $numCacheDuration, $arrUrls ) );	
 		$oFeed->set_stupidly_fast( true );
 		$oFeed->init();			
 		return $oFeed;

@@ -13,15 +13,16 @@ class ResponsiveColumnWidgets_Option_ {
 	);
 	public $arrDefaultSidebarArgs = array(	// must be public; accessed in the core object for register_sidebar()
 		'description' 		=> '',
-		'before_widget'		=> '<aside id="%1%s" class="%2$s"><div class="widget">',
+		'before_widget'		=> '<aside id="%1$s" class="%2$s"><div class="widget">',
 		'after_widget'		=> '</div></aside>',
 		'before_title'		=> '<h3 class="widget-title">',
 		'after_title'		=> '</h3>',
 		'message_no_widget'	=> 'No widget added yet.',
+		'insert_footer'		=> false,
 	);	
 	public $arrCapabilities = array(	// used in the drop-down list of the General Options page.
 		0 => 'manage_options',
-		1 => 'edit_pages',
+		1 => 'edit_theme_options',
 		2 => 'publish_posts',
 		3 => 'edit_posts',
 		4 => 'read'

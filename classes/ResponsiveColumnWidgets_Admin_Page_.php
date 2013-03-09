@@ -10,6 +10,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 
 	// Objects
 	public $oOption = null;	// stores the option object. It is set via the SetOptionObject() method.
+	protected $oWidgetPage;
 	
 	function start_ResponsiveColumnWidgets_Admin_Page() {
 		
@@ -25,7 +26,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			add_action( 'admin_init', array( $this, 'EnqueueAdminStyle' ) );
 			
 		$this->strGetPro = __( 'Get Pro to enabel this feature!', 'responsive-column-widgets' );
-
+		
+		// For the widgets tab page
+		// if ( ( isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug 
+			// && isset( $_GET['tab'] ) && $_GET['tab'] == 'widgets' )
+			// || isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug && ! isset( $_GET['tab'] )  )
+			// $this->oWidgetPage = new ResponsiveColumnWidgets_Admin_Page_Widgets;
+		
 	}
 	function EnqueueAdminStyle() {
 		wp_enqueue_style( 'responsive_column_widgets_enqueue_style', RESPONSIVECOLUMNWIDGETSURL . '/css/responsive_column_widgets.css' );
@@ -62,6 +69,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		// Add in-page tabs in the third page.			
 		$this->AddInPageTabs( $this->strPluginSlug,	
 			array(	// slug => title
+				// 'widgets'		=> __( 'Widgets', 'responsive-column-widgets' ),
 				'neworedit' 	=> '<span class="newtab">' . __( 'New', 'responsive-column-widgets' ) . '</span>&nbsp;<span class="slash">/</span>&nbsp;' . __( 'Edit', 'responsive-column-widgets' ),
 				'manage'		=> __( 'Manage', 'responsive-column-widgets' ),
 				'general'		=> __( 'General Options', 'responsive-column-widgets' ),
@@ -240,6 +248,22 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						),							
 					),
 				),
+				array(
+					'pageslug' => $this->strPluginSlug,
+					'tabslug' => 'neworedit',
+					'id' => 'section_insert',
+					'title' => __( 'Insert Widget Box', 'responsive-column-widgets' ), 
+					'fields' => array(
+						array(
+							'id' => 'field_footer',
+							'title' => __( 'Footer', 'responsive-column-widgets' ),
+							'label' => __( 'Insert the widget box into the footer.', 'responsive-column-widgets' ),
+							'type' => 'checkbox',
+							'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['insert_footer'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_footer'],
+							'default' => $this->oOption->arrDefaultSidebarArgs['insert_footer'],
+						),
+					),
+				),
 				// General Options
 				array(  
 					'pageslug' => $this->strPluginSlug,
@@ -387,6 +411,12 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	/*
 	 * Modify Page Body Part
 	 * */
+	function do_responsive_column_widgets_widgets() {
+		// global $wp_registered_sidebars;
+		// require_once( ABSPATH . 'wp-admin/widgets.php' );
+		$this->oWidgetPage->RenderWidgetPage();
+		
+	}
     function do_responsive_column_widgets() {  
 	
 		// function submit_button( $text = null, $type = 'primary', $name = 'submit', $wrap = true, $other_attributes = null ) {
@@ -488,7 +518,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	 * Validate Post Data
 	 * */
 	function validation_responsive_column_widgets_neworedit( $arrInput ) {
-
 
 		// Sanitize HTML Post Data
 		$arr = array();
@@ -607,27 +636,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$arrBoxOptions['omit'] = $arrInput['section_params']['field_omit'];
 		$arrBoxOptions['showonly'] = $arrInput['section_params']['field_showonly'];
 		$arrBoxOptions['offsets'] = $arrInput['section_params']['field_offsets'];
+		$arrBoxOptions['insert_footer'] = $arrInput['section_insert']['field_footer'];
 		
 		// Update
 		$this->oOption->InsertBox( $arrBoxOptions['sidebar'], $arrBoxOptions );
 		$this->oOption->Update();		
 		
-	}
-	function FixNumber( $numToFix, $numDefault, $numMin="", $numMax="" ) {
-	
-		// checks if the passed value is a number and set it to the default if not.
-		// if it is a number and exceeds the set maximum number, it sets it to the max value.
-		// if it is a number and is below the minimum number, it sets to the minimium value.
-		// set a blank value for no limit
-		if ( !is_numeric( trim( $numToFix ) ) ) return $numDefault;
-			
-		if ( $numMin != "" && $numToFix < $numMin) return $numMin;
-			
-		if ( $numMax != "" && $numToFix > $numMax ) return $numMax;
-
-		return $numToFix;
-		
-	}			
+	}		
 	function IsLabelAlreadyUsed( $strLabel ) {
 		// since 1.0.4
 		foreach( $this->oOption->arrOptions['boxes'] as $strSidebarID => $arrBoxOptions ) 			

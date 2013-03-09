@@ -4,6 +4,7 @@
 	
  * @package     Responsive Column Widgets
  * @copyright   Copyright (c) 2013, Michael Uno
+ * @authorurl	http://michaeluno.jp
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		1.0.0
 */
@@ -63,8 +64,16 @@ class ResponsiveColumnWidgets_Core_ {
 		// add_filter( 'dynamic_sidebar_params', array( $this, 'CheckSidebarLoad' ) );
 		// add_action( 'dynamic_sidebar', array( $this, 'AddFormInDynamicSidebar' ) );
 		
+		add_action( 'wp_footer', array( $this, 'AddWidgetboxInFooter' ) );
 	}
-	
+	function AddWidgetboxInFooter() {
+		
+		// since 1.0.5
+		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => $arrBoxOptions ) 
+			if ( isset( $arrBoxOptions['insert_footer'] ) && $arrBoxOptions['insert_footer'] )
+				$this->RenderWidgetBox( array( 'sidebar' => $strSidebarID ) );
+		
+	}
 	function RegisterSidebar() {
 		
 		global $wp_registered_sidebars;
@@ -73,23 +82,20 @@ class ResponsiveColumnWidgets_Core_ {
 
 		if ( ! function_exists( 'register_sidebar' ) ) return;
 		
-		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => $arrBoxOptions ) {
-			
-			// $this->arrDefaultParams['sidebar'] = strtolower( $this->arrDefaultParams['sidebar'] );
-			register_sidebar( array(
-				'name' => $arrBoxOptions['label'],
-				'id' => strtolower( $arrBoxOptions['sidebar'] ), // must be all lowercase
-				'description' => $arrBoxOptions['description'],
-				'before_widget' => $arrBoxOptions['before_widget'], // $this->oOption->arrDefaultSidebarArgs['before_widget'], //'<aside id="%1$s" class="%2$s"><div class="widget">',
-				'after_widget' => $arrBoxOptions['after_widget'], // $this->oOption->arrDefaultSidebarArgs['after_widget'], //'</div></aside>',
-				'before_title' => $arrBoxOptions['before_title'], // $this->oOption->arrDefaultSidebarArgs['before_title'], //'<h3 class="widget-title">',
-				'after_title' => $arrBoxOptions['after_title'], // $this->oOption->arrDefaultSidebarArgs['after_title'] //'</h3>',
-			) );	
-			
-		}
+		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => $arrBoxOptions ) 			
+			register_sidebar( 
+				array(
+					'name' => $arrBoxOptions['label'],
+					'id' => strtolower( $arrBoxOptions['sidebar'] ), // must be all lowercase
+					'description' => $arrBoxOptions['description'],
+					'before_widget' => $arrBoxOptions['before_widget'], // $this->oOption->arrDefaultSidebarArgs['before_widget'], //'<aside id="%1$s" class="%2$s"><div class="widget">',
+					'after_widget' => $arrBoxOptions['after_widget'], // $this->oOption->arrDefaultSidebarArgs['after_widget'], //'</div></aside>',
+					'before_title' => $arrBoxOptions['before_title'], // $this->oOption->arrDefaultSidebarArgs['before_title'], //'<h3 class="widget-title">',
+					'after_title' => $arrBoxOptions['after_title'], // $this->oOption->arrDefaultSidebarArgs['after_title'] //'</h3>',
+				) 
+			);		
 			
 	}
-
 	
 	function CheckSidebarLoad( $arrSidebarParams ) {
 		
@@ -185,8 +191,7 @@ class ResponsiveColumnWidgets_Core_ {
 		
 		// The direct parameters take precedence
 		if ( isset( $this->oOption->arrOptions['boxes'][$sidebar] ) )
-			$arrParams = $arrParams + $this->oOption->arrOptions['boxes'][$sidebar];
-// echo '<pre>' . htmlspecialchars( print_r( $arrParams, true ) ) . '</pre>';			
+			$arrParams = $arrParams + $this->oOption->arrOptions['boxes'][$sidebar];			
 		
 		return '<div class="' . $this->strClassAttrBox . ' ' . $sidebar . '">' . $this->OutputWidgetBuffer( $sidebar, $arrParams ) . '</div>';
 		
@@ -367,5 +372,4 @@ class ResponsiveColumnWidgets_Core_ {
 		$this->bIsStyleAddedMaxColsByPixel = true;
 		return $strStyleRules;
 	}
-
 }

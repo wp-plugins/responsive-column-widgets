@@ -79,6 +79,11 @@ e.g.
 
 == Changelog ==
 
+= 1.0.5 - 03/09/2013 =
+* Added: the ability to automatically insert the widget box in the footer if the option is checked in the setting page.
+* Fixed: a bug that the same ID attribute was applied to the aside tags.
+* Changed: a filter name that the plugin internally uses to make the names consistent.
+
 = 1.0.4.9 - 03/04/2013 =
 * Changed: the Access Rights option not to appear for members other than administrators. 
 
