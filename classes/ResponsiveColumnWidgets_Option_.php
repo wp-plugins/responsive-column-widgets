@@ -19,6 +19,7 @@ class ResponsiveColumnWidgets_Option_ {
 		'after_title'		=> '</h3>',
 		'message_no_widget'	=> 'No widget added yet.',
 		'insert_footer'		=> false,
+		'custom_style'		=> '',
 	);	
 	public $arrCapabilities = array(	// used in the drop-down list of the General Options page.
 		0 => 'manage_options',

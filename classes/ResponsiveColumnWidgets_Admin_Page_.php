@@ -4,12 +4,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	// Properties
 	protected $strPluginName = 'Responsive Column Widgets';
 	protected $strPluginSlug = 'responsive_column_widgets';
+	protected $arrRecentlyAddedOptionKeys = array();	// used with the CheckKeys() method to allow missing keys when an array is validated	
 	
 	// Flags
 	protected $bIsNew;
 
 	// Objects
-	public $oOption = null;	// stores the option object. It is set via the SetOptionObject() method.
+	public $oOption;	// stores the option object. It is set via the SetOptionObject() method.
 	protected $oWidgetPage;
 	
 	function start_ResponsiveColumnWidgets_Admin_Page() {
@@ -32,7 +33,15 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			// && isset( $_GET['tab'] ) && $_GET['tab'] == 'widgets' )
 			// || isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug && ! isset( $_GET['tab'] )  )
 			// $this->oWidgetPage = new ResponsiveColumnWidgets_Admin_Page_Widgets;
-		
+
+		// If the settings are updated and there are no errors without failing the validation, go to the edit page
+		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug 
+			&& ( !isset( $_GET['tab'] ) || $_GET['tab'] == 'neworedit' )
+			&& isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == true 
+			&& ! get_transient( md5( get_class( $this ) . '_' . $this->strPluginSlug ) ) 
+		) 
+			wp_redirect( admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ) );
+			
 	}
 	function EnqueueAdminStyle() {
 		wp_enqueue_style( 'responsive_column_widgets_enqueue_style', RESPONSIVECOLUMNWIDGETSURL . '/css/responsive_column_widgets.css' );
@@ -60,7 +69,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$this->SetCapability( $this->oOption->arrCapabilities[$numCapability ? $numCapability : 0] );
 
 		// Build menu and pages
-        $this->SetRootMenu( 'Appearence' );          // specifies to which parent menu to belong.
+        $this->SetRootMenu( 'Appearance' );          // specifies to which parent menu to belong.
         $this->AddSubMenu(  
 			$this->strPluginName,    // page and menu title
 			$this->strPluginSlug 	// page slug
@@ -80,7 +89,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		// Determine which widget box it is.
 		$strSidebarID = $this->DetermineCurrentSidebarToEdit();	// the returned value can be empty.
 
-		$this->bIsNew =  empty( $strSidebarID ) || ! isset( $this->oOption->arrOptions['boxes'][$strSidebarID] )  ? true : false;
+		// Setup the box options - in case new keys are added in newer version and old saved data do not have them, merge the array keys.
+		if ( isset( $this->oOption->arrOptions['boxes'][ $strSidebarID ] ) ) {			
+			$arrDefaultBoxParams = $this->oOption->arrDefaultSidebarArgs + $this->oOption->arrDefaultParams; 
+			$this->oOption->arrOptions['boxes'][ $strSidebarID ] = $this->oOption->arrOptions['boxes'][ $strSidebarID ] + $arrDefaultBoxParams;
+		}
+				
+		// Determine whether it is the New or Edit page.
+		$this->bIsNew =  empty( $strSidebarID ) || ! isset( $this->oOption->arrOptions['boxes'][ $strSidebarID ] )  ? true : false;
 		$bIsNew = $this->bIsNew;
 		
 		// Add the form elements.
@@ -248,6 +264,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						),							
 					),
 				),
+				// Insert Widget Box
 				array(
 					'pageslug' => $this->strPluginSlug,
 					'tabslug' => 'neworedit',
@@ -264,6 +281,30 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						),
 					),
 				),
+				// Custom Style
+				array(
+					'pageslug' => $this->strPluginSlug,
+					'tabslug' => 'neworedit',
+					'id' => 'section_custom_style',
+					'title' => __( 'Custom Style', 'responsive-column-widgets' ), 
+					'fields' => array(
+						array(
+							'id' => 'field_custom_style',
+							'title' => __( 'CSS Rule', 'responsive-column-widgets' ),
+							'description' => __( 'Define your custom CSS rules here.', 'responsive-column-widgets' ) . '<br />'
+								. 'e.g. ' . esc_html( '.responsive_column_widgets_box .widget { padding: 0 20px 0 20px; }' ),
+							'type' => 'textarea',
+							'cols' => 120,
+							'rows' => 6,
+							'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['custom_style'] : ( isset( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['custom_style'] ) ? $this->oOption->arrOptions['boxes'][ $strSidebarID ]['custom_style'] : ''  ),
+							// 'post_html' => '<p>$strSidebarID: ' . $strSidebarID . '</p>'
+								// . '<p>$custom_style: ' . $this->oOption->arrOptions['boxes'][ $strSidebarID ]['custom_style'] . '</p>'
+								// . '<pre>' . esc_html( print_r( $arrDefaultBoxParams , true ) ) . '</pre>'
+								// . '<pre>' . esc_html( print_r( $this->oOption->arrOptions['boxes'][ $strSidebarID ] , true ) ) . '</pre>'
+							// ,
+						),
+					),
+				),				
 				// General Options
 				array(  
 					'pageslug' => $this->strPluginSlug,
@@ -335,7 +376,68 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				),				
 			)
 		);
-
+		$this->AddFormSections(
+			// Section Arrays
+			array( 				
+				// Manage Options
+				array(  
+					'pageslug' => $this->strPluginSlug,
+					'tabslug' => 'manage',
+					'id' => 'section_buttons', 
+					'title' => '', //__( 'Pro Settings', 'responsive-column-widgets' ), 
+					// 'description' => __( '', 'responsive-column-widgets' ),
+					'fields' => array( 	// Field Arrays
+						array(  // single button
+							'id' => 'submit_create_new',
+							'type' => 'submit',		// the submit type creates a button
+							'label' => __( 'Add New Box', 'responsive-column-widgets' ),
+							'class' => 'submit-buttons button button-primary',
+							'pre_html' => '<span title="' . $this->strGetPro . '">',
+							'post_html' => '</span>',							
+							'disable' => true,
+						),
+						array(  // single button
+							'id' => 'checkbox_table',
+							'type' => 'custom',	
+							'pre_html' => $this->GetWidgetBoxTable(),
+						),						
+						array(  // single button
+							'id' => 'submit_delete',
+							'type' => 'submit',		// the submit type creates a button
+							'label' => __( 'Delete Checked', 'responsive-column-widgets' ),
+							'class' => 'submit-buttons button button-secondary',
+							'pre_html' => '<span title="' . $this->strGetPro . '">',
+							'post_html' => '</span>',
+							'disable' => true,
+						),	
+						array(  // single button
+							'id' => 'export_box_options',
+							'type' => 'export',	
+							'file_name' => RESPONSIVECOLUMNWIDGETSKEY . '_' . date("Ymd") . '.txt',
+							'label' => array(
+								__( 'Export All', 'responsive-column-widgets' ),
+								__( 'Export Checked', 'responsive-column-widgets' ),
+							),
+							'delimiter' => '',
+							'class' => 'export-button submit-buttons button button-primary',
+							'pre_html' => '<span class="export" title="' . $this->strGetPro . '">',
+							'post_html' => '</span>',
+							'disable' => true,							
+						),	
+						array(  // single button
+							'id' => 'import_box_options',
+							'type' => 'import',	
+							'label' => __( 'Import Widget Boxes', 'responsive-column-widgets' ),
+							// 'class' => 'import-disabled', //'submit-buttons button button-primary',
+							'pre_html' => '<span class="import" title="' . $this->strGetPro . '">',
+							'post_html' => '</span>',
+							'delimiter' => '',
+							'disable' => true,							
+						),							
+					),
+				),				
+			)
+		);			
     }
 	/*
 	 *  Custom Methods
@@ -373,7 +475,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 		if ( $this->numPluginType == 0 ) return $this->oOption->arrDefaultParams['sidebar'];	// the default sidebar ID
 		
-		if ( isset( $_GET['sidebarid'] ) ) return $_GET['sidebarid'];
+		if ( isset( $_GET['sidebarid'] ) ) return trim( $_GET['sidebarid'] );
 		
 	}	
 	function SetOptionObject( &$oOption ) {
@@ -384,7 +486,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	 * Modify the head and the foot parts
 	 * */
 	function head_ResponsiveColumnWidgets_Admin_Page( $strHead ) {
-		$strButton = isset( $_GET['tab'] ) && $_GET['tab'] == 'manage' ? $this->GetAddNewBoxButton() : '';
+		// $strButton = isset( $_GET['tab'] ) && $_GET['tab'] == 'manage' ? $this->GetAddNewBoxButton() : '';
 		return $this->oUserAds->GetTopBanner()
 			. $strHead 
 			. '<div class="responsive-column-widgets-admin-body">'
@@ -392,8 +494,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			<tbody>
 			<tr>
 			<td valign="top">'
-			. $this->oUserAds->GetTextAd()
-			. $strButton;
+			. $this->oUserAds->GetTextAd();
+			// . $strButton;
 	}
 	function foot_ResponsiveColumnWidgets_Admin_Page( $strFoot ) {
 		
@@ -417,16 +519,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$this->oWidgetPage->RenderWidgetPage();
 		
 	}
-    function do_responsive_column_widgets() {  
-	
-		// function submit_button( $text = null, $type = 'primary', $name = 'submit', $wrap = true, $other_attributes = null ) {
-		// echo get_submit_button( $text, $type, $name, $wrap, $other_attributes );		
-// $str = RESPONSIVECOLUMNWIDGETSKEYADMIN;
-// $bIsUpdated = delete_option( 'responsive_column_widgets_admin' );
-// echo 'Admin Option Key : ' . $str . '<br />';
-// echo '$bIsUpdated: ' . $bIsUpdated . '<br />';
-
-	}	 
+ 
 	function do_responsive_column_widgets_neworedit() {
 		
 		// Submit Button
@@ -445,22 +538,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		// echo '<pre>' . htmlspecialchars( print_r( $arrOptionsAdmin , true ) ) . '</pre>';		
 		
 	}
-	// function head_responsive_column_widgets_manage( $strHead ) {
-		// return $strHead;			
-	// }
-    function do_responsive_column_widgets_manage() {
-		
-		$this->RenderWidgetBoxTable();
-		echo $this->GetDeleteButton();
-
-		// debug
-		// $sidebars_widgets = get_option('sidebars_widgets', array());		
-		// echo '<pre>' . htmlspecialchars( print_r( $sidebars_widgets, true ) ). '</pre>';
-		// echo '<pre>' . htmlspecialchars( print_r( $this->arrCallerInfo, true ) ). '</pre>';
-		
-    }
+	function head_responsive_column_widgets_manage( $strHead ) {
+		// this is for the redirection from the new / edit page after saving the options.
+		$strUpdatedMsg = isset( $_GET['updated'] ) && $_GET['updated'] ? '<div class="updated"><p>' . __( 'The widget box options have been saved.', 'responsive-column-widgets' ) . '</p></div>': '';
+		return $strUpdatedMsg . $strHead;			
+	}
+ 
 	function GetAddNewBoxButton() {
-		return '<div class="submit-buttons" style="margin-bottom:20px; margin-top: 10px;"><span title="' . $this->strGetPro . '">'
+		return '<div class="submit-buttons" style=""><span title="' . $this->strGetPro . '">'
 			. $this->GetSubmitButton( 
 				__( 'Add New Box', 'responsive-column-widgets' ),
 				'button button-primary', 
@@ -470,7 +555,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			. '</span></div>';			
 	}
 	function GetDeleteButton() {
-		return '<div class="submit-buttons" style="margin-bottom: 20px;"><span title="' . $this->strGetPro . '">'
+		return '<div class="submit-buttons" style=""><span title="' . $this->strGetPro . '">'
 			. $this->GetSubmitButton( 
 				__( 'Delete Checked', 'responsive-column-widgets' ),
 				'button button-secondary', 
@@ -482,17 +567,15 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	function GetSubmitButton( $strValue, $strClass, $strName, $strDisable ) {
 		return "<input type='submit' class='{$strClass}' name='{$strName}' value='{$strValue}' {$strDisable} />";
 	}
-	function do_responsive_column_widgets_general() {
-		// echo '<div class="submit-buttons">';
-		// submit_button();	
-		// echo '</div>';
-	}
+
 	function do_responsive_column_widgets_information() {
 		?>
 		<h3><?php _e( 'Please Review', 'responsive-column-widgets' ); ?></h3>
 		<p><?php _e( 'If you find the plugin useful, please <a href="http://wordpress.org/support/view/plugin-reviews/responsive-column-widgets">rate</a> it so that others can know it.', 'responsive-column-widgets' ); ?></p>
+		<?php if ( ! defined( 'RESPONSIVECOLUMNWIDGETSPROFILE' ) ) : ?>
 		<h3><?php _e( 'Get Pro', 'responsive-column-widgets' ); ?></h3>
 		<p><?php _e( 'If you like the plugin and want more useful features, please upgrade it to <a href="http://en.michaeluno.jp/responsive-column-widgets/responsive-column-widgets-pro">Pro</a>.', 'responsive-column-widgets' ); ?></p>
+		<?php endif; ?>
 		<h3><?php _e( 'Exchanges', 'responsive-column-widgets' ); ?></h4>
 		<p><?php _e( 'You may receive a discount or a copy of the plugin by contributing one of the followings. A contribution does not have to be for this plugin. It can be for any product of miunosoft. Please just ask.', 'responsive-column-widgets' ); ?></p>
 		<ul>
@@ -637,6 +720,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$arrBoxOptions['showonly'] = $arrInput['section_params']['field_showonly'];
 		$arrBoxOptions['offsets'] = $arrInput['section_params']['field_offsets'];
 		$arrBoxOptions['insert_footer'] = $arrInput['section_insert']['field_footer'];
+		$arrBoxOptions['custom_style'] = $arrInput['section_custom_style']['field_custom_style'];
 		
 		// Update
 		$this->oOption->InsertBox( $arrBoxOptions['sidebar'], $arrBoxOptions );
@@ -650,14 +734,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 
 	}	
 	function GetAvailableSidebarID() {
-		// since 1.0.4
-		// return 'responsive_column_widgets_' . uniqid();
 
-		/*
-		 *  The following method turned out to be incompatible with the WordPress code structure that registers sidebars.
-		 *  When a sidebar is removed, if the ID is like ..._n where n is a diget, then it remains in the WordPress database as an inactive sidebar.
-		 *  So plugin must use a different name structue for the ID.
-		 * */
+		// since 1.0.4
 		$numID = '';
 		$arrBoxes = ( array ) $this->oOption->arrOptions['boxes'];
 		$arrBoxes = array_reverse( $arrBoxes, true);	// the ID number is ascending so read from the last one.
@@ -689,6 +767,12 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 	}
 	function validation_responsive_column_widgets_manage( $arrInput ) {
+		// debug		
+		// file_put_contents( dirname( __FILE__ ) . '/info.txt' , 
+			// __FILE__ . PHP_EOL 
+			// . __METHOD__ . PHP_EOL
+			// . print_r( $_POST, true ) . PHP_EOL
+			// ,FILE_APPEND );		
 		// add_settings_error( $_POST['pageslug'], 
 			// 'can_be_any_string',  
 			// '<h3>Submitted Values</h3>' .
@@ -699,12 +783,12 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 		/*
 		 * Delete Checked Widget Box Items
-		 * */
-		if ( isset( $arrInput['delete'] ) ) {
+		 * */ 
+		if ( isset( $arrInput['responsive_column_widgets']['section_buttons']['submit_delete'] ) ) {		// the 'Delete Checked' submit button
 			$strMsg = '';
 			$bIsUnset = False;
 			$arrSidebarOptions = get_option( 'sidebars_widgets', array() );
-			foreach( ( array ) $arrInput['delete'] as $strSidebarID => $numValue ) {
+			foreach( ( array ) $arrInput['checked_boxes'] as $strSidebarID => $numValue ) {
 				
 				// If broken
 				if ( $strSidebarID == '' ) {
@@ -732,7 +816,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				
 			}
 			// unless unsetting the key, it will remain in the database. 
-			unset( $arrInput['delete'] );
+			unset( $arrInput['checked_boxes'] );
+			unset( $arrInput['responsive_column_widgets']['section_buttons']['submit_delete'] );
+			
 		}
 		
 		return $arrInput;
@@ -811,77 +897,61 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	/*
 	 * Table
 	 * */
-	function RenderWidgetBoxTable() {
-		?>
-		<div class="submit">
-			<table class="wp-list-table widefat fixed posts responsive_column_widgets_admin" cellspacing="0" >
-				<thead><?php $this->RenderWidgetBoexTableHeader(); ?></thead>
-				<tbody id="the-list">
-					<?php
-						$this->RenderWidgetBoexTableDefaultRow();
-						$this->RenderWidgetBoexTableRows();
-					?>
-				</tbody>
-				<tfoot><?php $this->RenderWidgetBoexTableHeader(); ?></tfoot>
-			</table>
-			<?php 
-			// $this->RenderSubmitButton( $this->pluginkey . '[remove_button]'
-									// , __( 'Remove Checked', 'responsive-column-widgets' ) ); 
-			?>
-		</div>
-		<?php	
+	function GetWidgetBoxTable() {
+		return '<div class="submit">'
+			. '<table class="wp-list-table widefat fixed posts responsive_column_widgets_admin" cellspacing="0" >'
+			. '<thead>' . $this->GetWidgetBoexTableHeader() . '</thead>'
+			. '<tbody id="the-list">'
+			. $this->GetWidgetBoexTableDefaultRow()
+			. $this->GetWidgetBoexTableRows()
+			. '</tbody>'
+			. '<tfoot>' . $this->GetWidgetBoexTableHeader() . '</tfoot>'
+			. '</table>'
+			. '</div>';
 	}	 
-	function RenderWidgetBoexTableHeader() {
-	?>
-		<tr style="">
-			<th scope="col" class="manage-column column-cb check-column" style="vertical-align:middle; padding-left:4px;" valign="middle">
-				<input type="checkbox">
-			</th>
-			<th scope="col" class="manage-column column-label asc desc sortable" style="width:22%;">
-				<span><?php _e( 'Box Label', 'responsive-column-widgets' ); ?> / <?php _e( 'Description', 'responsive-column-widgets' ); ?></span>
-			</th>
-			<th scope="col" class="manage-column column-label asc desc sortable" style="width:20%;">
-				<span><?php _e( 'Sidebar ID', 'responsive-column-widgets' ); ?></span>
-			</th>
-			<th scope="col" class="manage-column column-label asc desc sortable" style="width:44%;">
-				<span><?php _e( 'Shortcode', 'responsive-column-widgets' ); ?> / <?php _e( 'PHP Code', 'responsive-column-widgets' ); ?> <?php _e( 'Example', 'responsive-column-widgets' ); ?></span>
-			</th>	
-			<th scope="col" class="manage-column column-label asc desc sortable operation" style="width:10%;">
-				<span><?php _e( 'Operation', 'responsive-column-widgets' ); ?></span>
-			</th>				
-		</tr>
-	<?php
+	function GetWidgetBoexTableHeader() {
+		return '<tr style="">'
+			. '<th scope="col" class="manage-column column-cb check-column" style="vertical-align:middle; padding-left:4px;" valign="middle">'
+			. '<input type="checkbox">'				
+			. '</th>'
+			. '<th scope="col" class="manage-column column-label asc desc sortable" style="width:22%;">'
+			. '<span>' . __( 'Box Label', 'responsive-column-widgets' ) . ' / ' . __( 'Description', 'responsive-column-widgets' ) . '</span>'
+			. '</th>'
+			. '<th scope="col" class="manage-column column-label asc desc sortable" style="width:20%;">'
+			. '<span>' . __( 'Sidebar ID', 'responsive-column-widgets' ) . '</span>'
+			. '</th>'
+			. '<th scope="col" class="manage-column column-label asc desc sortable" style="width:44%;">'
+			. '<span>' . __( 'Shortcode', 'responsive-column-widgets' ) . ' / ' . __( 'PHP Code', 'responsive-column-widgets' ) . ' ' . __( 'Example', 'responsive-column-widgets' ) . '</span>'
+			. '</th>'
+			. '<th scope="col" class="manage-column column-label asc desc sortable operation" style="width:10%;">'
+			. '<span>' . __( 'Operation', 'responsive-column-widgets' ) . '</span>'
+			. '</th>'
+			. '</tr>';
 	}
-	function RenderWidgetBoexTableDefaultRow() {
-	?>
-		<tr class="responsive_column_widgets_default_row" >
-			<?php echo '<td align="center" class="check-column first-col" style="padding: 8px 0 8px" ></td>'; ?>
-			<td>
-				<ul style="margin:0;">
-					<li><b><?php echo $this->oOption->arrOptions['boxes'][ $this->oOption->arrDefaultParams['sidebar'] ]['label']; ?></b></li>
-					<li><?php echo $this->oOption->arrOptions['boxes'][ $this->oOption->arrDefaultParams['sidebar'] ]['description']; ?></li>
-				</ul>
-			</td>
-			<td>responsive_column_widgets</td>
-			<td>
-				<ul style="margin:0;">
-					<li>[<?php echo $this->oOption->arrOptions['boxes'][ $this->oOption->arrDefaultParams['sidebar'] ]['sidebar']; ?>]</li>
-					<li>&lt;?php ResponsiveColumnWidgets(); ?&gt;</li>
-				</ul>
-			</td>
-			<td class="operation">
-				<?php
-					$strURL = admin_url( 'admin.php?page=' . $_GET['page'] . '&tab=neworedit&sidebarid=responsive_column_widgets' . '&mode=edit' );
-					echo "<a href='{$strURL}'>" . __( 'Edit', 'responsive-column-widgets' ) . "</a>";
-					// . "&nbsp;|&nbsp;"
-					// $strURL = admin_url( 'admin.php?page=' . $_GET['page'] . '&tab=' . $_GET['tab'] . '&sidebarid=responsive_column_widgets&view=true' );
-					// echo "<a href='{$strURL}'>" . __( 'View', 'responsive-column-widgets' ) . "</a>";					 
-				?>
-			</td>
-		</tr>	
-	<?php
+	function GetWidgetBoexTableDefaultRow() {
+		
+		$strURL = admin_url( 'admin.php?page=' . ( isset( $_GET['page'] ) ? $_GET['page'] : '' ) . '&tab=neworedit&sidebarid=' . $this->oOption->arrDefaultParams['sidebar'] . '&mode=edit' );
+		return '<tr class="responsive_column_widgets_default_row" >'
+			. '<td align="center" class="check-column first-col" style="padding: 8px 0 8px" ></td>'
+			. '<td>'
+			. '<ul style="margin:0;">'
+			. '<li><b>' . $this->oOption->arrOptions['boxes'][ $this->oOption->arrDefaultParams['sidebar'] ]['label'] . '</b></li>'
+			. '<li>' . $this->oOption->arrOptions['boxes'][ $this->oOption->arrDefaultParams['sidebar'] ]['description'] . '</li>'
+			. '</ul>'
+			. '</td>'
+			. '<td>' . $this->oOption->arrDefaultParams['sidebar'] . '</td>'
+			. '<td>'
+			. '<ul style="margin:0;">'
+			. '<li>[' . $this->oOption->arrOptions['boxes'][ $this->oOption->arrDefaultParams['sidebar'] ]['sidebar'] . ']</li>'
+			. '<li>&lt;?php ResponsiveColumnWidgets(); ?&gt;</li>'
+			. '</ul>'
+			. '</td>'
+			. '<td class="operation">'
+			. "<a href='{$strURL}'>" . __( 'Edit', 'responsive-column-widgets' ) . "</a>"
+			. '</td>'
+			. '</tr>';
 	}
-	function RenderWidgetBoexTableRows() {}
+	function GetWidgetBoexTableRows() {}
 	 
 	/*
 	 * Modify Style
@@ -902,6 +972,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			.submit-buttons {
 				float: right; 
 				clear: both;
+			}
+			.wp-core-ui .button, .wp-core-ui .button-primary, .wp-core-ui .button-secondary {
+				margin-left: 10px;
 			}
 			.submit-buttons p {
 				padding: 4px;
@@ -931,7 +1004,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		';
 	}
 	function style_responsive_column_widgets_manage( $strStyle ) {
-		return $strStyle . '
+		$strInputFileFontColor = defined( 'RESPONSIVECOLUMNWIDGETSPROFILE' ) ? '#555' : '#DDD';
+		return $strStyle . "
 			.responsive_column_widgets_default_row {
 				background-color:#F1F1F1;
 			} 
@@ -945,7 +1019,24 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			.operation {
 				text-align: center;				
 			}
-		';
+			.form-table tbody tr th {
+				width: 0px;
+				padding: 0px;
+			}
+			.submit {
+				padding: 0px;				
+			}
+			input.export-button {
+				clear:none;
+			}
+			.import {
+				float: right;
+			}
+			.import input {
+				color: {$strInputFileFontColor};
+				background-color: inherit;
+			}
+		";
 	}
 	function style_responsive_column_widgets_information( $strStyle ) {
 		return $strStyle . '

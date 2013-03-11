@@ -32,7 +32,8 @@ class ResponsiveColumnWidgets_Core_ {
 	private $strClassAttrNewCol = 'responsive_column_widgets_firstcol';
 	private $strClassAttrRow = 'responsive_column_widgets_row';
 	private $strClassAttrMaxColsByPixel = '';
-	private $bIsStyleAddedMaxColsByPixel = False;	// flag to indicate whether the style rule for max cols by pixel is added or not
+	private $bIsStyleAddedMaxColsByPixel = False;	// flag to indicate whether the style rule for max cols by pixel has been added or not
+	private $bIsCustomStyleAdded = False;	// flag that indicates whether the custom style for the widget box has been added or not. 
 	
 	private $bIsFormInDynamicSidebarRendered = false;
 	
@@ -240,12 +241,14 @@ class ResponsiveColumnWidgets_Core_ {
 
 		global $wp_registered_sidebars, $wp_registered_widgets;
 
-		// extract the parameters
+		// extract the parameters 
+		// Todo : review whether it is readable to use extact(); otherwise, find an alternative for extract().
 		extract( $arrParams );
 		$arrMaxCols = preg_split( '/[, ]+/', $columns, -1, PREG_SPLIT_NO_EMPTY );
 		$arrOmits = preg_split( '/[, ]+/', $omit, -1, PREG_SPLIT_NO_EMPTY );
 		$arrShowOnlys = preg_split( '/[, ]+/', $showonly, -1, PREG_SPLIT_NO_EMPTY );
 		$arrOffsetsByPixel = $this->GetMaxColsByPixelArray( $offsets );
+		$strCustomStyle = trim( $custom_style );
 		
 		$index = $this->GetIndex( $index );
 		$sidebars_widgets = wp_get_sidebars_widgets();
@@ -339,9 +342,25 @@ class ResponsiveColumnWidgets_Core_ {
 		if ( ! $this->bIsStyleAddedMaxColsByPixel )
 			$strBuffer .= $this->AddStyleForMaxColsByPixel( $index, $arrOffsetsByPixel );
 
+		// If the custom style for the widget box has not been added yet,
+		if ( ! empty( $strCustomStyle ) && ! $this->bIsCustomStyleAdded )
+			$strBuffer .= $this->AddCustomStyle( $index, $strCustomStyle );
+			
 		return $strBuffer;
 	}
+	function AddCustomStyle( $strSidebarID, $strCustomStyle ) {
+		
+		// since 1.0.6
+		$strStyleRules = '<style type="text/css" scoped>' 
+			. $strCustomStyle
+			. '</style>';
+
+		$this->bIsCustomStyleAdded = true;
+		return $strStyleRules;	
+		
+	}
 	function AddStyleForMaxColsByPixel( $strSidebarID, $arrOffsetsByPixel ) {
+		
 		// added since 1.0.3
 		$strStyleRules = '<style type="text/css" scoped>';
 		

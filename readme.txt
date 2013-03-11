@@ -69,6 +69,9 @@ e.g.
     background-color: #EEE;
 }`
 
+= Is it possible to create multiple widget boxes? =
+Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-column-widgets-pro/).
+
 == Screenshots ==
 
 1. ***Adding Widgets***
@@ -78,6 +81,10 @@ e.g.
 
 
 == Changelog ==
+
+= 1.0.6 - 03/11/2013 =
+* Fixed: a bug that saving in the General Options page redirected to the Manage page in the plugin admin pages.
+* Added: the ability to set custom style rules per widget box.
 
 = 1.0.5 - 03/09/2013 =
 * Added: the ability to automatically insert the widget box in the footer if the option is checked in the setting page.
