@@ -3,10 +3,10 @@
 	Plugin Name: Responsive Column Widgets
 	Plugin URI: http://en.michaeluno.jp/responsive-column-widgets
 	Description: Creates a widget box which displays widgets in columns with a responsive design.
-	Version: 1.0.6
+	Version: 1.0.6.1
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
-	Requirements: This plugin requires WordPress >= 3.0 and PHP >= 5.1.2
+	Requirements: This plugin requires WordPress >= 3.2 and PHP >= 5.2.4
 */
 
 /*
@@ -18,7 +18,7 @@
  
  
 // Constants
-// We use two keys for the options. One for the actual options and the other is for admin pages.
+// We use two keys for the options. One for the actual options and the other is for the admin pages.
 define( "RESPONSIVECOLUMNWIDGETSKEY", "responsive_column_widgets" );
 define( "RESPONSIVECOLUMNWIDGETSKEYADMIN", "responsive_column_widgets_admin" );
 
@@ -31,7 +31,7 @@ define( "RESPONSIVECOLUMNWIDGETSURL", plugins_url('', __FILE__ ) );
 // - Arrays
 $arrResponsiveColumnWidgetsClasses = isset( $arrResponsiveColumnWidgetsClasses ) ? $arrResponsiveColumnWidgetsClasses : array();	// stores the class paths.
 // - Objects
-$oResponsiveColumnWidgets_Options = null;	// the option object which stores and manipulate necessary settings.
+$oResponsiveColumnWidgets_Options = null;	// the option object which stores and manipulates necessary settings.
 $oResponsiveColumnWidgets = null;			// the core object which handles rendering widgets.
 
 
@@ -90,12 +90,22 @@ class ResponsiveColumnWidgets_RegisterClasses {
 	
 }
 /*
- *  Activation Hook
+ *  Activation / Deactivation Hook
  * */
 register_activation_hook( RESPONSIVECOLUMNWIDGETSFILE, 'ResponsiveColumnWidgets_SetupTransients' );
 function ResponsiveColumnWidgets_SetupTransients() {
 	
 	wp_schedule_single_event( time(), 'RCWP_action_setup_transients' );		
+	
+}
+register_deactivation_hook( RESPONSIVECOLUMNWIDGETSFILE, 'ResponsiveColumnWidgets_CleanupTransients' );
+function ResponsiveColumnWidgets_CleanupTransients() {
+	
+	// Delete transients
+	global $wpdb, $table_prefix;
+	$strPrefixFeedTransient = 'RCWFeed_';	
+	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_%{$strPrefixFeedTransient}%' )" );
+	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_timeout%{$strPrefixFeedTransient}%' )" );
 	
 }
 /*
@@ -114,13 +124,35 @@ function ResponsiveColumnWidgets_Startup() {
 	// Admin Page - $oAdmin is local 
 	$oAdmin = new ResponsiveColumnWidgets_Admin_Page( RESPONSIVECOLUMNWIDGETSKEYADMIN );		
 	$oAdmin->SetOptionObject( $oResponsiveColumnWidgets_Options );
-	
+		
 	// Load events
 	new ResponsiveColumnWidgets_Events( $oResponsiveColumnWidgets_Options );
 
 	// For plugin extensions
 	do_action( 'RCW_action_started', $oResponsiveColumnWidgets_Options );
 		
+	// Requirement Check in the admin_init hook
+	new ResponsiveColumnWidgets_Requirements( 
+		RESPONSIVECOLUMNWIDGETSFILE,
+		array(
+			'php' => array(
+				'version' => '5.2.4',
+				'error' => 'The plugin requires the PHP version %1$s or higher.',
+			),
+			'wordpress' => array(
+				'version' => '3.2',
+				'error' => 'The plugin requires the WordPress version %1$s or higher.',
+			),
+			'functions' => array(
+				// 'unknown_func' => 'The plugin requires the %1$s function to be installed.',
+			),
+			'classes' => array(),
+			'constants'	=> array(),
+		),
+		True, 			// if it fails it will deactivate the plugin
+		'admin_init'	// the hook to trigger the check
+	);
+	
 }
 
 /*

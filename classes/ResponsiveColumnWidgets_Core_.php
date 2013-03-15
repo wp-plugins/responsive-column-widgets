@@ -228,15 +228,6 @@ class ResponsiveColumnWidgets_Core_ {
 		if ( empty( $sidebars_widgets[$index] ) ) return false;
 		return true;
 	}
-	function GetMaxColsByPixelArray( $offsets ) {
-		// added since 1.0.3
-		// e.g. 740:3, 600: 2, 300: 1 ( -- converts --> ) array( array( 740, 3 ), array( 600, 2 ), array( 300, 1 ) )
-		$arrElems = preg_split( '/[,]\s+/', $offsets, -1, PREG_SPLIT_NO_EMPTY );
-		$arrOffsetsByPixel = array();
-		foreach( $arrElems as $numIndex => $strElem ) 
-			$arrOffsetsByPixel[$numIndex] = preg_split( '/[: ]+/', trim( $strElem ), 0, PREG_SPLIT_NO_EMPTY );
-		return $arrOffsetsByPixel;
-	}
 	function OutputWidgetBuffer( $index = 1, $arrParams ) {
 
 		global $wp_registered_sidebars, $wp_registered_widgets;
@@ -244,10 +235,10 @@ class ResponsiveColumnWidgets_Core_ {
 		// extract the parameters 
 		// Todo : review whether it is readable to use extact(); otherwise, find an alternative for extract().
 		extract( $arrParams );
-		$arrMaxCols = preg_split( '/[, ]+/', $columns, -1, PREG_SPLIT_NO_EMPTY );
-		$arrOmits = preg_split( '/[, ]+/', $omit, -1, PREG_SPLIT_NO_EMPTY );
-		$arrShowOnlys = preg_split( '/[, ]+/', $showonly, -1, PREG_SPLIT_NO_EMPTY );
-		$arrOffsetsByPixel = $this->GetMaxColsByPixelArray( $offsets );
+		$arrMaxCols = $this->oOption->ConvertStringToArray( $columns );
+		$arrOmits = $this->oOption->ConvertStringToArray( $omit );		
+		$arrShowOnlys = $this->oOption->ConvertStringToArray( $showonly );	
+		$arrOffsetsByPixel = $this->oOption->ConvertStringToArray( $offsets, ',', ':' );
 		$strCustomStyle = trim( $custom_style );
 		
 		$index = $this->GetIndex( $index );
@@ -301,7 +292,7 @@ class ResponsiveColumnWidgets_Core_ {
 						
 		// Now $arrWidgetBuffer contains the necessary data for output.
 		$strBuffer = '';		// stores the buffer output
-		$numColPosInRow = 0;	// number of the widgets loaded in a row, zero base.
+		$numColPosInRow = 0;	// the number of the widgets loaded in a row, zero base.
 		$numRowPos = 0;			// stores the iterating row, zero base.
 		$bIsRowTagClosed = False;	
 		foreach ( $arrWidgetBuffer as $nIndex => $strItem ) {

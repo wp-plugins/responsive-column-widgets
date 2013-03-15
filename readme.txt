@@ -2,7 +2,7 @@
 Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
 Tags: widget, widgets, sidebar, columns, responsive, post, posts, page, pages, plugin, miunosoft
-Requires at least: 3.0
+Requires at least: 3.2
 Tested up to: 3.5.1
 Stable tag: 1.0.6
 License: GPLv2 or later
@@ -81,6 +81,14 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 
 == Changelog ==
+
+= 1.0.6.1 - 03/13/2013 =
+* Raised: the required WordPress version to 3.2 from 3.0.
+* Fixed: an issue that the user with a custom access level could not change the options.
+* Fixed: minor typographical errors in the setting page.
+* Added: the sanitization functionality for option values with delimiters including *Numbers of Columns*, *Omitting Widgets*, *Show-only Widgets*, *Width Percentage Offsets*, and *Additional Allowed HTML Tags*.
+* Added: the requirement check which includes PHP version to 5.2.4 or higher.
+* Tweaked: the code to load the pages faster in the admin pages.
 
 = 1.0.6 - 03/11/2013 =
 * Fixed: a bug that saving in the General Options page redirected to the Manage page in the plugin admin pages.
