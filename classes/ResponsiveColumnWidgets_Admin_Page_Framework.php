@@ -967,7 +967,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		// Check if the export button is pressed. If so, do not continue and return.
 		if ( isset( $_POST['__export']['submit'] ) ) {
 			
-			$bIsExported = $this->ProcessExportOptions( $_POST['__export'] );			
+			$bIsExported = $this->ProcessExportOptions( $_POST['__export'], $arrOriginalIntact );			
 			if ( $bIsExported ) exit;
 
 		}
@@ -1329,9 +1329,16 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		add_settings_error( $_POST['pageslug'], 'can_be_any_string', $strMsg, 'updated' );	
 		return $arrImport;				
 	}
-	protected function ProcessExportOptions( $arrPostExport ) {
+	protected function ProcessExportOptions( $arrPostExport, $arrOriginal ) {
 		
 		// added in 1.0.2
+		// Avoid undefined key warnings
+		$arrPostExport = $arrPostExport + array(
+			'transient' => null,
+			'file_name' => null,
+			'option_key' => null,	// have not been inmplemented yet
+			'submit'	=> null,
+		);
 		
 		// Determine if multiple upload input fields were used or single.
 		if ( is_array( $arrPostExport['submit'] ) ) {
@@ -1348,7 +1355,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		}
 		
 		// Set up the exporting array.
-		$arrExport = isset( $strTransientKey ) && ! empty( $strTransientKey ) ? ( array ) get_transient( $strTransientKey ) : $arrOriginalIntact;
+		$arrExport = isset( $strTransientKey ) && ! empty( $strTransientKey ) ? ( array ) get_transient( $strTransientKey ) : $arrOriginal;
 		$arrExport = $this->AddAndApplyFilters( 
 			$this->prefix_export, 
 			array(
