@@ -35,7 +35,14 @@ class ResponsiveColumnWidgets_Core_ {
 	private $bIsStyleAddedMaxColsByPixel = False;	// flag to indicate whether the style rule for max cols by pixel has been added or not
 	private $bIsCustomStyleAdded = False;	// flag that indicates whether the custom style for the widget box has been added or not. 
 	
+	// Dynamic Properties
+	protected $numPostID;	// since 1.0.7 - stores the current post ID.
+	
+	// Flags
 	private $bIsFormInDynamicSidebarRendered = false;
+	protected $bIsPost;		// since 1.0.7 - used to auto insert widgets into posts
+	protected $bIsPage;		// since 1.0.7 - used to auto insert widgets into pages
+	protected $bIsFront;	// since 1.0.7 - used to auto insert widgets into posts / pages
 	
 	function __construct( $strShortCode, &$oOption ) {
 		
@@ -65,16 +72,103 @@ class ResponsiveColumnWidgets_Core_ {
 		// add_filter( 'dynamic_sidebar_params', array( $this, 'CheckSidebarLoad' ) );
 		// add_action( 'dynamic_sidebar', array( $this, 'AddFormInDynamicSidebar' ) );
 		
+		// Auto Insertions
+		add_action( 'wp_head', array( $this, 'SetUpPostInfo' ) );	// The init hook is too early to perform the functions including is_single(), is_page() etc.
 		add_action( 'wp_footer', array( $this, 'AddWidgetboxInFooter' ) );
+		add_action( 'the_content', array( $this, 'AddWidgetboxInPostContent' ) );
+			
 	}
-	function AddWidgetboxInFooter() {
+	/*
+	 *  Auto Insertions
+	 */
+	public function SetUpPostInfo() {
+
+		// since 1.0.7
+		// these funcitons must be called after the query has been set up.
+		$this->bIsPost = is_single();
+		$this->bIsPage = is_page();
+		$this->bIsFront = is_home() || is_front_page() ? True : False;		
+		$this->numPostID = $this->GetPostID();
+			
+	}
+	protected function GetPostID() {
+
+		global $wp_query;
+		if ( is_object( $wp_query->post ) ) return $wp_query->post->ID;	
+		
+	}
+	public function AddWidgetboxInFooter() {
+		
+		$this->numPostID = ( empty( $this->numPostID ) ) ? $this->GetPostID() : $this->numPostID;
 		
 		// since 1.0.5
-		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => $arrBoxOptions ) 
-			if ( isset( $arrBoxOptions['insert_footer'] ) && $arrBoxOptions['insert_footer'] )
+		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => $arrBoxOptions ) {
+			
+			// If the necessary key is not set, skip
+			if ( ! isset( $arrBoxOptions['insert_footer'] ) ) continue;
+			
+			// If the disable option for the front page is enabled, skip.
+			if ( $this->bIsFront && $arrBoxOptions['insert_footer_disable_front'] ) continue;
+
+			// If the disable option for the post id matches the current post ID, skip.
+			if ( $this->IsPostIn( $this->numPostID, $arrBoxOptions['insert_footer_disable_ids'] ) ) continue;
+			
+			if ( $arrBoxOptions['insert_footer'] )
 				$this->RenderWidgetBox( array( 'sidebar' => $strSidebarID ) );
+				
+		}
 		
 	}
+	public function AddWidgetboxInPostContent( $strContent ) {
+				
+		// since 1.0.7
+		$this->numPostID = ( empty( $this->numPostID ) ) ? $this->GetPostID() : $this->numPostID;
+		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => $arrBoxOptions ) {
+// echo $this->oOption->DumpArray( $arrBoxOptions );
+// echo 'numPostID: ' . $this->numPostID . '<br />';
+// echo 'bIsPost: ' . $this->bIsPost . '<br />';
+// echo 'bIsPage: ' . $this->bIsPage . '<br />';
+			
+			// If the necessary key is not set, skip
+			if ( ! isset( $arrBoxOptions['insert_posts'] ) ) continue;	
+
+			// If the disable option for the front page is enabled, skip.
+			if ( $this->bIsFront && $arrBoxOptions['insert_posts_disable_front'] ) continue;
+
+			// If the disable option for the post id matches the current post ID, skip.
+			if ( $this->IsPostIn( $this->numPostID, $arrBoxOptions['insert_posts_disable_ids'] ) ) continue;
+			
+			// For posts or pages.
+			if ( 
+				$this->bIsPost && $arrBoxOptions['insert_posts']['post'] ||
+				$this->bIsPage && $arrBoxOptions['insert_posts']['page']			
+			) {		
+			
+				$strContent = $arrBoxOptions['insert_posts_positions']['above'] ? $this->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ) ) . $strContent : $strContent;
+				$strContent = $arrBoxOptions['insert_posts_positions']['below'] ? $strContent . $this->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ) ) : $strContent;
+			
+			}		
+		}
+		
+		return $strContent;
+		
+	}
+	protected function IsPostIn( $numPostID, $arrPostIDs ) {
+	
+		// since 1.0.7	
+		if ( is_string( $arrPostIDs ) )
+			$arrPostIDs = $this->oOption->ConvertStringToArray( $arrPostIDs );
+		
+		if ( ! is_array( $arrPostIDs ) ) return null;
+
+		if ( in_array( $numPostID, $arrPostIDs ) ) return True;
+	
+	}	
+	
+	
+	/*
+	 * Registers saved sidebars
+	 * */
 	function RegisterSidebar() {
 		
 		global $wp_registered_sidebars;
@@ -98,6 +192,9 @@ class ResponsiveColumnWidgets_Core_ {
 			
 	}
 	
+	/*
+	 * Rendering form elements in dynamic sidebars in the Widgets setting page. - currently not used 
+	 * */
 	function CheckSidebarLoad( $arrSidebarParams ) {
 		
 		// since 1.0.4
@@ -139,7 +236,7 @@ class ResponsiveColumnWidgets_Core_ {
 	}
 	
 	/*
-	 *  This checks whether the displaying post contains the shortcode for this plugin. 
+	 *  Checks whether the displaying post contains the shortcode for this plugin. 
 	 *  It's not currently used.	
 	 */
 	function ParsePostObject( $posts ) {		// $posts is passed automatically
@@ -164,7 +261,9 @@ class ResponsiveColumnWidgets_Core_ {
 		return $posts;		
 	}
 	public function AddStyleSheetInHeader() {
+		
 		wp_enqueue_style( 'responsive_column_widgets_enqueue_style',  $this->strCSSDirURL . '/responsive_column_widgets.css' );
+	
 	}
 		
 	function GetWidgetBoxSidebarIDFromParams( $arrParams ) {

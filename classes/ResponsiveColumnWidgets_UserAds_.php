@@ -15,7 +15,8 @@ class ResponsiveColumnWidgets_UserAds_ {
 	protected $strURLFeed160x600 = 'http://feeds.feedburner.com/GANLinkBanner160x600Random40';
 	protected $strURLFeedText = 'http://feeds.feedburner.com/GANLinkTextRandom40';
 	protected $strURLFeed60x468 = 'http://feeds.feedburner.com/GANBanner60x468';
-		
+	protected $strURLFeed728x90 = 'http://feeds.feedburner.com/CustomBanner728x90';
+	
 	function __construct( &$oOption=null ) {
 		
 		global $oResponsiveColumnWidgets_Options;
@@ -47,6 +48,7 @@ class ResponsiveColumnWidgets_UserAds_ {
 			$strOut .= '<div style="clear:right; margin:0; padding:0;">' . $item->get_content() . '</div>';
 	
 		return '<div style="float:right; margin:0; padding:0;">' . $strOut . "</div>";
+		
 	}	
 	function GetSkyscraper( $numItems=2 ) {
 		
@@ -57,7 +59,19 @@ class ResponsiveColumnWidgets_UserAds_ {
 			$strOut .= '<div style="clear:right;">' . $item->get_content() . '</div>';
 
 		return '<div style="float:right; padding: 0px 0 0 20px;">' . $strOut . "</div>";
+		
 	}	
+	function GetBottomBanner( $numItems=1 ) {
+		
+		$this->oBottomBannerFeed = $this->GetFeedObj( $this->strURLFeed728x90 );
+		
+		$strOut = '';
+		foreach ( $this->oBottomBannerFeed->get_items( 0, $numItems ) as $item ) 
+			$strOut .= '<div style="clear:both;">' . $item->get_content() . '</div>';
+
+		return '<div style="float:both; margin-top: 20px;">' . $strOut . "</div>";
+		
+	}
 	function InitializeTextFeed( $arrUrls='' ) {
 	
 		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeedText : $arrUrls;

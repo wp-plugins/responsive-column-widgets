@@ -14,11 +14,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	protected $oWidgetPage;
 	
 	function start_ResponsiveColumnWidgets_Admin_Page() {
-		
-		// admin footer to add plugin version
-		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug )
-			add_filter( 'update_footer', array( $this, 'AddPluginVersionInFooter' ), 11 );
-			
+					
 		$this->AddLinkToPluginDescription( $this->GetPluginDescriptionLinks() );				
 		
 		$this->oUserAds = new ResponsiveColumnWidgets_UserAds;
@@ -54,14 +50,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			'<a href="http://en.michaeluno.jp/contact/custom-order/?lang=' . ( WPLANG ? WPLANG : 'en' ) . '">' . __( 'Order custom plugin', 'responsive-column-widgets' ) . '</a>',
 		);
 	}
-	function AddPluginVersionInFooter( $strText ) {	
 
-		$strProInfo = isset( $this->oOption->arrPluginDataPro ) ? $this->oOption->arrPluginDataPro['Name'] . ' ' . $this->oOption->arrPluginDataPro['Version'] : '';
-		return $strProInfo 
-			. ' ' . $this->oOption->arrPluginData['Name'] 
-			. ' ' . $this->oOption->arrPluginData['Version']
-			. ' ' . $strText;			
-	}
 	
     function SetUp() {
 		
@@ -103,6 +92,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		// Determine whether it is the New or Edit page.
 		$this->bIsNew =  empty( $strSidebarID ) || ! isset( $this->oOption->arrOptions['boxes'][ $strSidebarID ] )  ? true : false;
 		$bIsNew = $this->bIsNew;
+		$arrWidgetBoxDefaultOptions = $this->oOption->arrDefaultSidebarArgs + $this->oOption->arrDefaultParams;
+		$arrWidgetBoxDefaultOptions['message_no_widget'] = __( 'No widgetd is added yet.', 'responsive-column-widgets' ); 
+		$arrWidgetBoxOptions = $bIsNew ? $arrWidgetBoxDefaultOptions : $this->UniteArraysRecursive( $this->oOption->arrOptions['boxes'][ $strSidebarID ], $arrWidgetBoxDefaultOptions );
 		
 		// Add the form elements.
 		$this->AddFormSections(
@@ -124,7 +116,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'class' => $this->numPluginType == 0 || isset( $_GET['sidebarid'] ) && $_GET['sidebarid'] == 'responsive_column_widgets' ? 'disabled' : '',
 							'disable' => $this->numPluginType == 0 || isset( $_GET['sidebarid'] ) && $_GET['sidebarid'] == 'responsive_column_widgets' ? true : false,
 							'value' => $this->numPluginType == 0 ? $this->oOption->arrDefaultParams['label'] : (  $bIsNew  ? '' : $this->oOption->arrOptions['boxes'][$strSidebarID]['label'] ),
-							'default' => '',
 						),
 						array(
 							'id' => 'field_sidebar',
@@ -135,7 +126,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 								: __( 'The sidebar ID associated with this widget box.', 'responsive-column-widgets' ),
 							'type' => 'hidden',
 							'value' => $bIsNew ? '' : ( $this->numPluginType == 0 ? $this->oOption->arrDefaultParams['sidebar'] : $strSidebarID ),
-							'default' => '',
 						),						
 						array(
 							'id' => 'field_description',
@@ -143,8 +133,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'description' => __( 'Additional notes for this box.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'size' => 100,
-							'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['description'] : $this->oOption->arrOptions['boxes'][$strSidebarID]['description'],
-							'default' => '',
+							'value' => $arrWidgetBoxOptions['description'],
 						),		
 						array(
 							'id' => 'field_before_widget',
@@ -152,8 +141,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'description' => __( 'Set the before_widget html opening tag.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'size' => 100,
-							'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['before_widget'] : $this->oOption->arrOptions['boxes'][$strSidebarID]['before_widget'],
-							'default' => $this->oOption->arrDefaultSidebarArgs['before_widget'], //'<aside id="%1$s" class="%2$s"><div class="widget">',
+							'value' => $arrWidgetBoxOptions['before_widget'],
 						),
 						array(
 							'id' => 'field_after_widget',
@@ -161,8 +149,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'description' => __( 'Set the after_widget html closing tag.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'size' => 100,
-							'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['after_widget'] : $this->oOption->arrOptions['boxes'][$strSidebarID]['after_widget'],
-							'default' => $this->oOption->arrDefaultSidebarArgs['after_widget'],	//'</div></aside>',
+							'value' => $arrWidgetBoxOptions['after_widget'],
 						),
 						array(
 							'id' => 'field_before_title',
@@ -170,8 +157,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'description' => __( 'Set the before_title html opening tag.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'size' => 100,
-							'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['before_title'] : $this->oOption->arrOptions['boxes'][$strSidebarID]['before_title'],
-							'default' => $this->oOption->arrDefaultSidebarArgs['before_title'], //'<h3 class="widget-title">',
+							'value' => $arrWidgetBoxOptions['before_title'],
 						),
 						array(
 							'id' => 'field_after_title',
@@ -179,8 +165,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'description' => __( 'Set the after_title html closing tag.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'size' => 100,
-							'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['after_title'] : $this->oOption->arrOptions['boxes'][$strSidebarID]['after_title'],
-							'default' => $this->oOption->arrDefaultSidebarArgs['after_title'], //'</h3>',
+							'value' => $arrWidgetBoxOptions['after_title'],
 						),
 						array(
 							'id' => 'field_message_no_widget',
@@ -188,8 +173,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'description' => __( 'Set the message which appears when no widget is added; thus, nothing can be rendered.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'size' => 100,
-							'value' => $bIsNew ? __( 'No widgetd is added yet.', 'responsive-column-widgets' ) : $this->oOption->arrOptions['boxes'][$strSidebarID]['message_no_widget'],
-							'default' => __( 'No widgetd is added yet.', 'responsive-column-widgets' ),
+							'value' => $arrWidgetBoxOptions['message_no_widget'], 
 						),						
 					),
 				),
@@ -209,7 +193,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 								. 'e.g. 4, 2, 3',
 							'type' => 'text',
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'columns' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['columns'] ),
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultParams['columns'] : $this->oOption->arrOptions['boxes'][$strSidebarID]['columns'],
 						),		
 						array(
 							'id' => 'field_maxwidgets',
@@ -217,7 +200,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'description' => __( 'Set the number of max widgets. 0 for no limit.', 'responsive-column-widgets' ) . ' e.g. 10',
 							'type' => 'number',
 							'min' => 0,
-							'value' => $bIsNew ? $this->oOption->arrDefaultParams['maxwidgets'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['maxwidgets'],
+							'value' => $arrWidgetBoxOptions['maxwidgets'],
 						),	
 						array(
 							'id' => 'field_maxrows',
@@ -225,7 +208,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'description' => __( 'Set the number of max rows. 0 for no limit.', 'responsive-column-widgets' ) . ' e.g. 2',
 							'type' => 'number',
 							'min' => 0,
-							'value' => $bIsNew ? $this->oOption->arrDefaultParams['maxrows'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['maxrows'],
+							'value' => $arrWidgetBoxOptions['maxrows'], 
 						),	
 						array(
 							'id' => 'field_omit',
@@ -235,7 +218,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 								. ' e.g. "2, 5, 8" ' . __( 'where the second, the fifth, and the eighth ones will be skipped.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'omit' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['omit'] ),
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultParams['omit'] : $this->oOption->arrOptions['boxes'][$strSidebarID]['omit'],
 						),	
 						array(
 							'id' => 'field_showonly',
@@ -245,7 +227,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 								. ' e.g. "1, 3" ' . __( 'where only the first and the third ones will be shown.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'showonly' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['showonly'] ),
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultParams['showonly'] : $this->oOption->arrOptions['boxes'][$strSidebarID]['showonly'],
 						),	
 						array(
 							'id' => 'field_offsets',
@@ -256,16 +237,23 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'type' => 'text',
 							'size' => 100,
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'offsets' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['offsets'] ),
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultParams['offsets'] : $this->oOption->arrOptions['boxes'][$strSidebarID]['offsets'],
+							
 						),							
-					),
+						array(  // single button
+							'pre_html' => $this->oUserAds->GetTextAd(),
+							'id' => 'submit_save_1',
+							'type' => 'submit',		// the submit type creates a button
+							'label' => __( 'Save Changes', 'responsive-column-widgets' ),
+							'class' => 'submit-buttons button button-primary'
+						),							
+					),					
 				),
-				// Insert Widget Box
+				// Insert Widget Box into Footer
 				array(
 					'pageslug' => $this->strPluginSlug,
 					'tabslug' => 'neworedit',
-					'id' => 'section_insert',
-					'title' => __( 'Insert Widget Box', 'responsive-column-widgets' ), 
+					'id' => 'section_insert_footer',
+					'title' => __( 'Insert Widget Box into Footer', 'responsive-column-widgets' ), 
 					'fields' => array(
 						array(
 							'id' => 'field_footer',
@@ -273,129 +261,91 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'tip' => __( 'Insert the widget box into the footer.', 'responsive-column-widgets' ),
 							'label' => __( 'Insert the widget box into the footer.', 'responsive-column-widgets' ),
 							'type' => 'checkbox',
-							'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['insert_footer'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_footer'],
-							'default' => $this->oOption->arrDefaultSidebarArgs['insert_footer'],
+							'value' => $arrWidgetBoxOptions['insert_footer'],
 						),
-						// array(	// since 1.0.7
-							// 'id' => 'field_footer_front_to_show',
-							// 'type' => 'checkbox',
-							// 'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
-							// 'pre_html' => '<p>' . __( 'Post / Page ID to Show the Widget Box', 'responsive-column-widgets' ) . '</p>'
-								// . '<span title="' . $this->strGetPro . '">',
-							// 'post_html' => '</span>',
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['insert_footer_front_to_show'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_footer_front_to_show'],
-							// 'disable' => true,
-							// 'class' => 'disabled',							
-						// ),								
-						// array(	// since 1.0.7
-							// 'id' => 'field_footer_posts_ids_to_show',
-							// 'type' => 'text',
-							// 'size' => 100,
-							// 'description' => __( 'Enter the post IDs only where the widget box is displayed, separated by commas. Set empty for all. If this is set, the below Hide option will not take effects.', 'responsive-column-widgets' )
-								// . '<br />e.g. 123, 234, 567',
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['insert_footer_posts_ids_to_show'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_footer_posts_ids_to_show'],
-							// 'disable' => true,
-							// 'class' => 'disabled',							
-							// 'pre_html' => '<span title="' . $this->strGetPro . '">',
-							// 'post_html' => '</span>',							
-						// ),	
-						// array(	// since 1.0.7
-							// 'id' => 'field_footer_front_to_hide',
-							// 'type' => 'checkbox',
-							// 'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
-							// 'pre_html' => '<p>' . __( 'Post / Page ID to Hide the Widget Box', 'responsive-column-widgets' ) . '</p>'
-								// . '<span title="' . $this->strGetPro . '">',
-							// 'post_html' => '</span>',											
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['insert_footer_front_to_hide'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_footer_front_to_hide'],
+						array(	// since 1.0.7
+							'id' => 'field_footer_disable_front',
+							'type' => 'checkbox',
+							'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
+							'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
+							'pre_html' => '<span title="' . $this->strGetPro . '">',
+							'post_html' => '</span>',											
+							'value' => $arrWidgetBoxOptions['insert_footer_disable_front'], 
 							// 'disable' => true,	
 							// 'class' => 'disabled',
-						// ),							
-						// array(	// since 1.0.7
-							// 'id' => 'field_footer_posts_ids_to_hide',
-							// 'type' => 'text',
-							// 'size' => 100,
-							// 'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above Show option has IDs to be set.', 'responsive-column-widgets' )
-								// . '<br />e.g. 98, 76, 5',
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['insert_footer_posts_ids_to_hide'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_footer_posts_ids_to_hide'],
+						),							
+						array(	// since 1.0.7
+							'id' => 'field_footer_disable_ids',
+							'type' => 'text',
+							'size' => 100,
+							'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
+							'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
+								. '<br />e.g. 98, 76, 5',
+							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_footer_disable_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_footer_disable_ids'] ),							
 							// 'disable' => true,	
 							// 'class' => 'disabled',	
+							'pre_html' => '<span title="' . $this->strGetPro . '">',
+							'post_html' => '</span>',								
+						),		
+					)
+				),
+				array(
+					'pageslug' => $this->strPluginSlug,
+					'tabslug' => 'neworedit',
+					'id' => 'section_insert_posts',
+					'title' => __( 'Insert Widget Box into Posts and Pages', 'responsive-column-widgets' ), 
+					'fields' => array(				
+						array(	// since 1.0.7
+							'id' => 'field_posts',
+							'title' => __( 'Posts and Pages', 'responsive-column-widgets' ),
+							'tip' => __( 'Insert the widget box into posts and pages.', 'responsive-column-widgets' ),
+							'label' => array(
+								'post' => __( 'Insert the widget box into posts.', 'responsive-column-widgets' ),
+								'page' => __( 'Insert the widget box into pages.', 'responsive-column-widgets' ),
+							),
+							'type' => 'checkbox',
+							'value' => $arrWidgetBoxOptions['insert_posts'],
+							'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>',
+						),	
+						array(	// since 1.0.7
+							'id' => 'field_posts_positions',
+							'type' => 'checkbox',
+							'title' => __( 'Posision', 'responsive-column-widgets' ),
 							// 'pre_html' => '<span title="' . $this->strGetPro . '">',
-							// 'post_html' => '</span>',								
-						// ),							
-						// array(	// since 1.0.7
-							// 'id' => 'field_posts',
-							// 'title' => __( 'Posts and Pages', 'responsive-column-widgets' ),
-							// 'tip' => __( 'Insert the widget box into posts and pages.', 'responsive-column-widgets' ),
-							// 'label' => array(
-								// 'post' => __( 'Insert the widget box into posts.', 'responsive-column-widgets' ),
-								// 'page' => __( 'Insert the widget box into pages.', 'responsive-column-widgets' ),
-							// ),
-							// 'type' => 'checkbox',
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['insert_posts'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_posts'],
-						// ),	
-						// array(	// since 1.0.7
-							// 'id' => 'field_posts_position',
-							// 'type' => 'radio',
-							// 'pre_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>'
-								// . '<span title="' . $this->strGetPro . '">'
-								// . '<p>' . __( 'Posision', 'responsive-column-widgets' ) . '</p>',
-							// 'label' => array(
-								// __( 'Above Content', 'responsive-column-widgets' ),
-								// __( 'Below Content', 'responsive-column-widgets' ),
-								// __( 'Both', 'responsive-column-widgets' ),
-							// ),
-							// 'delimiter' => '&nbsp;&nbsp',
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['insert_posts_position'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_posts_position'],
+							'label' => array(
+								'above' => __( 'Above Content', 'responsive-column-widgets' ),
+								'below' => __( 'Below Content', 'responsive-column-widgets' ),
+							),
+							'delimiter' => '&nbsp;&nbsp;&nbsp;',
+							'value' => $arrWidgetBoxOptions['insert_posts_positions'],
 							// 'disable' => true,
 							// 'class' => 'disabled',	
 							// 'post_html' => '</span>',								
-						// ),	
-						// array(	// since 1.0.7
-							// 'id' => 'field_posts_front_to_show',
-							// 'type' => 'checkbox',
-							// 'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
-							// 'pre_html' => '<p>' . __( 'Post / Page ID to Show the Widget Box', 'responsive-column-widgets' ) . '</p>'
-								// . '<span title="' . $this->strGetPro . '">',
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['insert_posts_front_to_show'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_posts_front_to_show'],
-							// 'disable' => true,		
-							// 'class' => 'disabled',	
-							// 'post_html' => '</span>',								
-						// ),								
-						// array(	// since 1.0.7
-							// 'id' => 'field_posts_ids_to_show',
-							// 'type' => 'text',
-							// 'size' => 100,
-							// 'description' => __( 'Enter the post IDs only where the widget box is displayed, separated by commas. Set empty for all. If this is set, the below Hide option will not take effects.', 'responsive-column-widgets' )
-								// . '<br />e.g. 123, 234, 567',
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['insert_posts_ids_to_show'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_posts_ids_to_show'],
-							// 'disable' => true,		
-							// 'class' => 'disabled',
+						),	
+						array(	// since 1.0.7
+							'id' => 'field_posts_disable_front',
+							'type' => 'checkbox',
+							'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
+							'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
 							// 'pre_html' => '<span title="' . $this->strGetPro . '">',
-							// 'post_html' => '</span>',							
-						// ),	
-						// array(	// since 1.0.7
-							// 'id' => 'field_posts_front_to_hide',
-							// 'type' => 'checkbox',
-							// 'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
-							// 'pre_html' => '<p>' . __( 'Post / Page ID to Hide the Widget Box', 'responsive-column-widgets' ) . '</p>'
-								// . '<span title="' . $this->strGetPro . '">',
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['insert_posts_front_to_hide'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_posts_front_to_hide'],
+							'value' => $arrWidgetBoxOptions['insert_posts_disable_front'],
 							// 'disable' => true,							
 							// 'class' => 'disabled',
 							// 'post_html' => '</span>',							
-						// ),							
-						// array(	// since 1.0.7
-							// 'id' => 'field_posts_ids_to_hide',
-							// 'type' => 'text',
-							// 'size' => 100,
-							// 'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above Show option has IDs to be set.', 'responsive-column-widgets' )
-								// . '<br />e.g. 98, 76, 5',
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['insert_posts_ids_to_hide'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_posts_ids_to_hide'],
+						),							
+						array(	// since 1.0.7
+							'id' => 'field_posts_disable_ids',
+							'type' => 'text',
+							'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
+							'size' => 100,
+							'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
+								. '<br />e.g. 98, 76, 5',
+							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_posts_disable_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_posts_disable_ids'] ),
 							// 'disable' => true,
 							// 'class' => 'disabled',
 							// 'pre_html' => '<span title="' . $this->strGetPro . '">',
 							// 'post_html' => '</span>',									
-						// ),							
+						),							
 					),
 				),
 				// Custom Style
@@ -413,7 +363,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'type' => 'textarea',
 							'cols' => 120,
 							'rows' => 6,
-							'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['custom_style'] : ( isset( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['custom_style'] ) ? $this->oOption->arrOptions['boxes'][ $strSidebarID ]['custom_style'] : ''  ),
+							'value' => $arrWidgetBoxOptions['custom_style'],
+							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['custom_style'] : ( isset( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['custom_style'] ) ? $this->oOption->arrOptions['boxes'][ $strSidebarID ]['custom_style'] : ''  ),
 						),
 					),
 				),				
@@ -450,13 +401,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'type' => 'text',
 							'size' => 100,
 							'value' => $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['general']['allowedhtmltags'] ), 
-							// 'value' => implode( 
-								// ', ',
-								// ( array ) $this->oOption->arrOptions['general']['allowedhtmltags']
-							// ),
 						),	
 						array(  // single button
-							'id' => 'submit_save',
+							'id' => 'submit_save_2',
 							'type' => 'submit',		// the submit type creates a button
 							'label' => __( 'Save Changes', 'responsive-column-widgets' ),
 							'class' => 'submit-buttons button button-primary'
@@ -467,6 +414,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'pageslug' => $this->strPluginSlug,
 					'tabslug' => 'general',
 					'id' => 'section_dangerzone', 
+					'capability' => 'manage_options',
 					'title' => __( 'Option Management', 'responsive-column-widgets' ), 
 					'description' => __( 'Be carefult to perform these operations.', 'responsive-column-widgets' ),
 					'fields' => array( 	// Field Arrays
@@ -620,13 +568,22 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}
 	function foot_ResponsiveColumnWidgets_Admin_Page( $strFoot ) {
 		
-		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'neworedit' ? 3 : 2;
+		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'neworedit' ? 4 : 2;
 		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'manage' ? 1 : $numItems;
+		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'getpro' ? 2 : $numItems;
 		return $strFoot 
-			. '<div style="float:left; margin-top: 10px" >' . $this->oUserAds->GetTextAd() . '</div>'
+			. '<div style="float:left; margin-top: 10px" >' 
+			. $this->oUserAds->GetTextAd() 
+			. '</div>'
 			. '</td>
-			<td valign="top">' 
-			. $this->oUserAds->GetSkyscraper( $numItems ) . '</td>
+			<td valign="top" rowspan="2">' 
+			. $this->oUserAds->GetSkyscraper( $numItems ) 
+			. '</td>
+			</tr>
+			<tr>
+				<td valign="bottom" align="center">'
+			. $this->oUserAds->GetBottomBanner() 
+			. '</td>
 			</tr>
 			</tbody>
 			</table>'
@@ -960,18 +917,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$arrBoxOptions['omit'] = $this->oOption->ConvertStringToArray( $arrInput['section_params']['field_omit'] );
 		$arrBoxOptions['showonly'] = $this->oOption->ConvertStringToArray( $arrInput['section_params']['field_showonly'] );
 		$arrBoxOptions['offsets'] = $this->oOption->ConvertStringToArray( $arrInput['section_params']['field_offsets'], ',', ':' );
-		$arrBoxOptions['insert_footer'] = $arrInput['section_insert']['field_footer'];
-		$arrBoxOptions['insert_footer_front_to_show'] = $arrInput['section_insert']['field_footer_front_to_show'];		// since 1.0.7
-		$arrBoxOptions['insert_footer_posts_ids_to_show'] = $arrInput['section_insert']['field_footer_posts_ids_to_show'];		// since 1.0.7
-		$arrBoxOptions['insert_footer_front_to_hide'] = $arrInput['section_insert']['field_posts_front_to_hide'];		// since 1.0.7
-		$arrBoxOptions['insert_footer_posts_ids_to_hide'] = $arrInput['section_insert']['field_footer_posts_ids_to_hide'];		// since 1.0.7
+		$arrBoxOptions['insert_footer'] = $arrInput['section_insert_footer']['field_footer'];
+		$arrBoxOptions['insert_footer_disable_front'] = $arrInput['section_insert_footer']['field_footer_disable_front'];		// since 1.0.7
+		$arrBoxOptions['insert_footer_disable_ids'] = $this->oOption->ConvertStringToArray( $arrInput['section_insert_footer']['field_footer_disable_ids'] );		// since 1.0.7
+		$arrBoxOptions['insert_posts'] = $arrInput['section_insert_posts']['field_posts'];									// since 1.0.7
+		$arrBoxOptions['insert_posts_positions'] = $arrInput['section_insert_posts']['field_posts_positions'];				// since 1.0.7
+		$arrBoxOptions['insert_posts_disable_front'] = $arrInput['section_insert_posts']['field_posts_disable_front'];		// since 1.0.7
+		$arrBoxOptions['insert_posts_disable_ids'] = $this->oOption->ConvertStringToArray( $arrInput['section_insert_posts']['field_posts_disable_ids'] );			// since 1.0.7
 		$arrBoxOptions['custom_style'] = $arrInput['section_custom_style']['field_custom_style'];
-		$arrBoxOptions['insert_posts'] = $arrInput['section_insert']['field_posts'];				// since 1.0.7
-		$arrBoxOptions['insert_posts_position'] = $arrInput['section_insert']['field_posts_position'];		// since 1.0.7
-		$arrBoxOptions['insert_posts_ids_to_show'] = $arrInput['section_insert']['field_posts_ids_to_show'];		// since 1.0.7
-		$arrBoxOptions['insert_posts_ids_to_hide'] = $arrInput['section_insert']['field_posts_ids_to_hide'];		// since 1.0.7
-		$arrBoxOptions['insert_posts_front_to_hide'] = $arrInput['section_insert']['field_posts_front_to_hide'];		// since 1.0.7
-		$arrBoxOptions['insert_posts_front_to_show'] = $arrInput['section_insert']['field_posts_front_to_show'];		// since 1.0.7
 	
 		// Update
 		$this->oOption->InsertBox( $arrBoxOptions['sidebar'], $arrBoxOptions );

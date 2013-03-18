@@ -21,20 +21,19 @@ class ResponsiveColumnWidgets_Option_ {
 		'after_title'						=> '</h3>',
 		'message_no_widget'					=> 'No widget added yet.',
 		'insert_footer'						=> false,	// since 1.0.5
-		'insert_footer_front_to_show'		=> false,	// since 1.0.7
-		'insert_footer_posts_ids_to_show'	=> '',		// since 1.0.7
-		'insert_footer_front_to_hide'		=> false,	// since 1.0.7
-		'insert_footer_posts_ids_to_hide'	=> '',		// since 1.0.7
+		'insert_footer_disable_front'		=> false,	// since 1.0.7
+		'insert_footer_disable_ids'			=> array(),		// since 1.0.7
 		'custom_style'						=> '',		// since 1.0.6
 		'insert_posts'						=> array(	// since 1.0.7
 			'post' => false,
 			'page' => false,
 		),	
-		'insert_posts_position'				=> 1,		// 0 to 2 since 1.0.7
-		'insert_posts_ids_to_show'			=> '',		// since 1.0.7
-		'insert_posts_front_to_show'		=> false,	// since 1.0.7
-		'insert_posts_ids_to_hide'			=> '',		// since 1.0.7
-		'insert_posts_front_to_hide'		=> false,	// since 1.0.7
+		'insert_posts_positions'			=> array(	// since 1.0.7
+			'above' => false,
+			'below' => true,
+		),		
+		'insert_posts_disable_front'		=> false,	// since 1.0.7
+		'insert_posts_disable_ids'			=> array(),		// since 1.0.7
 	);	
 	public $arrCapabilities = array(	// used in the drop-down list of the General Options page.
 		0 => 'manage_options',
@@ -191,4 +190,13 @@ class ResponsiveColumnWidgets_Option_ {
 		return $arrPrecedence;
 		
 	}			
+	
+	/*
+	 * Methods for Debug
+	 * */
+	function DumpArray( $arr ) {
+		
+		return '<pre>' . esc_html( print_r( $arr, true ) ) . '</pre>';
+		
+	}	
 }

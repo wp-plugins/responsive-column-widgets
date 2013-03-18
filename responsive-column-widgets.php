@@ -3,7 +3,7 @@
 	Plugin Name: Responsive Column Widgets
 	Plugin URI: http://en.michaeluno.jp/responsive-column-widgets
 	Description: Creates a widget box which displays widgets in columns with a responsive design.
-	Version: 1.0.6.1
+	Version: 1.0.7
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Requirements: This plugin requires WordPress >= 3.2 and PHP >= 5.2.4
@@ -42,6 +42,11 @@ add_action(
 	// $arrResponsiveColumnWidgetsClasses global array which contains the path info of all registering classes.
 	array( new ResponsiveColumnWidgets_RegisterClasses( RESPONSIVECOLUMNWIDGETSDIR . '/classes/' ), 'RegisterClasses' )
 );	
+// Setup function 
+add_action(
+	'RCW_action_started',
+	'ResponsiveColumnWidgets_Startup'
+);
 
 class ResponsiveColumnWidgets_RegisterClasses {
 	
@@ -70,8 +75,12 @@ class ResponsiveColumnWidgets_RegisterClasses {
 		
 		spl_autoload_register( array( $this, 'CallbackFromAutoLoader' ) );
 
-		// Start running the plugin
-		ResponsiveColumnWidgets_Startup();
+		// Prepare the option object	
+		global $oResponsiveColumnWidgets_Options;
+		$oResponsiveColumnWidgets_Options = new ResponsiveColumnWidgets_Option( RESPONSIVECOLUMNWIDGETSKEY );	
+		
+		// For plugin extensions
+		do_action( 'RCW_action_started', $oResponsiveColumnWidgets_Options );
 
 	}
 	function GetNameWOExtFromPath( $str ) {
@@ -111,26 +120,22 @@ function ResponsiveColumnWidgets_CleanupTransients() {
 /*
  *  To start up
  */
-function ResponsiveColumnWidgets_Startup() {
-		
-	// Prepare the option object	
-	global $oResponsiveColumnWidgets_Options;
-	$oResponsiveColumnWidgets_Options = new ResponsiveColumnWidgets_Option( RESPONSIVECOLUMNWIDGETSKEY );
-	
+function ResponsiveColumnWidgets_Startup( $oOption ) {
+			
 	// Must be done after registering the classes.
 	global $oResponsiveColumnWidgets;
-	$oResponsiveColumnWidgets = new ResponsiveColumnWidgets_Core( 'responsive_column_widgets', $oResponsiveColumnWidgets_Options );
+	$oResponsiveColumnWidgets = new ResponsiveColumnWidgets_Core( 'responsive_column_widgets', $oOption );
 
 	// Admin Page - $oAdmin is local 
-	$oAdmin = new ResponsiveColumnWidgets_Admin_Page( RESPONSIVECOLUMNWIDGETSKEYADMIN );		
-	$oAdmin->SetOptionObject( $oResponsiveColumnWidgets_Options );
+	$oAdmin = new ResponsiveColumnWidgets_Admin_Page( 
+		RESPONSIVECOLUMNWIDGETSKEYADMIN,
+		RESPONSIVECOLUMNWIDGETSFILE
+	);		
+	$oAdmin->SetOptionObject( $oOption );
 		
 	// Load events
-	new ResponsiveColumnWidgets_Events( $oResponsiveColumnWidgets_Options );
+	new ResponsiveColumnWidgets_Events( $oOption );
 
-	// For plugin extensions
-	do_action( 'RCW_action_started', $oResponsiveColumnWidgets_Options );
-		
 	// Requirement Check in the admin_init hook
 	new ResponsiveColumnWidgets_Requirements( 
 		RESPONSIVECOLUMNWIDGETSFILE,
@@ -152,7 +157,7 @@ function ResponsiveColumnWidgets_Startup() {
 		True, 			// if it fails it will deactivate the plugin
 		'admin_init'	// the hook to trigger the check
 	);
-	
+		
 }
 
 /*

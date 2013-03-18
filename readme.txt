@@ -82,6 +82,11 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.0.7 - 03/18/2013 =
+* Added: the ability to disable the auto-insert option for both footer and posts/pages by post IDs and the checkbox for the front page.
+* Added: the ability to auto-insert into post and pages above/below the contents.
+* Fixed: a minor bug that merging with the default option values did not performed correctly when the subject option key had a null value.
+
 = 1.0.6.1 - 03/13/2013 =
 * Raised: the required WordPress version to 3.2 from 3.0.
 * Fixed: an issue that the user with a custom access level could not change the options.

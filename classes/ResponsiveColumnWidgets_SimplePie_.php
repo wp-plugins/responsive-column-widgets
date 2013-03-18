@@ -101,7 +101,7 @@ class ResponsiveColumnWidgets_SimplePie_ extends SimplePie {
 		foreach( ( array ) $this->vSetURL as $strURL ) 
 			delete_transient( $this->strRealCacheModTimePrefix . md5( $strURL ) );
 		
-		wp_schedule_single_event( time(), 'RCWP_action_simplepie_renew_cache', array( $this->vSetURL ) );
+		wp_schedule_single_event( time() + 5, 'RCWP_action_simplepie_renew_cache', array( $this->vSetURL ) );
 	}
 	public function SetBackground( $bIsBackground=false ) {
 		
