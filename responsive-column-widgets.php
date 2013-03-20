@@ -3,7 +3,7 @@
 	Plugin Name: Responsive Column Widgets
 	Plugin URI: http://en.michaeluno.jp/responsive-column-widgets
 	Description: Creates a widget box which displays widgets in columns with a responsive design.
-	Version: 1.0.7.1
+	Version: 1.0.8
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Requirements: This plugin requires WordPress >= 3.2 and PHP >= 5.2.4
@@ -122,21 +122,23 @@ function ResponsiveColumnWidgets_CleanupTransients() {
 /*
  *  To start up
  */
-function ResponsiveColumnWidgets_Startup( &$oOption ) {
+function ResponsiveColumnWidgets_Startup() {
 			
+	global $oResponsiveColumnWidgets_Options;
+	
 	// Must be done after registering the classes.
 	global $oResponsiveColumnWidgets;
-	$oResponsiveColumnWidgets = new ResponsiveColumnWidgets_Core( 'responsive_column_widgets', $oOption );
+	$oResponsiveColumnWidgets = new ResponsiveColumnWidgets_Core( 'responsive_column_widgets', $oResponsiveColumnWidgets_Options );
 
 	// Admin Page - $oAdmin is local 
 	$oAdmin = new ResponsiveColumnWidgets_Admin_Page( 
 		RESPONSIVECOLUMNWIDGETSKEYADMIN,
 		RESPONSIVECOLUMNWIDGETSFILE
 	);		
-	$oAdmin->SetOptionObject( $oOption );
+	$oAdmin->SetOptionObject( $oResponsiveColumnWidgets_Options );
 		
 	// Load events
-	new ResponsiveColumnWidgets_Events( $oOption );
+	new ResponsiveColumnWidgets_Events( $oResponsiveColumnWidgets_Options );
 
 	// Requirement Check in the admin_init hook
 	new ResponsiveColumnWidgets_Requirements( 
@@ -160,6 +162,9 @@ function ResponsiveColumnWidgets_Startup( &$oOption ) {
 		'admin_init'	// the hook to trigger the check
 	);
 		
+	// Auto-insert - since 1.0.8, some parts of code have been separated from the core class.
+	new ResponsiveColumnWidgets_AutoInsert( $oResponsiveColumnWidgets_Options, $oResponsiveColumnWidgets );
+
 }
 
 /*

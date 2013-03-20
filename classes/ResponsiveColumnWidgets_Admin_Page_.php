@@ -4,7 +4,12 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	// Properties
 	protected $strPluginName = 'Responsive Column Widgets';
 	protected $strPluginSlug = 'responsive_column_widgets';
-	protected $arrRecentlyAddedOptionKeys = array();	// used with the CheckKeys() method to allow missing keys when an array is validated	
+	protected $arrRecentlyAddedOptionKeys = array(	// used with the CheckKeys() method to allow missing keys when an array is validated	
+		'insert_comment_form',					// since 1.0.8
+		'insert_comment_form_positions', 		// since 1.0.8
+		'insert_comment_form_disable_front',	// since 1.0.8
+		'insert_comment_form_disable_post_ids',	// since 1.0.8
+	);
 	
 	// Flags
 	protected $bIsNew;
@@ -288,6 +293,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'label' => __( 'Insert the widget box into the footer.', 'responsive-column-widgets' ),
 							'type' => 'checkbox',
 							'value' => $arrWidgetBoxOptions['insert_footer'],
+							'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>',
 						),
 						array(	// since 1.0.7
 							'id' => 'field_footer_disable_front',
@@ -297,8 +303,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'pre_html' => '<span title="' . $this->strGetPro . '">',
 							'post_html' => '</span>',											
 							'value' => $arrWidgetBoxOptions['insert_footer_disable_front'], 
-							// 'disable' => true,	
-							// 'class' => 'disabled',
 						),							
 						array(	// since 1.0.7
 							'id' => 'field_footer_disable_ids',
@@ -308,13 +312,12 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
 								. '<br />e.g. 98, 76, 5',
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_footer_disable_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_footer_disable_ids'] ),							
-							// 'disable' => true,	
-							// 'class' => 'disabled',	
 							'pre_html' => '<span title="' . $this->strGetPro . '">',
 							'post_html' => '</span>',								
 						),		
 					)
 				),
+				// Insert Widget Box into Posts and Pages
 				array(
 					'pageslug' => $this->strPluginSlug,
 					'tabslug' => 'neworedit',
@@ -331,33 +334,25 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							),
 							'type' => 'checkbox',
 							'value' => $arrWidgetBoxOptions['insert_posts'],
-							'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>',
+							'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless one of these is checked.', 'responsive-column-widgets' ) . '</span></p>',
 						),	
 						array(	// since 1.0.7
 							'id' => 'field_posts_positions',
 							'type' => 'checkbox',
 							'title' => __( 'Posision', 'responsive-column-widgets' ),
-							// 'pre_html' => '<span title="' . $this->strGetPro . '">',
 							'label' => array(
 								'above' => __( 'Above Content', 'responsive-column-widgets' ),
 								'below' => __( 'Below Content', 'responsive-column-widgets' ),
 							),
 							'delimiter' => '&nbsp;&nbsp;&nbsp;',
-							'value' => $arrWidgetBoxOptions['insert_posts_positions'],
-							// 'disable' => true,
-							// 'class' => 'disabled',	
-							// 'post_html' => '</span>',								
+							'value' => $arrWidgetBoxOptions['insert_posts_positions'],							
 						),	
 						array(	// since 1.0.7
 							'id' => 'field_posts_disable_front',
 							'type' => 'checkbox',
 							'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
 							'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
-							// 'pre_html' => '<span title="' . $this->strGetPro . '">',
-							'value' => $arrWidgetBoxOptions['insert_posts_disable_front'],
-							// 'disable' => true,							
-							// 'class' => 'disabled',
-							// 'post_html' => '</span>',							
+							'value' => $arrWidgetBoxOptions['insert_posts_disable_front'],						
 						),							
 						array(	// since 1.0.7
 							'id' => 'field_posts_disable_ids',
@@ -366,14 +361,55 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'size' => 100,
 							'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
 								. '<br />e.g. 98, 76, 5',
-							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_posts_disable_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_posts_disable_ids'] ),
-							// 'disable' => true,
-							// 'class' => 'disabled',
-							// 'pre_html' => '<span title="' . $this->strGetPro . '">',
-							// 'post_html' => '</span>',									
+							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_posts_disable_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_posts_disable_ids'] ),						
 						),							
 					),
 				),
+				// Insert Widget Box into Comment Form Section - since 1.0.8
+				array(
+					'pageslug' => $this->strPluginSlug,
+					'tabslug' => 'neworedit',
+					'id' => 'section_insert_comment_form',
+					'title' => __( 'Insert Widget Box into Comment Form Section', 'responsive-column-widgets' ), 
+					'fields' => array(				
+						array(	// since 1.0.8
+							'id' => 'field_insert_in_comment_form',
+							'title' => __( 'Comment Form Section', 'responsive-column-widgets' ),
+							'tip' => __( 'Insert the widget box into the comment form section.', 'responsive-column-widgets' ),
+							'label' => __( 'Insert widget box into the comment form section.', 'responsive-column-widgets' ),
+							'type' => 'checkbox',
+							'value' => $arrWidgetBoxOptions['insert_comment_form'],
+							'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>',
+						),	
+						array(	// since 1.0.8
+							'id' => 'field_insert_in_comment_form_positions',
+							'type' => 'checkbox',
+							'title' => __( 'Posision', 'responsive-column-widgets' ),
+							'label' => array(
+								'above' => __( 'Above Comment Form', 'responsive-column-widgets' ),
+								'below' => __( 'Below Comment Form', 'responsive-column-widgets' ),
+							),
+							'delimiter' => '&nbsp;&nbsp;&nbsp;',
+							'value' => $arrWidgetBoxOptions['insert_comment_form_positions'],							
+						),	
+						array(	// since 1.0.8
+							'id' => 'field_insert_in_comment_form_disable_front',
+							'type' => 'checkbox',
+							'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
+							'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
+							'value' => $arrWidgetBoxOptions['insert_comment_form_disable_front'],						
+						),							
+						array(	// since 1.0.8
+							'id' => 'field_insert_in_comment_form_disable_ids',
+							'type' => 'text',
+							'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
+							'size' => 100,
+							'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
+								. '<br />e.g. 98, 76, 5',
+							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_comment_form_disable_post_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_comment_form_disable_post_ids'] ),						
+						),							
+					),
+				),				
 				// Custom Style
 				array(
 					'pageslug' => $this->strPluginSlug,
@@ -962,6 +998,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$arrBoxOptions['omit'] = $this->oOption->ConvertStringToArray( $arrInput['section_params']['field_omit'] );
 		$arrBoxOptions['showonly'] = $this->oOption->ConvertStringToArray( $arrInput['section_params']['field_showonly'] );
 		$arrBoxOptions['offsets'] = $this->oOption->ConvertStringToArray( $arrInput['section_params']['field_offsets'], ',', ':' );
+		$arrBoxOptions['custom_style'] = $arrInput['section_custom_style']['field_custom_style'];
 		$arrBoxOptions['insert_footer'] = $arrInput['section_insert_footer']['field_footer'];
 		$arrBoxOptions['insert_footer_disable_front'] = $arrInput['section_insert_footer']['field_footer_disable_front'];		// since 1.0.7
 		$arrBoxOptions['insert_footer_disable_ids'] = $this->oOption->ConvertStringToArray( $arrInput['section_insert_footer']['field_footer_disable_ids'] );		// since 1.0.7
@@ -969,7 +1006,10 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$arrBoxOptions['insert_posts_positions'] = $arrInput['section_insert_posts']['field_posts_positions'];				// since 1.0.7
 		$arrBoxOptions['insert_posts_disable_front'] = $arrInput['section_insert_posts']['field_posts_disable_front'];		// since 1.0.7
 		$arrBoxOptions['insert_posts_disable_ids'] = $this->oOption->ConvertStringToArray( $arrInput['section_insert_posts']['field_posts_disable_ids'] );			// since 1.0.7
-		$arrBoxOptions['custom_style'] = $arrInput['section_custom_style']['field_custom_style'];
+		$arrBoxOptions['insert_comment_form'] = $arrInput['section_insert_comment_form']['field_insert_in_comment_form'];									// since 1.0.8
+		$arrBoxOptions['insert_comment_form_positions'] = $arrInput['section_insert_comment_form']['field_insert_in_comment_form_positions'];				// since 1.0.8
+		$arrBoxOptions['insert_comment_form_disable_front'] = $arrInput['section_insert_comment_form']['field_insert_in_comment_form_disable_front'];		// since 1.0.8
+		$arrBoxOptions['insert_comment_form_disable_post_ids'] = $this->oOption->ConvertStringToArray( $arrInput['section_insert_comment_form']['field_insert_in_comment_form_disable_ids'] );			// since 1.0.8
 	
 		// Update
 		$this->oOption->InsertBox( $arrBoxOptions['sidebar'], $arrBoxOptions );

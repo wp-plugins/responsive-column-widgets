@@ -10,39 +10,36 @@
 */
 class ResponsiveColumnWidgets_Core_ {
 	
+	// Default properties
 	private $strShortCode;
 	private $strCSSDirURL;
 	private $arrDefaultParams = array();	// will be overriden by the option object's array in the constructor.
 	private $strColPercentages = array(
-		1 => '100%',
-		2 => '49.2%',
-		3 => '32.2%',
-		4 => '23.8%',
-		5 => '18.72%',
-		6 => '15.33%',
-		7 => '12.91%',
-		8 => '11.1%',
-		9 => '9.68%',
-		10 => '8.56%',
-		11 => '7.63%',
-		12 => '6.86%',
+		1 =>	'100%',
+		2 =>	'49.2%',
+		3 =>	'32.2%',
+		4 =>	'23.8%',
+		5 =>	'18.72%',
+		6 =>	'15.33%',
+		7 =>	'12.91%',
+		8 =>	'11.1%',
+		9 =>	'9.68%',
+		10 =>	'8.56%',
+		11 =>	'7.63%',
+		12 =>	'6.86%',
 	);		
 	private $strClassAttrBox ='responsive_column_widget_area responsive_column_widgets_box widget-area';
 	private $strClassAttrSidebarID = 'responsive_column_widgets';
 	private $strClassAttrNewCol = 'responsive_column_widgets_firstcol';
 	private $strClassAttrRow = 'responsive_column_widgets_row';
 	private $strClassAttrMaxColsByPixel = '';
-	private $bIsStyleAddedMaxColsByPixel = False;	// flag to indicate whether the style rule for max cols by pixel has been added or not
-	private $bIsCustomStyleAdded = False;	// flag that indicates whether the custom style for the widget box has been added or not. 
-	
-	// Dynamic Properties
-	protected $numPostID;	// since 1.0.7 - stores the current post ID.
 	
 	// Flags
 	private $bIsFormInDynamicSidebarRendered = false;
-	protected $bIsPost;		// since 1.0.7 - used to auto insert widgets into posts
-	protected $bIsPage;		// since 1.0.7 - used to auto insert widgets into pages
-	protected $bIsFront;	// since 1.0.7 - used to auto insert widgets into posts / pages
+	
+	// Container arrays
+	private $arrFlagsCustomStyleAdded = array();		// since 1.0.8 stores the flags to indicate whether the custom style for the widget box has been added or not. 
+	private $arrFlagsStyleMaxColsByPixel = array();		// since 1.0.8 stores the flags to indicate whether the style rule for max cols by pixel has been added or not.
 	
 	function __construct( $strShortCode, &$oOption ) {
 		
@@ -71,104 +68,14 @@ class ResponsiveColumnWidgets_Core_ {
 		// hook the dynamic sidebar output ( widget container )
 		// add_filter( 'dynamic_sidebar_params', array( $this, 'CheckSidebarLoad' ) );
 		// add_action( 'dynamic_sidebar', array( $this, 'AddFormInDynamicSidebar' ) );
-		
-		// Auto Insertions
-		add_action( 'wp_head', array( $this, 'SetUpPostInfo' ) );	// The init hook is too early to perform the functions including is_single(), is_page() etc.
-		add_action( 'wp_footer', array( $this, 'AddWidgetboxInFooter' ) );
-		add_action( 'the_content', array( $this, 'AddWidgetboxInPostContent' ) );
-		
+			
 		// Debug
 		// if ( defined( 'WP_DEBUG' ) )
 			// add_action( 'wp_footer', array( $this->oOption, 'EchoMemoryLimit' ) );
 			// add_action( 'wp_footer', array( $this, 'EchoMemoryUsage' ) );
 			
 	}
-	/*
-	 *  Auto Insertions
-	 */
-	public function SetUpPostInfo() {
 
-		// since 1.0.7
-		// these funcitons must be called after the query has been set up.
-		$this->bIsPost = is_single();
-		$this->bIsPage = is_page();
-		$this->bIsFront = is_home() || is_front_page() ? True : False;		
-		$this->numPostID = $this->GetPostID();
-			
-	}
-	protected function GetPostID() {
-
-		global $wp_query;
-		if ( is_object( $wp_query->post ) ) return $wp_query->post->ID;	
-		
-	}
-	public function AddWidgetboxInFooter() {
-		
-		// since 1.0.5
-		
-		$this->numPostID = ( empty( $this->numPostID ) ) ? $this->GetPostID() : $this->numPostID;
-		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => &$arrBoxOptions ) {
-			
-			// If the necessary key is not set, skip
-			if ( ! isset( $arrBoxOptions['insert_footer'] ) ) continue;
-			
-			// If the disable option for the front page is enabled, skip.
-			if ( $this->bIsFront && $arrBoxOptions['insert_footer_disable_front'] ) continue;
-
-			// If the disable option for the post id matches the current post ID, skip.
-			if ( $this->IsPostIn( $this->numPostID, $arrBoxOptions['insert_footer_disable_ids'] ) ) continue;
-			
-			if ( $arrBoxOptions['insert_footer'] )
-				$this->RenderWidgetBox( array( 'sidebar' => $strSidebarID ) );
-					
-		}
-	}
-	public function AddWidgetboxInPostContent( $strContent ) {
-				
-		// since 1.0.7
-		$this->numPostID = ( empty( $this->numPostID ) ) ? $this->GetPostID() : $this->numPostID;
-		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => &$arrBoxOptions ) {
-// echo $this->oOption->DumpArray( $arrBoxOptions );
-// echo 'numPostID: ' . $this->numPostID . '<br />';
-// echo 'bIsPost: ' . $this->bIsPost . '<br />';
-// echo 'bIsPage: ' . $this->bIsPage . '<br />';
-			
-			// If the necessary key is not set, skip
-			if ( ! isset( $arrBoxOptions['insert_posts'] ) ) continue;	
-
-			// If the disable option for the front page is enabled, skip.
-			if ( $this->bIsFront && $arrBoxOptions['insert_posts_disable_front'] ) continue;
-
-			// If the disable option for the post id matches the current post ID, skip.
-			if ( $this->IsPostIn( $this->numPostID, $arrBoxOptions['insert_posts_disable_ids'] ) ) continue;
-			
-			// For posts or pages.
-			if ( 
-				$this->bIsPost && $arrBoxOptions['insert_posts']['post'] ||
-				$this->bIsPage && $arrBoxOptions['insert_posts']['page']			
-			) {		
-			
-				$strContent = $arrBoxOptions['insert_posts_positions']['above'] ? $this->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ) ) . $strContent : $strContent;
-				$strContent = $arrBoxOptions['insert_posts_positions']['below'] ? $strContent . $this->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ) ) : $strContent;
-			
-			}		
-		
-		}
-		
-		return $strContent;
-		
-	}
-	protected function IsPostIn( $numPostID, &$arrPostIDs ) {
-	
-		// since 1.0.7	
-		if ( is_string( $arrPostIDs ) )
-			$arrPostIDs = $this->oOption->ConvertStringToArray( $arrPostIDs );
-		
-		if ( ! is_array( $arrPostIDs ) ) return null;
-
-		if ( in_array( $numPostID, $arrPostIDs ) ) return True;
-	
-	}	
 	
 	/*
 	 * Registers saved sidebars
@@ -448,11 +355,11 @@ class ResponsiveColumnWidgets_Core_ {
 		if ( empty( $bIsRowTagClosed ) ) $strBuffer .= '</div>';
 	
 		// If the style for max cols by pixel has not been added, add it. ( since 1.0.3 )
-		if ( ! $this->bIsStyleAddedMaxColsByPixel )
+		if ( ! isset( $this->arrFlagsStyleMaxColsByPixel[ $index ] ) || ! $this->arrFlagsStyleMaxColsByPixel[ $index ] )
 			$strBuffer .= $this->AddStyleForMaxColsByPixel( $index, $arrOffsetsByPixel );
 
 		// If the custom style for the widget box has not been added yet,
-		if ( ! empty( $strCustomStyle ) && ! $this->bIsCustomStyleAdded )
+		if ( ! empty( $strCustomStyle ) && (  ! isset( $this->arrFlagsCustomStyleAdded[ $index ] ) || ! $this->arrFlagsCustomStyleAdded[ $index ] ) )
 			$strBuffer .= $this->AddCustomStyle( $index, $strCustomStyle );
 			
 		return $strBuffer;
@@ -465,7 +372,7 @@ class ResponsiveColumnWidgets_Core_ {
 			. $strCustomStyle
 			. '</style>';
 
-		$this->bIsCustomStyleAdded = true;
+		$this->arrFlagsCustomStyleAdded[ $strSidebarID ] = true;
 		return $strStyleRules;	
 		
 	}
@@ -498,7 +405,7 @@ class ResponsiveColumnWidgets_Core_ {
 		}
 
 		$strStyleRules .= '</style>';
-		$this->bIsStyleAddedMaxColsByPixel = true;
+		$this->arrFlagsStyleMaxColsByPixel[ $strSidebarID ] = true;
 		return $strStyleRules;
 		
 	}
