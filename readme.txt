@@ -83,8 +83,9 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 == Changelog ==
 
 = 1.0.8 - 03/20/2013 =
+* Fixed: a bug that when multiple widget boxes were present in one page, only the first widget box's custom style was loaded; the other custom styles' set to each box did not load.
 * Fixed: a bug that when multiple widget boxes were present in one page, only the first widget box was responsive; the responsive rules did not apply to the other widget boxes.
-* Added: the ability to auto-insert the widget box into comment form section.
+* Added: the ability to auto-insert the widget box into the comment form section.
 * Fixed: the warning to occur in some servers, "Parameter 1 to ResponsiveColumnWidgets_Startup() expected to be a reference, value given in .../wp-includes/plugin.php on line 406."
 
 = 1.0.7.1 - 03/19/2013 = 
