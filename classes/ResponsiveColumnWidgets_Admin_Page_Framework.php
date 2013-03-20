@@ -136,10 +136,10 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		
 		// For earlier loading than $this->Setup
 		add_action( $this->prefix_start	. $this->strClassName , array( $this, $this->prefix_start . $this->strClassName ) );
-		do_action( $this->prefix_start	. $this->strClassName );
-						
+		do_action( $this->prefix_start	. $this->strClassName );		
+							
 	}	
-	
+
 	/*
 		Extensible Methods - should be customized in the extended class.
 	*/
@@ -500,8 +500,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		
 		if ( ! isset( $_GET['page'] ) || ! array_key_exists( $_GET['page'] , $this->arrPageTitles )  ) return $strText;
 		
-		return __( 'Powered by <a href="http://wordpress.org/extend/plugins/admin-page-framework/">Admin Page Framework</a>' )
-			. ', ' . '<a href="http://wordpress.org">WordPress</a>';
+		return __( 'Powered by', 'admin-page-framework' ) . '<a href="http://wordpress.org/extend/plugins/admin-page-framework/">Admin Page Framework</a>'
+			. ', <a href="http://wordpress.org">WordPress</a>';
 		
 	}	
 	public function AddLinkToPluginDescription_Callback( $arrLinks, $strFile ) {	// this is a callback method so should not be protected
@@ -703,6 +703,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			'disable' => null,
 			'max' => null,
 			'min' => null,
+			'size' => null,
+			'maxlength' => null,
 			'step' => null,
 			'pre_html' => null,
 			'post_html' => null,
@@ -711,6 +713,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			'update_message' => null,	// used by the import custom field
 			'error_message' => null,	// used by the import custom field
 			'capability' => null,	// since 1.0.2.1, used to determine whether the field should be displayed to the user; this should not be used in this method but the AddFormFields() method
+			'pre_field' => null,	// since 1.0.2.4 - pre-pends the given string before the field tag
+			'post_field' => null,	// since 1.0.2.4 - appends the given string after the field tag
 		);
 					
 		// $strValue - the retrieved value from the database option table in which currently saved 
@@ -751,16 +755,21 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			case 'url':
 			case 'week':	// attributes: size					
 				$arrField['size'] = empty( $arrField['size'] ) ? 30 : $arrField['size']; 
-				$strOutput .= "<input id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' size='{$arrField['size']}' type='{$arrField['type']}' value='{$strValue}' {$bIsDisabled} />"; 			
+				$strInputField = "<input id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' size='{$arrField['size']}' type='{$arrField['type']}' value='{$strValue}' {$bIsDisabled} />"; 
+				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];				
 				break;
 			case 'number':	// HTML5, attributes: min, max, step,
+				$arrField['size'] = empty( $arrField['size'] ) ? 30 : $arrField['size']; 
+				$numMaxLength = isset( $arrField['maxlength'] ) ? $arrField['maxlength'] : $arrField['size'];
 			case 'range':						
-				$strOutput .= "<input id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' min='{$arrField['min']}' max='{$arrField['max']}' step='{$arrField['step']}' type='{$arrField['type']}' value='{$strValue}' {$bIsDisabled} />";
+				$strInputField = "<input id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' min='{$arrField['min']}' max='{$arrField['max']}' step='{$arrField['step']}' type='{$arrField['type']}' value='{$strValue}' maxlength='{$numMaxLength}' {$bIsDisabled} />";
+				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
 				break;
 			case 'textarea':	// attributes: rows, cols
 				$arrField['rows'] = empty( $arrField['rows'] ) ? 4 : $arrField['rows'];
 				$arrField['cols'] = empty( $arrField['cols'] ) ? 80 : $arrField['cols'];
-				$strOutput .= "<textarea id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' rows='{$arrField['rows']}' cols='{$arrField['cols']}' {$bIsDisabled} >{$strValue}</textarea>";
+				$strInputField = "<textarea id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' rows='{$arrField['rows']}' cols='{$arrField['cols']}' {$bIsDisabled} >{$strValue}</textarea>";
+				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
 				break;	
 			case 'radio':
 				$strOutput .= "<div id='{$strTagID}'>";
@@ -770,6 +779,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 					$strOutput .= $arrField['delimiter'];
 				}
 				$strOutput .= "</div>";
+				$strOutput .= $arrField['pre_field'] . $strOutput . $arrField['post_field'];
 				break;
 			case 'checkbox':	// support multiple creation with array of label
 				if ( is_array( $arrField['label'] ) ) {
@@ -778,7 +788,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 					foreach ( $arrField['label'] as $strKey => $strLabel ) {	
 						$strChecked = ( $arrValues[ $strKey ] == 1 ) ? 'Checked' : '';
 						$strOutput .= "<input type='hidden' name='{$strFieldName}[{$strKey}]' value='0' />";
-						$strOutput .= "<input id='{$strTagID}_{$strKey}' class='{$arrField['class']}' type='checkbox' name='{$strFieldName}[{$strKey}]' value='1' {$strChecked} {$bIsDisabled} />&nbsp;&nbsp;{$strLabel}";
+						$strInputField = "<input id='{$strTagID}_{$strKey}' class='{$arrField['class']}' type='checkbox' name='{$strFieldName}[{$strKey}]' value='1' {$strChecked} {$bIsDisabled} />&nbsp;&nbsp;{$strLabel}";
+						$strOutput .= $this->GetCorrespondingArrayValue( $strKey, $arrField['pre_field'] ) . $strInputField . $this->GetCorrespondingArrayValue( $strKey, $arrField['pre_field'] );
 						$strOutput .= $arrField['delimiter'];
 					}
 					$strOutput .= "</div>";
@@ -787,7 +798,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 				// if the labels key is not an array,
 				$strChecked = ( $strValue == 1 ) ? 'Checked' : '';			
 				$strOutput .= "<input type='hidden' name='{$strFieldName}' value='0' />";
-				$strOutput .= "<input id='{$strTagID}' class='{$arrField['class']}' type='checkbox' name='{$strFieldName}' value='1' {$strChecked} {$bIsDisabled} />&nbsp;&nbsp;{$arrField['label']}<br />";
+				$strInputField = "<input id='{$strTagID}' class='{$arrField['class']}' type='checkbox' name='{$strFieldName}' value='1' {$strChecked} {$bIsDisabled} />&nbsp;&nbsp;{$arrField['label']}<br />";
+				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
 				break;
 			case 'select':
 				if ( !is_array( $arrField['label'] ) ) break;	// the label key must be an array for the select type.
@@ -797,6 +809,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 					$strOutput .= "<option id='{$strTagID}_{$strKey}' value='{$strKey}' {$strSelected}>{$strLabel}</option>";
 				}
 				$strOutput .= "</select>";
+				$strOutput = $arrField['pre_field'] . $strOutput . $arrField['post_field'];
 				break;
 			case 'hidden':	// support multiple creation with array of label
 				if ( is_array( $arrField['label'] ) ) {
@@ -805,43 +818,50 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 						$strKey = 	isset( $arrField['default'][$strArrayKey] ) 	? $arrField['default'][$strArrayKey] : $strArrayKey;
 						$strValue = isset( $arrField['default'][$strArrayValue] ) ? $arrField['default'][$strArrayValue] : $strArrayValue;
 						$strValue = isset( $arrField['value'][$strArrayValue] ) ? $arrField['value'][$strArrayValue] : $strValue;
-						$strOutput .= "<input id='{$strTagID}_{$strKey}' class='{$arrField['class']}' name='{$strFieldName}[{$strKey}]' type='hidden' value='{$strValue}' />";
+						$strInputField = "<input id='{$strTagID}_{$strKey}' class='{$arrField['class']}' name='{$strFieldName}[{$strArrayKey}]' type='hidden' value='{$strValue}' />";
+						$strOutput .= $this->GetCorrespondingArrayValue( $strArrayKey, $arrField['pre_field'] ) . $strInputField . $this->GetCorrespondingArrayValue( $strArrayKey, $arrField['pre_field'] );
 					}
 					$strOutput .= "</div>";
 					break;
 				}
 				$strValue = isset( $arrField['value'] ) ? $arrField['value'] : $arrField['label'];
-				$strOutput .= "<input id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' type='hidden' value='{$strValue}' />";
+				$strInputField = "<input id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' type='hidden' value='{$strValue}' />";
+				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
 				break;					
 			case 'file':	// support multiple creation with array of label
 				// $strName = ( isset( $arrField['name'] ) && !empty( $arrField['name'] ) ) ? $arrField['name'] : 'file';
 				if ( is_array( $arrField['label'] ) ) {
 					$strOutput .= "<div id='{$strTagID}'>";
-					foreach( $arrField['label'] as $strKey => $strValue ) 
-						$strOutput .= "<input id='{$strTagID}_{$strKey}' class='{$arrField['class']}' type='file' name='{$strFieldName}[{$strValue}]' />";
+					foreach( $arrField['label'] as $strKey => $strValue ) {				
+						$strInputField = "<input id='{$strTagID}_{$strKey}' class='{$arrField['class']}' type='file' name='{$strFieldName}[{$strValue}]' />";
+						$strOutput .= $this->GetCorrespondingArrayValue( $strKey, $arrField['pre_field'] ) . $strInputField . $this->GetCorrespondingArrayValue( $strKey, $arrField['pre_field'] );						
+					}
 					$strOutput .= "</div>";
 					break;
 				}						
-				$strOutput .= "<input id='{$strTagID}' class='{$arrField['class']}' type='file' name='{$strFieldName}' {$bIsDisabled}/>";
+				$strInputField = "<input id='{$strTagID}' class='{$arrField['class']}' type='file' name='{$strFieldName}' {$bIsDisabled}/>";
+				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
 				break;
 			case 'submit':	// support multiple creation with array of label
 				$strClass = ( $arrField['class'] ) ? $arrField['class'] : 'button button-primary';
 				if ( is_array( $arrField['label'] ) ) {
 					$strOutput .= "<div id='{$strTagID}'>";
 					foreach( $arrField['label'] as $strArrayKey => $strArrayValue ) {
-						$strLabel = ( $strArrayValue ) ? $strArrayValue : __( 'Submit' );
-						$strOutput .= "<input id='{$strTagID}_{$strArrayKey}' class='{$strClass}' name='{$strFieldName}[{$strArrayKey}]' type='submit' value='{$strLabel}' {$bIsDisabled} />";
+						$strLabel = ( $strArrayValue ) ? $strArrayValue : __( 'Submit', 'admin-page-framework' );
+						$strInputField = "<input id='{$strTagID}_{$strArrayKey}' class='{$strClass}' name='{$strFieldName}[{$strArrayKey}]' type='submit' value='{$strLabel}' {$bIsDisabled} />";
+						$strOutput .= $this->GetCorrespondingArrayValue( $strArrayKey, $arrField['pre_field'] ) . $strInputField . $this->GetCorrespondingArrayValue( $strArrayKey, $arrField['pre_field'] );
 						$strOutput .= $arrField['delimiter'];
 					}
 					$strOutput .= "</div>";
 					break;
 				}
-				$strLabel = ( $arrField['label'] ) ? $arrField['label'] : __( 'Submit' );
-				$strOutput .= "<input id='{$strTagID}' class='{$strClass}' name='{$strFieldName}' type='submit' value='{$strLabel}' {$bIsDisabled} />";
+				$strLabel = ( $arrField['label'] ) ? $arrField['label'] : __( 'Submit', 'admin-page-framework' );
+				$strInputField = "<input id='{$strTagID}' class='{$strClass}' name='{$strFieldName}' type='submit' value='{$strLabel}' {$bIsDisabled} />";
+				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
 				break;
 			default:	
 				// for anything else, 
-				$strOutput .= $strValue;
+				$strOutput = $arrField['pre_field'] . $strValue . $arrField['post_field'];
 				break;
 			case 'import':	// import options
 				$strLabel = ( $arrField['label'] ) ? $arrField['label'] : __( 'Import Options', 'admin-page-framework' );
@@ -849,13 +869,15 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 				// $strOutput .= "<input class='{$strClass}' type='hidden' name='__import[option_key]' value='{$arrField['key']}' />";
 				$strOutput .= "<input type='hidden' name='__import[error_message]' value='{$arrField['error']}' />";
 				$strOutput .= "<input type='hidden' name='__import[update_message]' value='{$arrField['update_message']}' />";
-				$strOutput .= "<input id='{$strTagID}' class='{$arrField['class']}' type='file'	name='__import' {$bIsDisabled} />";	// the file type will be stored in $_FILE 
-				$strOutput .= $arrField['delimiter'];
-				$strOutput .= "<input id='{$strTagID}_submit' class='{$strClass}' name='__import[submit]' type='submit' value='{$arrField['label']}' {$bIsDisabled} />";
+				$strInputField = "<input id='{$strTagID}' class='{$arrField['class']}' type='file'	name='__import' {$bIsDisabled} />";	// the file type will be stored in $_FILE 
+				$strInputField .= $arrField['delimiter'];
+				$strInputField .= "<input id='{$strTagID}_submit' class='{$strClass}' name='__import[submit]' type='submit' value='{$arrField['label']}' {$bIsDisabled} />";
+				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
 				break;	
 			case 'export':	// export options
 				if ( is_array( $arrField['label'] ) ) { 
 					foreach( $arrField['label'] as $numIndex => $strLabel ) {
+						$strInputField ='';
 						$strFileName = $this->GetCorrespondingArrayValue( $numIndex, $arrField['file_name'], $this->strClassName . '.txt' );
 						$strClass = $this->GetCorrespondingArrayValue( $numIndex, $arrField['class'], 'button button-primary' );
 						$strTransientKey = $this->GetCorrespondingArrayValue( $numIndex, $arrField['transient'], '' );	
@@ -864,7 +886,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 							$strOutput .= "<input type='hidden' name='__export[transient][{$numIndex}]' value='{$strTransientKey}' />";
 						$strOutput .= "<input type='hidden' name='__export[file_name][{$numIndex}]' value='{$strFileName}' />";
 						$strOutput .= "<input type='hidden' name='__export[option_key][{$numIndex}]' value='{$arrField['option_key']}' />";
-						$strOutput .= "<input id='{$strTagID}_{$numIndex}' class='{$strClass}' type='submit' value='{$strLabel}' name='__export[submit][{$numIndex}]' {$bIsDisabled_} />";
+						$strInputField .= "<input id='{$strTagID}_{$numIndex}' class='{$strClass}' type='submit' value='{$strLabel}' name='__export[submit][{$numIndex}]' {$bIsDisabled_} />";
+						$strOutput .= $this->GetCorrespondingArrayValue( $numIndex, $arrField['pre_field'] ) . $strInputField . $this->GetCorrespondingArrayValue( $numIndex, $arrField['pre_field'] );
 						$strOutput .= $arrField['delimiter'];
 					}
 					break;
@@ -876,10 +899,12 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 					$strOutput .= "<input type='hidden' name='__export[transient]' value='{$arrField['transient']}' />";
 				$strOutput .= "<input type='hidden' name='__export[file_name]' value='{$strFileName}' />";
 				$strOutput .= "<input type='hidden' name='__export[option_key]' value='{$arrField['option_key']}' />";
-				$strOutput .= "<input id='{$strTagID}' class='{$strClass}' type='submit' value='{$strLabel}' name='__export[submit]' {$bIsDisabled} />";
+				$strInputField = "<input id='{$strTagID}' class='{$strClass}' type='submit' value='{$strLabel}' name='__export[submit]' {$bIsDisabled} />";
+				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
 				break;
 			case 'image':	// image uploader
-				$strOutput .= $this->FormImageField( $strFieldName, $strOptionKeyForReference, $arrOptions, $arrField );
+				$strInputField = $this->FormImageField( $strFieldName, $strOptionKeyForReference, $arrOptions, $arrField );
+				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
 				break;
 
 		}
@@ -1564,7 +1589,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 	/*
 	 * Utilities - designed to be used by the framework internally.
 	 * */
-	protected function GetCorrespondingArrayValue( $strKey, $vSubject, $strDefault ) {
+	protected function GetCorrespondingArrayValue( $strKey, $vSubject, $strDefault='' ) {
 		
 		// since 1.0.2
 		// When there are multiple arrays and they have similar index struture but it's not certain,

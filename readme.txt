@@ -82,6 +82,12 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.0.7.1 - 03/19/2013 = 
+* Added: a warning message when there is no widget added to the widget box in the edit page.
+* Added: the a setting to attempt to override the memory limit for PHP set by the server.
+* Added: the Japanese translation. 
+* Added: the localization support with the text domain, responsive-column-widgets.
+
 = 1.0.7 - 03/18/2013 =
 * Added: the ability to disable the auto-insert option for both footer and posts/pages by post IDs and the checkbox for the front page.
 * Added: the ability to auto-insert into post and pages above/below the contents.

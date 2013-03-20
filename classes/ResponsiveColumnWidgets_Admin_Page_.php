@@ -14,7 +14,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	protected $oWidgetPage;
 	
 	function start_ResponsiveColumnWidgets_Admin_Page() {
-					
+							
+		$this->Localize();
+		
 		$this->AddLinkToPluginDescription( $this->GetPluginDescriptionLinks() );				
 		
 		$this->oUserAds = new ResponsiveColumnWidgets_UserAds;
@@ -40,6 +42,21 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			wp_redirect( admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ) );
 			
 	}
+	function Localize() {
+		
+		$this->bLoadedTextDomain = load_plugin_textdomain( 
+			'responsive-column-widgets', 
+			false, 
+			dirname( plugin_basename( RESPONSIVECOLUMNWIDGETSFILE ) ) . '/lang/'
+		);
+		$this->bLoadedTextDomain = load_plugin_textdomain( 
+			'admin-page-framework', 
+			false, 
+			dirname( plugin_basename( RESPONSIVECOLUMNWIDGETSFILE ) ) . '/lang/'
+		);		
+		
+	}	
+	
 	function EnqueueAdminStyle() {
 		wp_enqueue_style( 'responsive_column_widgets_enqueue_style', RESPONSIVECOLUMNWIDGETSURL . '/css/responsive_column_widgets.css' );
 	}
@@ -95,6 +112,15 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$arrWidgetBoxDefaultOptions = $this->oOption->arrDefaultSidebarArgs + $this->oOption->arrDefaultParams;
 		$arrWidgetBoxDefaultOptions['message_no_widget'] = __( 'No widgetd is added yet.', 'responsive-column-widgets' ); 
 		$arrWidgetBoxOptions = $bIsNew ? $arrWidgetBoxDefaultOptions : $this->UniteArraysRecursive( $this->oOption->arrOptions['boxes'][ $strSidebarID ], $arrWidgetBoxDefaultOptions );
+	
+		// If this is an edit page, check if a widget is added to this widget box; otherwise, show a warning message.
+		if ( ! $bIsNew && ! is_active_sidebar( $strSidebarID ) ) 
+			add_settings_error( 
+				$this->strPluginSlug, 
+				'can_be_any_string', 
+				__( 'No widget has been added to this widget box yet.', 'responsive-column-widgets' ) . ' ' 
+				. sprintf( __( "You need to add widgets in the <a href='%s'>Widgets</a> page to the widget box.", 'responsive-column-widgets' ), admin_url( 'widgets.php' ) )
+			);		
 		
 		// Add the form elements.
 		$this->AddFormSections(
@@ -243,7 +269,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'pre_html' => $this->oUserAds->GetTextAd(),
 							'id' => 'submit_save_1',
 							'type' => 'submit',		// the submit type creates a button
-							'label' => __( 'Save Changes', 'responsive-column-widgets' ),
+							'label' => $this->numPluginType == 0 || isset( $_GET['mode'] ) && $_GET['mode'] == 'edit' ? __( 'Save Changes', 'responsive-column-widgets' ) : __( 'Add New Box', 'responsive-column-widgets' ),
 							'class' => 'submit-buttons button button-primary'
 						),							
 					),					
@@ -420,6 +446,22 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'fields' => array( 	// Field Arrays
 						// Checkbox
 						array(  
+							'id' => 'field_memory_allocation',
+							'title' => __( 'Attempt to Override Allocated Memory Size', 'responsive-column-widgets' ),
+							'description' => __( 'If the error, "Allowed memory size of ... bytes exhausted" occurs, try increasing the memory size allocated for PHP. Set 0 to use the server\'s setting.', 'responsive-column-widgets' ) . '<br />'
+								. __( 'The current memory limit set by the server:', 'responsive-column-widgets' ) . ' ' . $this->oOption->GetMemoryLimit() . '<br />'
+								. ( ! function_exists( 'memory_get_usage' ) || ! function_exists( 'ini_get' ) ? '<span class="error">' . __( 'The necessary functions are disabled by the server.', 'responsive-column-widgets' ) . '</span>' : '' ),
+							'type' => 'number',
+							'min' => 0,
+							'size' => 10,
+							'pre_field' => '',
+							'post_field' => ' M',
+							'value' => $this->oOption->arrOptions['general']['memory_allocation'],
+							'disable' => ! function_exists( 'memory_get_usage' ) || ! function_exists( 'ini_get' ) ? true : false,
+							'label' => __( 'Initialize', 'responsive-column-widgets' ),
+						),									
+						// Checkbox
+						array(  
 							'id' => 'field_initializeoptions',
 							'title' => __( 'Initialize Options', 'responsive-column-widgets' ),
 							'description' => __( 'Clean all saved data and intialize to the default.', 'responsive-column-widgets' ),
@@ -427,11 +469,11 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'default' => 0,
 							'label' => __( 'Initialize', 'responsive-column-widgets' ),
 						),
-						// Submit Buttons
+						// Submit Button
 						array(  // single button
 							'id' => 'submit_perform',
 							'type' => 'submit',		// the submit type creates a button
-							'label' =>  __( 'Perform Checked', 'responsive-column-widgets' ),
+							'label' =>  __( 'Perform', 'responsive-column-widgets' ),
 							'class' => 'submit-buttons button button-secondary'
 						),
 					),
@@ -501,6 +543,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			)
 		);			
     }
+	
 	/*
 	 *  Custom Methods
 	 */
@@ -627,12 +670,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		return $strUpdatedMsg . $strHead;		
 		
 	}
-	// function do_responsive_column_widgets_manage() {
-		
+	function do_responsive_column_widgets_manage() {
+
 		// if ( WP_DEBUG )
 			// echo $this->DumpArray( $this->oOption->arrOptions['boxes'] );
 		
-	// }
+	}
+	function do_responsive_column_widgets_general() {	
+	}
 	
 	function GetAddNewBoxButton() {
 		
@@ -697,10 +742,10 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		echo '<tr>';
 		echo '<th class="first-col" >&nbsp;</th>';
 		echo '<th align="center">';
-		echo __( 'Standard', 'responsive-column-widgtes' );
+		echo __( 'Standard', 'responsive-column-widgets' );
 		echo '</th>';
 		echo '<th align="center">';
-		echo __( 'Pro', 'responsive-column-widgtes' );
+		echo __( 'Pro', 'responsive-column-widgets' );
 		echo '</th>';
 		echo '</tr>';
 		echo $this->GetComparisionTableTR( 
@@ -719,7 +764,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		);			
 		echo $this->GetComparisionTableTR( 
 			array( 
-				array( 'type' => 'text', 'value' => __( 'Insert into Footer', 'responsive-column-widgets' ), 'align' => 'center', 'class' => 'first-col' ),
+				array( 'type' => 'text', 'value' => __( 'Auto-insert into Footer, Posts, and Pages', 'responsive-column-widgets' ), 'align' => 'center', 'class' => 'first-col' ),
 				array( 'type' => 'image', 'value' => True, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'second-col' ),
 				array( 'type' => 'image', 'value' => True, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'third-col' ),				
 			) 			
@@ -781,7 +826,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			// means it's an image
 			$strOut .= "<td align='{$arrInfo['align']}' class='{$arrInfo['class']}'>"
 				. '<img src="' . RESPONSIVECOLUMNWIDGETSURL . '/img/' . ( $arrInfo['value'] ? 'available.gif' : 'unavailable.gif' ) . '" '
-				. 'title="' . ( $arrInfo['value'] ? __( 'Available', 'responsive-column-widgets' ) : __( 'Unavailable', 'responsive-column-widgtes' ) ) . '"'
+				. 'title="' . ( $arrInfo['value'] ? __( 'Available', 'responsive-column-widgets' ) : __( 'Unavailable', 'responsive-column-widgets' ) ) . '"'
 				. '</td>';
 				
 		}
@@ -1069,10 +1114,16 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			
 		}	
 		
-		// Do some validation and sanitization here.
-		// field_allowedhtmltags
+		// Do the validations and sanitizations here.
 		$this->oOption->arrOptions['general']['capability'] = $arrInput['responsive_column_widgets']['section_general']['field_capability'];
-		$this->oOption->arrOptions['general']['allowedhtmltags'] = $this->oOption->ConvertStringToArray( $arrInput['responsive_column_widgets']['section_general']['field_allowedhtmltags'] ); // preg_split( '/[, ]+/', $arrInput['responsive_column_widgets']['section_general']['field_allowedhtmltags'], -1, PREG_SPLIT_NO_EMPTY );
+		$this->oOption->arrOptions['general']['allowedhtmltags'] = $this->oOption->ConvertStringToArray( $arrInput['responsive_column_widgets']['section_general']['field_allowedhtmltags'] ); 
+		
+		// Memory Allocation since 1.0.7.1
+		$this->oOption->arrOptions['general']['memory_allocation'] = empty( $arrInput['responsive_column_widgets']['section_dangerzone']['field_memory_allocation'] ) ? 0 
+			: $this->FixNumber( $arrInput['responsive_column_widgets']['section_dangerzone']['field_memory_allocation'], 
+				intval( $strCurrentLimit ),
+				32 	// minimum
+			);
 		
 		// Update the value to the separate main option.
 		$this->oOption->Update();
@@ -1307,5 +1358,28 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	protected $numPluginType = 0;
 	protected $strGetPro = 'Get Pro to enabel this feature!';
 	protected $strGetProNow = 'Get Pro now!';
+	function __NoteProStrings() {	
+		__( '<a href="http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/">Responsive Column Widgets</a> needs to be installed and activated.', 'responsive-column-widgets' );
+		__( 'Add New Box', 'responsive-column-widgets' );
+		__( 'Delete Checked', 'responsive-column-widgets' );
+		__( 'Edit', 'responsive-column-widgets' );
+		__( 'Export All', 'responsive-column-widgets' );
+		__( 'Export Checked', 'responsive-column-widgets' );
+		__( 'Failed to validate the license key.', 'responsive-column-widgets' );	
+		__( 'Import Widget Boxes', 'responsive-column-widgets' );
+		__( 'License Key', 'responsive-column-widgets' );
+		__( 'License Status', 'responsive-column-widgets' );					
+		__( 'Not Verified', 'responsive-column-widgets' );
+		__( 'Nothing could be exporeted.', 'responsive-column-widgets' ) ;
+		__( 'Pro Settings', 'responsive-column-widgets' );
+		__( 'Set the license key provided by miunosoft written in the purchase receipt.', 'responsive-column-widgets' );
+		__( 'The current status of the license of this plugin.', 'responsive-column-widgets' );
+		__( 'The license key has been verified.', 'responsive-column-widgets' );
+		__( 'The main plugin\'s version must be at least 1.0.4.8.', 'responsive-column-widgets' );
+		__( 'The plugin, Responsive Column Widgets Pro, was deactivated.', 'responsive-column-widgets' );
+		__( 'There was %d box(es) with borken options that were unable to be imported.', 'responsive-column-widgets' );
+		__( 'Validate', 'responsive-column-widgets' );
+		__( 'View', 'responsive-column-widgets' );
+	}
 	
 }

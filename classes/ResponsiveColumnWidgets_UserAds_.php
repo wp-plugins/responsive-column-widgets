@@ -107,9 +107,9 @@ class ResponsiveColumnWidgets_UserAds_ {
 		
 		// If the cache lifetime is explicitly set to 0, do not trigger the background renewal cache event
 		if ( $numCacheDuration == 0 )
-			$oFeed->SetBackground( true );	// set it true will be considerd the background process; thus, it won't trigger the renewal event.
+			$oFeed->SetBackground( true );	// setting it true will be considerd the background process; thus, it won't trigger the renewal event.
 		
-		// set_stupidly_fast() will disable this but turn it on because it will trigger the custom sort method
+		// set_stupidly_fast() disables this internally so turn it on manually because it will trigger the custom sort method
 		$oFeed->enable_order_by_date( true );	
 		$oFeed->init();			
 		return $oFeed;

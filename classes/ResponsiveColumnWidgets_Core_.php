@@ -76,6 +76,11 @@ class ResponsiveColumnWidgets_Core_ {
 		add_action( 'wp_head', array( $this, 'SetUpPostInfo' ) );	// The init hook is too early to perform the functions including is_single(), is_page() etc.
 		add_action( 'wp_footer', array( $this, 'AddWidgetboxInFooter' ) );
 		add_action( 'the_content', array( $this, 'AddWidgetboxInPostContent' ) );
+		
+		// Debug
+		// if ( defined( 'WP_DEBUG' ) )
+			// add_action( 'wp_footer', array( $this->oOption, 'EchoMemoryLimit' ) );
+			// add_action( 'wp_footer', array( $this, 'EchoMemoryUsage' ) );
 			
 	}
 	/*
@@ -99,10 +104,10 @@ class ResponsiveColumnWidgets_Core_ {
 	}
 	public function AddWidgetboxInFooter() {
 		
-		$this->numPostID = ( empty( $this->numPostID ) ) ? $this->GetPostID() : $this->numPostID;
-		
 		// since 1.0.5
-		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => $arrBoxOptions ) {
+		
+		$this->numPostID = ( empty( $this->numPostID ) ) ? $this->GetPostID() : $this->numPostID;
+		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => &$arrBoxOptions ) {
 			
 			// If the necessary key is not set, skip
 			if ( ! isset( $arrBoxOptions['insert_footer'] ) ) continue;
@@ -115,15 +120,14 @@ class ResponsiveColumnWidgets_Core_ {
 			
 			if ( $arrBoxOptions['insert_footer'] )
 				$this->RenderWidgetBox( array( 'sidebar' => $strSidebarID ) );
-				
+					
 		}
-		
 	}
 	public function AddWidgetboxInPostContent( $strContent ) {
 				
 		// since 1.0.7
 		$this->numPostID = ( empty( $this->numPostID ) ) ? $this->GetPostID() : $this->numPostID;
-		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => $arrBoxOptions ) {
+		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => &$arrBoxOptions ) {
 // echo $this->oOption->DumpArray( $arrBoxOptions );
 // echo 'numPostID: ' . $this->numPostID . '<br />';
 // echo 'bIsPost: ' . $this->bIsPost . '<br />';
@@ -148,12 +152,13 @@ class ResponsiveColumnWidgets_Core_ {
 				$strContent = $arrBoxOptions['insert_posts_positions']['below'] ? $strContent . $this->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ) ) : $strContent;
 			
 			}		
+		
 		}
 		
 		return $strContent;
 		
 	}
-	protected function IsPostIn( $numPostID, $arrPostIDs ) {
+	protected function IsPostIn( $numPostID, &$arrPostIDs ) {
 	
 		// since 1.0.7	
 		if ( is_string( $arrPostIDs ) )
@@ -164,7 +169,6 @@ class ResponsiveColumnWidgets_Core_ {
 		if ( in_array( $numPostID, $arrPostIDs ) ) return True;
 	
 	}	
-	
 	
 	/*
 	 * Registers saved sidebars
@@ -183,13 +187,12 @@ class ResponsiveColumnWidgets_Core_ {
 					'name' => $arrBoxOptions['label'],
 					'id' => strtolower( $arrBoxOptions['sidebar'] ), // must be all lowercase
 					'description' => $arrBoxOptions['description'],
-					'before_widget' => $arrBoxOptions['before_widget'], // $this->oOption->arrDefaultSidebarArgs['before_widget'], //'<aside id="%1$s" class="%2$s"><div class="widget">',
-					'after_widget' => $arrBoxOptions['after_widget'], // $this->oOption->arrDefaultSidebarArgs['after_widget'], //'</div></aside>',
-					'before_title' => $arrBoxOptions['before_title'], // $this->oOption->arrDefaultSidebarArgs['before_title'], //'<h3 class="widget-title">',
-					'after_title' => $arrBoxOptions['after_title'], // $this->oOption->arrDefaultSidebarArgs['after_title'] //'</h3>',
+					'before_widget' => $arrBoxOptions['before_widget'],
+					'after_widget' => $arrBoxOptions['after_widget'],
+					'before_title' => $arrBoxOptions['before_title'],
+					'after_title' => $arrBoxOptions['after_title'],
 				) 
-			);		
-			
+			);					
 	}
 	
 	/*
@@ -244,13 +247,14 @@ class ResponsiveColumnWidgets_Core_ {
 		if ( empty( $posts ) ) return $posts;
 		$bFound = false;
 
-		foreach ( $posts as $post ) {
+		foreach ( $posts as &$post ) {
 		
 			if ( stripos( $post->post_content, '[' . $this->strShortCode ) !== false ) {
 						
 				add_shortcode( $this->strShortCode, array( $this, 'GetWidgetBoxOutput' ) );
 				$bFound = true;
 				break;
+				
 			}
 		}
 
@@ -269,7 +273,7 @@ class ResponsiveColumnWidgets_Core_ {
 	function GetWidgetBoxSidebarIDFromParams( $arrParams ) {
 		// since 1.0.4
 		if ( isset( $arrParams['label'] ) && ! empty( $arrParams['label'] ) ) 
-			foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => $arrBoxOptions ) 
+			foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => &$arrBoxOptions ) 
 				if ( $arrBoxOptions['label'] == $arrParams['label'] ) return $strSidebarID;
 			
 		// if nothing could be found, returns the default box ID
@@ -277,6 +281,7 @@ class ResponsiveColumnWidgets_Core_ {
 			
 	}
 	public function GetWidgetBoxOutput( $arrParams ) {
+		
 		// since 1.0.4
 		// The function callback for shortcode. Notice that the last part is returning the output.
 
@@ -297,6 +302,7 @@ class ResponsiveColumnWidgets_Core_ {
 		
 	}
 	public function RenderWidgetBox( $arrParams ) {
+		
 		// Called by a function outside the class so it must be public. 
 		// Notice that the last part is echo.
 		
@@ -308,6 +314,7 @@ class ResponsiveColumnWidgets_Core_ {
 	 * Retrieve widget output buffers.
 	 * */
 	function GetIndex( $vIndex ) {
+		
 		global $wp_registered_sidebars;
 		if ( is_int( $vIndex ) ) return "sidebar-$vIndex";
 
@@ -317,8 +324,10 @@ class ResponsiveColumnWidgets_Core_ {
 				return $strKey;
 		}
 		return $vIndex;
+		
 	}
 	function IsRenderable( $index, $sidebars_widgets ) {
+		
 		global $wp_registered_sidebars;
 		if ( empty( $sidebars_widgets ) ) return false;
 		if ( empty( $wp_registered_sidebars[$index]) ) return false;
@@ -326,8 +335,9 @@ class ResponsiveColumnWidgets_Core_ {
 		if ( !is_array( $sidebars_widgets[$index] ) ) return false;
 		if ( empty( $sidebars_widgets[$index] ) ) return false;
 		return true;
+		
 	}
-	function OutputWidgetBuffer( $index = 1, $arrParams ) {
+	function OutputWidgetBuffer( $index = 1, &$arrParams ) {
 
 		global $wp_registered_sidebars, $wp_registered_widgets;
 
@@ -359,10 +369,14 @@ class ResponsiveColumnWidgets_Core_ {
 			if ( $bShowOnly && !in_array( $numWidgetOrder, $arrShowOnlys ) ) continue;	// if show-only orders match
 			
 			$params = array_merge(
-				array(	array_merge( 
-							$sidebar, array('widget_id' => $id, 
-							'widget_name' => $wp_registered_widgets[$id]['name'] ) 
-						)
+				array(	
+					array_merge( 
+						$sidebar, 
+						array(
+							'widget_id' => $id, 
+							'widget_name' => $wp_registered_widgets[$id]['name'] 
+						) 
+					)
 				),
 				( array ) $wp_registered_widgets[$id]['params']
 			);
@@ -370,10 +384,12 @@ class ResponsiveColumnWidgets_Core_ {
 			// Substitute HTML id and class attributes into before_widget
 			$classname_ = '';
 			foreach ( ( array ) $wp_registered_widgets[$id]['classname'] as $cn ) {
+				
 				if ( is_string( $cn ) )
 					$classname_ .= '_' . $cn;
 				elseif ( is_object( $cn ) )
 					$classname_ .= '_' . get_class( $cn );
+					
 			}
 			$classname_ = ltrim( $classname_, '_' );
 			$params[0]['before_widget'] = sprintf( $params[0]['before_widget'], $id, $classname_ );
@@ -382,11 +398,14 @@ class ResponsiveColumnWidgets_Core_ {
 			do_action( 'dynamic_sidebar', $wp_registered_widgets[$id] );
 
 			ob_start();
-			if ( is_callable( $callback ) ) {			
+			if ( is_callable( $callback ) ) {		
+			
 				call_user_func_array( $callback, $params );		// will echo widgets	
 				$arrWidgetBuffer[] = ob_get_contents();
+				
 			}
 			ob_end_clean();
+			
 		}
 						
 		// Now $arrWidgetBuffer contains the necessary data for output.
@@ -437,6 +456,7 @@ class ResponsiveColumnWidgets_Core_ {
 			$strBuffer .= $this->AddCustomStyle( $index, $strCustomStyle );
 			
 		return $strBuffer;
+		
 	}
 	function AddCustomStyle( $strSidebarID, $strCustomStyle ) {
 		
@@ -480,5 +500,22 @@ class ResponsiveColumnWidgets_Core_ {
 		$strStyleRules .= '</style>';
 		$this->bIsStyleAddedMaxColsByPixel = true;
 		return $strStyleRules;
+		
 	}
+	
+	/*
+	 *  Debug
+	 */
+	function EchoMemoryUsage() {
+		$mem_usage = memory_get_usage(true);
+	   
+		if ($mem_usage < 1024)
+			echo $mem_usage." bytes";
+		elseif ($mem_usage < 1048576)
+			echo round($mem_usage/1024,2)." kilobytes";
+		else
+			echo round($mem_usage/1048576,2)." megabytes";
+		   
+		echo "<br/>";
+	} 		
 }

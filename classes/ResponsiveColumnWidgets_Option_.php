@@ -48,6 +48,7 @@ class ResponsiveColumnWidgets_Option_ {
 			'capability' => 0,
 			'allowedhtmltags' => array(),		// e.g. array( 'noscript', 'style' )	// will be imploded when it is rendered
 			'license' =>'',
+			'memory_allocation' => 0,	// since 1.0.7.1 - 0 means do nothing.
 		),
 	);
 	function __construct( $strOptionKey ) {
@@ -56,7 +57,7 @@ class ResponsiveColumnWidgets_Option_ {
 		$this->arrOptions = ( array ) get_option( $strOptionKey );
 		
 		// Merge with the default values.
-		$this->arrDefaultSidebarArgs['description'] = __( 'The default widget box of Responsive Column Widgets.', 'responsive-column-windgets' );	// cannot be declared as the default property because it needs to use a custom function.
+		$this->arrDefaultSidebarArgs['description'] = __( 'The default widget box of Responsive Column Widgets.', 'responsive-column-widgets' );	// cannot be declared as the default property because it needs to use a custom function.
 				
 		// wp_parse_args(), array() + array(), array_merge() - do not work with multi-dimensional arrays
 		// array_replace_recursive() - does not support PHP below 5.3.0
@@ -77,6 +78,10 @@ class ResponsiveColumnWidgets_Option_ {
 		$this->arrPluginData = get_plugin_data( RESPONSIVECOLUMNWIDGETSFILE, false );
 		if ( defined( 'RESPONSIVECOLUMNWIDGETSPROFILE' ) ) 
 			$this->arrPluginDataPro = get_plugin_data( RESPONSIVECOLUMNWIDGETSPROFILE, false );
+			
+		// if the attempt to override the memory allocation option is set,
+		if ( ! empty( $this->arrOptions['general']['memory_allocation'] ) ) 		
+			$this->SetMemoryLimit( $this->arrOptions['general']['memory_allocation'] );
 			
 	}
 	
@@ -122,6 +127,30 @@ class ResponsiveColumnWidgets_Option_ {
 	/*
 	 * Utilities - helper methods which can be used outside the plugin
 	 * */
+	function EchoMemoryLimit() {
+		
+		// since 1.0.7.1
+		echo $this->arrOptions['general']['memory_allocation'] . '<br />';
+		echo $this->GetMemoryLimit();
+		
+	}
+	function GetMemoryLimit() {
+		
+		// since 1.0.7.1
+		// if ( ! function_exists( 'memory_get_usage' ) ) return;
+		if ( ! function_exists( 'ini_get' ) ) return;		// some servers disable ini_get()
+		return @ini_get( 'memory_limit' );		// returns the string with the traling M characeter. e.g. 128M
+
+	}
+	function SetMemoryLimit( $numMegabytes ) {
+		
+		// since 1.0.7.1
+		// unlike GetMemoryLimit() the passed value should not contain the M character at the end.
+		// if ( ! function_exists( 'memory_get_usage' ) ) return;		
+		if ( ! function_exists( 'ini_set' ) ) return;		// some servers disable ini_set()
+		@ini_set( 'memory_limit', rtrim( $numMegabytes, 'M' ) . 'M' );
+		
+	}	 
 	function ImplodeRecursive( $arrInput, $arrGlues ) {
 		
 		// since 1.0.6.1
