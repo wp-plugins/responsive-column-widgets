@@ -4,7 +4,7 @@ Donate link: http://en.michaeluno.jp/donate
 Tags: widget, widgets, sidebar, columns, responsive, post, posts, page, pages, plugin, miunosoft
 Requires at least: 3.2
 Tested up to: 3.5.1
-Stable tag: 1.0.7.1
+Stable tag: 1.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Creates a custom responsive column widget box.
@@ -82,6 +82,10 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.0.8 - 03/20/2013 =
+* Added: the ability to auto-insert the widget box into comment form section.
+* Fixed: the warning to occur in some servers, "Parameter 1 to ResponsiveColumnWidgets_Startup() expected to be a reference, value given in .../wp-includes/plugin.php on line 406."
+
 = 1.0.7.1 - 03/19/2013 = 
 * Added: a warning message when there is no widget added to the widget box in the edit page.
 * Added: the setting to attempt to override the memory limit for PHP set by the server.
@@ -90,7 +94,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 = 1.0.7 - 03/18/2013 =
 * Added: the ability to disable the auto-insert option for both footer and posts/pages by post IDs and the checkbox for the front page.
-* Added: the ability to auto-insert into post and pages above/below the contents.
+* Added: the ability to auto-insert the widget box into post and pages above/below the contents.
 * Fixed: a minor bug that merging with the default option values did not performed correctly when the subject option key had a null value.
 
 = 1.0.6.1 - 03/13/2013 =
