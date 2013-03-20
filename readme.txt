@@ -84,7 +84,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 = 1.0.7.1 - 03/19/2013 = 
 * Added: a warning message when there is no widget added to the widget box in the edit page.
-* Added: the a setting to attempt to override the memory limit for PHP set by the server.
+* Added: the setting to attempt to override the memory limit for PHP set by the server.
 * Added: the Japanese translation. 
 * Added: the localization support with the text domain, responsive-column-widgets.
 
