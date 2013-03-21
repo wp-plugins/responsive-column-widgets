@@ -69,7 +69,8 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 			if ( isset( $arrBoxOptions['insert_comments'] ) && $arrBoxOptions['insert_comment'] )			
 				$this->arrAutoInsertIntoComments[] = $strSidebarID;
 
-			if ( isset( $arrBoxOptions['insert_comment_form_positions'] ) ) {
+			if ( isset( $arrBoxOptions['insert_comment_form'] ) && $arrBoxOptions['insert_comment_form']
+				&& isset( $arrBoxOptions['insert_comment_form_positions'] ) ) {
 				
 				if ( $arrBoxOptions['insert_comment_form_positions']['above'] ) 
 					$this->arrAutoInsertIntoCommentFormAbove[] = $strSidebarID;
