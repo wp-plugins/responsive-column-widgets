@@ -99,7 +99,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 	protected function GetPostID() {	// since 1.0.7
 		
 		global $wp_query;
-		if ( is_object( $wp_query->post ) ) return $wp_query->post->ID;	
+		if ( isset( $wp_query->post ) && is_object( $wp_query->post ) ) return $wp_query->post->ID;	
 		
 	}
 	public function AddWidgetBoxInComment( $strCommentText, $oComment ) {

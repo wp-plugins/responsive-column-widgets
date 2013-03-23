@@ -82,6 +82,9 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.0.8.2 - 03/23/2013 =
+* Fixed: a warning to occur in debug mode in a Not Found page, Undefined property: WP_Query::$post.
+
 = 1.0.8.1 - 03/21/2013 =
 * Fixed: a bug that the widget box was inserted below the comment form regardless the option was checked or not.
 
