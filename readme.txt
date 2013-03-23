@@ -83,7 +83,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 == Changelog ==
 
 = 1.0.8.2 - 03/23/2013 =
-* Fixed: a warning to occur in debug mode in a Not Found page, Undefined property: WP_Query::$post.
+* Fixed: the warning that occurred in debug mode in a Not Found page, Undefined property: WP_Query::$post.
 
 = 1.0.8.1 - 03/21/2013 =
 * Fixed: a bug that the widget box was inserted below the comment form regardless the option was checked or not.
@@ -92,7 +92,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 * Fixed: a bug that when multiple widget boxes with different sidebar IDs were present in one page, only the first widget box's custom style was loaded; the other custom styles' set to each box did not load.
 * Fixed: a bug that when multiple widget boxes with different sidebar IDs were present in one page, only the first widget box was responsive; the responsive rules did not apply to the other widget boxes.
 * Added: the ability to auto-insert the widget box into the comment form section.
-* Fixed: the warning to occur in some servers, "Parameter 1 to ResponsiveColumnWidgets_Startup() expected to be a reference, value given in .../wp-includes/plugin.php on line 406."
+* Fixed: the warning that occurred in some servers, "Parameter 1 to ResponsiveColumnWidgets_Startup() expected to be a reference, value given in .../wp-includes/plugin.php on line 406."
 
 = 1.0.7.1 - 03/19/2013 = 
 * Added: a warning message when there is no widget added to the widget box in the edit page.
