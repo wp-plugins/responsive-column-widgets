@@ -753,16 +753,24 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		<h3><?php _e( 'Get Pro', 'responsive-column-widgets' ); ?></h3>
 		<p><?php _e( 'If you like the plugin and want more useful features, please upgrade it to <a href="http://en.michaeluno.jp/responsive-column-widgets/responsive-column-widgets-pro">Pro</a>.', 'responsive-column-widgets' ); ?></p>
 		<?php endif; ?>
-		<h3><?php _e( 'Exchanges', 'responsive-column-widgets' ); ?></h4>
+		<h3><?php _e( 'Exchanges', 'responsive-column-widgets' ); ?></h3>
 		<p><?php _e( 'You may receive a discount or a copy of the plugin by contributing one of the followings. A contribution does not have to be for this plugin. It can be for any product of miunosoft. Please just ask.', 'responsive-column-widgets' ); ?></p>
 		<ul>
-			<li><?php _e( 'Translation - submitting a localization file for an untranslated languge. With a plugin called <a href="http://wordpress.org/extend/plugins/codestyling-localization/stats/">Codestyling Localization</a> no programming skill is required to create a language file.', 'responsive-column-widgets' )?></li>
-			<li><?php _e( 'Testimonial - with your photo, comments, and a link to your SNS page will be on the plugin site.', 'responsive-column-widgets' )?></li>
-			<li><?php _e( 'Graphic Design - icons, banners etc. for the plugin.', 'responsive-column-widgets' )?></li>
-			<li><?php _e( 'Review Article - requires Google PageRank 3 or higher and the link to the product page.', 'responsive-column-widgets' )?></li>
-			<li><?php _e( 'Video Tutorial - a brief instruction video tutorial with your narration.', 'responsive-column-widgets' )?></li>
-			<li><?php _e( 'Something else - please ask for something else for the exchange.', 'responsive-column-widgets' )?></li>
+			<li><?php 
+				_e( '<strong>Testing Development Version</strong> - If the development version is greater than the current stable version, tell the developer that the development version works fine or not in your environment. Then you will get a 20% off coupon for miunosoft products.', 'responsive-column-widgets' );
+				echo '&nbsp;';
+				_e( 'The development version number can be confirmed <a href="http://plugins.svn.wordpress.org/responsive-column-widgets/trunk/responsive-column-widgets.php">here</a>.', 'responsive-column-widgets' );
+				?>
+			</li>
+			<li><?php _e( '<strong>Translation</strong> - submitting a localization file for an untranslated languge. With a plugin called <a href="http://wordpress.org/extend/plugins/codestyling-localization/stats/">Codestyling Localization</a> no programming skill is required to create a language file.', 'responsive-column-widgets' ); ?></li>
+			<li><?php _e( '<strong>Testimonial</strong> - with your photo, comments, and a link to your SNS page will be on the plugin site.', 'responsive-column-widgets' ); ?></li>
+			<li><?php _e( '<strong>Graphic Design</strong> - icons, banners etc. for the plugin.', 'responsive-column-widgets' ); ?></li>
+			<li><?php _e( '<strong>Review Article</strong> - requires Google PageRank 3 or higher and the link to the product page.', 'responsive-column-widgets' ); ?></li>
+			<li><?php _e( '<strong>Video Tutorial</strong> - a brief instruction video tutorial with your narration.', 'responsive-column-widgets' ); ?></li>
+			<li><?php _e( 'Something else - please ask for something else for the exchange.', 'responsive-column-widgets' ); ?></li>
 		</ul>	
+		<h3><?php _e( 'Contanct Info', 'responsive-column-widgets' ); ?></h3>
+		<p><?php echo( 'wpplugins@michaeluno.jp' ); ?></p>
 		<?php
 	}
 	
