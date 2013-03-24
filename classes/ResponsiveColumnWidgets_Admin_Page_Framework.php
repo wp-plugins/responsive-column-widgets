@@ -500,7 +500,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		
 		if ( ! isset( $_GET['page'] ) || ! array_key_exists( $_GET['page'] , $this->arrPageTitles )  ) return $strText;
 		
-		return __( 'Powered by', 'admin-page-framework' ) . '<a href="http://wordpress.org/extend/plugins/admin-page-framework/">Admin Page Framework</a>'
+		return __( 'Powered by', 'admin-page-framework' ) . '&nbsp;' . '<a href="http://wordpress.org/extend/plugins/admin-page-framework/">Admin Page Framework</a>'
 			. ', <a href="http://wordpress.org">WordPress</a>';
 		
 	}	
