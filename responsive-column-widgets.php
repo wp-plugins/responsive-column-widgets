@@ -3,7 +3,7 @@
 	Plugin Name: Responsive Column Widgets
 	Plugin URI: http://en.michaeluno.jp/responsive-column-widgets
 	Description: Creates a widget box which displays widgets in columns with a responsive design.
-	Version: 1.0.8.2
+	Version: 1.0.8.3
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Requirements: This plugin requires WordPress >= 3.2 and PHP >= 5.2.4
@@ -109,6 +109,35 @@ function ResponsiveColumnWidgets_SetupTransients() {
 	wp_schedule_single_event( time(), 'RCWP_action_setup_transients' );		
 	
 }
+if ( ! class_exists( 'ResponsiveColumnWidgets_Requirements' ) )
+	include_once( dirname( RESPONSIVECOLUMNWIDGETSFILE ) . '/classes/ResponsiveColumnWidgets_Requirements.php' );
+register_activation_hook( 
+	RESPONSIVECOLUMNWIDGETSFILE,
+	array( 
+		new ResponsiveColumnWidgets_Requirements( 
+			RESPONSIVECOLUMNWIDGETSFILE,
+			array(
+				'php' => array(
+					'version' => '5.2.4',
+					'error' => 'The plugin requires the PHP version %1$s or higher.',
+				),
+				'wordpress' => array(
+					'version' => '3.2',
+					'error' => 'The plugin requires the WordPress version %1$s or higher.',
+				),
+				'functions' => array(
+					// 'unknown_func' => 'The plugin requires the %1$s function to be installed.',
+				),
+				'classes' => array(),
+				'constants'	=> array(),
+			),
+			True, 			// if it fails it will deactivate the plugin
+			null			// do not hook
+		),
+		'CheckRequirements'
+	)
+);
+
 register_deactivation_hook( RESPONSIVECOLUMNWIDGETSFILE, 'ResponsiveColumnWidgets_CleanupTransients' );
 function ResponsiveColumnWidgets_CleanupTransients() {
 	
@@ -139,28 +168,6 @@ function ResponsiveColumnWidgets_Startup() {
 		
 	// Load events
 	new ResponsiveColumnWidgets_Events( $oResponsiveColumnWidgets_Options );
-
-	// Requirement Check in the admin_init hook
-	new ResponsiveColumnWidgets_Requirements( 
-		RESPONSIVECOLUMNWIDGETSFILE,
-		array(
-			'php' => array(
-				'version' => '5.2.4',
-				'error' => 'The plugin requires the PHP version %1$s or higher.',
-			),
-			'wordpress' => array(
-				'version' => '3.2',
-				'error' => 'The plugin requires the WordPress version %1$s or higher.',
-			),
-			'functions' => array(
-				// 'unknown_func' => 'The plugin requires the %1$s function to be installed.',
-			),
-			'classes' => array(),
-			'constants'	=> array(),
-		),
-		True, 			// if it fails it will deactivate the plugin
-		'admin_init'	// the hook to trigger the check
-	);
 		
 	// Auto-insert - since 1.0.8, some parts of code have been separated from the core class.
 	new ResponsiveColumnWidgets_AutoInsert( $oResponsiveColumnWidgets_Options, $oResponsiveColumnWidgets );

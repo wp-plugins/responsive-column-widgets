@@ -82,6 +82,9 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.0.8.3 - 03/24/2013 = 
+* Changed: the requirement check to perform only upon the plugin activation from loading the plugin admin page.
+
 = 1.0.8.2 - 03/23/2013 =
 * Fixed: the warning that occurred in debug mode in a Not Found page, Undefined property: WP_Query::$post.
 
