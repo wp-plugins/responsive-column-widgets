@@ -83,6 +83,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 == Changelog ==
 
 = 1.0.8.3 - 03/24/2013 = 
+* Fixed: a typo in the plugin admin page footer.
 * Updated: the information page.
 * Changed: the requirement check to perform only upon the plugin activation from loading the plugin admin page.
 
