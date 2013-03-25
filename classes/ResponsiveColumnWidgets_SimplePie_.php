@@ -15,13 +15,64 @@
  * */
 
 // make sure that SimplePie has been already loaded
+// very importat. Without this line, the cache setting breaks. 
+// Do not include class-simplepie.php, which causes the unknown class warning.
 if ( ! class_exists( 'SimplePie' ) ) 
-	require_once( ABSPATH . WPINC . '/class-feed.php' );		//<-- very importat. Without this line, the cache setting breaks.
+	require_once( ABSPATH . WPINC . '/class-feed.php' );		
 
-class ResponsiveColumnWidgets_SimplePie_ extends SimplePie {
+// If the WordPress version is below 3.5, which uses SimplePie below 1.3.
+if ( version_compare( get_bloginfo('version') , '3.5', "<" ) ) {	
+
+	class ResponsiveColumnWidgets_SimplePie__ extends SimplePie {
+		
+		public static $sortorder = 'random';
+		public function sort_items( $a, $b ) {
+
+			// Sort 
+			// by date
+			if ( self::$sortorder == 'date' ) 
+				return $a->get_date('U') <= $b->get_date('U');		
+			// by title ascending
+			if ( self::$sortorder == 'title' ) 
+				return self::sort_items_by_title( $a, $b );
+			// by title decending
+			if ( self::$sortorder == 'title_descending' ) 
+				return self::sort_items_by_title_descending( $a, $b );
+			// by random 
+			return rand( -1, 1 );	
+			
+		}		
+	}
+	
+} else {
+	
+	class ResponsiveColumnWidgets_SimplePie__ extends SimplePie {
+		
+		public static $sortorder = 'random';
+		public static function sort_items( $a, $b ) {
+
+			// Sort 
+			// by date
+			if ( self::$sortorder == 'date' ) 
+				return $a->get_date('U') <= $b->get_date('U');		
+			// by title ascending
+			if ( self::$sortorder == 'title' ) 
+				return self::sort_items_by_title( $a, $b );
+			// by title decending
+			if ( self::$sortorder == 'title_descending' ) 
+				return self::sort_items_by_title_descending( $a, $b );
+			// by random 
+			return rand( -1, 1 );	
+			
+		}		
+	}	
+
+}
+	
+class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimplePie__ {
 	
 	public $classver = 'standard';
-	public static $sortorder = 'date';
+	public static $sortorder = 'random';
 	public static $bKeepRawTitle = false;
 	public static $strCharEncoding = 'UTF-8';
 	var $vSetURL;	// stores the feed url(s) set by the user.
@@ -121,22 +172,7 @@ class ResponsiveColumnWidgets_SimplePie_ extends SimplePie {
 	public function set_charset_for_sort( $strCharEncoding ) {
 		self::$strCharEncoding = $strCharEncoding;		
 	}
-	public static function sort_items( $a, $b ) {
 
-		// Sort 
-		// by date
-		if ( self::$sortorder == 'date' ) 
-			return $a->get_date('U') <= $b->get_date('U');		
-		// by title ascending
-		if ( self::$sortorder == 'title' ) 
-			return self::sort_items_by_title( $a, $b );
-		// by title decending
-		if ( self::$sortorder == 'title_descending' ) 
-			return self::sort_items_by_title_descending( $a, $b );
-		// by random 
-		return rand( -1, 1 );	
-		
-	}	
 	public static function sort_items_by_title( $a, $b ) {
 		$a_title = ( self::$bKeepRawTitle ) ? $a->get_title() : preg_replace('/#\d+?:\s?/i', '', $a->get_title());
 		$b_title = ( self::$bKeepRawTitle ) ? $b->get_title() : preg_replace('/#\d+?:\s?/i', '', $b->get_title());

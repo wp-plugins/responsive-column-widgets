@@ -82,6 +82,9 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.0.8.4 - 03/25/2013 =
+* Fixed: a bug that the WordPress version 3.4.x or below got Fatal error: Cannot make non static method SimplePie::sort_items() static in class ResponsiveColumnWidgets_SimplePie_ in .../wp-content/plugins/responsive-column-widgets/classes/ResponsiveColumnWidgets_SimplePie_.php on line 21.
+
 = 1.0.8.3 - 03/24/2013 = 
 * Fixed: a typo in the plugin admin page footer.
 * Updated: the information page.
