@@ -214,9 +214,17 @@ class ResponsiveColumnWidgets_Core_ {
 		// Notice that the last part is echo.
 		
 		echo $this->GetWidgetBoxOutput( $arrParams );
-	
+		echo $this->GetCredit();
+		
 	}
-	
+	protected function GetCredit() {
+		
+		$strCredit = defined( 'RESPONSIVECOLUMNWIDGETSPROFILE' ) ? 'Responsive Column Widgets Pro' : 'Responsive Column Widgets';
+		$strVendor = 'miunosoft http://michaeluno.jp';
+			echo "<!-- Rendered with {$strCredit} by {$strVendor} -->";
+		
+		
+	}
 	/*
 	 * Retrieve widget output buffers.
 	 * */
