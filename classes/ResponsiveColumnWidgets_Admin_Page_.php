@@ -759,7 +759,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			<li><?php 
 				_e( '<strong>Testing Development Version</strong> - If the development version is greater than the current stable version, tell the developer that the development version works fine or not in your environment. Then you will get a 20% off coupon for miunosoft products.', 'responsive-column-widgets' );
 				echo '&nbsp;';
-				_e( 'The development version number can be confirmed <a href="http://plugins.svn.wordpress.org/responsive-column-widgets/trunk/responsive-column-widgets.php">here</a>.', 'responsive-column-widgets' );
+				printf( __( 'The development version number can be confirmed <a href="%1$s">here</a>.', 'responsive-column-widgets' ), 'http://plugins.svn.wordpress.org/responsive-column-widgets/trunk/responsive-column-widgets.php' );
+				echo '&nbsp;';
+				printf( __( 'It can be downloaded <a href="%1$s">here</a>.', 'responsive-column-widgets' ), 'http://downloads.wordpress.org/plugin/responsive-column-widgets.zip' );
 				?>
 			</li>
 			<li><?php _e( '<strong>Translation</strong> - submitting a localization file for an untranslated languge. With a plugin called <a href="http://wordpress.org/extend/plugins/codestyling-localization/stats/">Codestyling Localization</a> no programming skill is required to create a language file.', 'responsive-column-widgets' ); ?></li>
