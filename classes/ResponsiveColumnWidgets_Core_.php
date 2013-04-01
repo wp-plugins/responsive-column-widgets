@@ -347,7 +347,7 @@ class ResponsiveColumnWidgets_Core_ {
 			// increment the position
 			$numColPosInRow++;	
 			
-			// check if it the last item in a row
+			// check if it is the last item in a row
 			if ( ( $numColPosInRow % $numMaxCols ) == 0 ) {
 				$strItem .= '</div>';		// clse the tag
 				$numRowPos++;				// increment the row position

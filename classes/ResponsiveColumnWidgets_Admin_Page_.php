@@ -117,16 +117,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$arrWidgetBoxDefaultOptions = $this->oOption->arrDefaultSidebarArgs + $this->oOption->arrDefaultParams;
 		$arrWidgetBoxDefaultOptions['message_no_widget'] = __( 'No widgetd is added yet.', 'responsive-column-widgets' ); 
 		$arrWidgetBoxOptions = $bIsNew ? $arrWidgetBoxDefaultOptions : $this->UniteArraysRecursive( $this->oOption->arrOptions['boxes'][ $strSidebarID ], $arrWidgetBoxDefaultOptions );
-	
-		// If this is an edit page, check if a widget is added to this widget box; otherwise, show a warning message.
-		if ( ! $bIsNew && ! is_active_sidebar( $strSidebarID ) ) 
-			add_settings_error( 
-				$this->strPluginSlug, 
-				'can_be_any_string', 
-				__( 'No widget has been added to this widget box yet.', 'responsive-column-widgets' ) . ' ' 
-				. sprintf( __( "You need to add widgets in the <a href='%s'>Widgets</a> page to the widget box.", 'responsive-column-widgets' ), admin_url( 'widgets.php' ) )
-			);		
-		
+			
 		// Add the form elements.
 		$this->AddFormSections(
 			// Section Arrays
@@ -577,7 +568,16 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					),
 				),				
 			)
-		);			
+		);	
+
+		// If this is an edit page, check if a widget is added to this widget box; otherwise, show a warning message.
+		if ( isset( $_GET['page'] ) && ( $_GET['page'] == $this->strPluginSlug ) && ! $bIsNew && ! is_active_sidebar( $strSidebarID ) ) 
+			add_settings_error( 
+				$this->strPluginSlug, 
+				'can_be_any_string', 
+				__( 'No widget has been added to this widget box yet.', 'responsive-column-widgets' ) . ' ' 
+				. sprintf( __( "You need to add widgets in the <a href='%s'>Widgets</a> page to the widget box.", 'responsive-column-widgets' ), admin_url( 'widgets.php' ) )
+			);			
     }
 	
 	/*
