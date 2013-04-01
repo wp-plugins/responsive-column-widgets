@@ -571,7 +571,11 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		);	
 
 		// If this is an edit page, check if a widget is added to this widget box; otherwise, show a warning message.
-		if ( isset( $_GET['page'] ) && ( $_GET['page'] == $this->strPluginSlug ) && ! $bIsNew && ! is_active_sidebar( $strSidebarID ) ) 
+		if ( 
+			isset( $_GET['page'] ) && ( $_GET['page'] == $this->strPluginSlug ) 
+			&& isset( $_GET['tab'] ) && ( $_GET['tab'] == 'neworedit' ) 
+			&& ! $bIsNew && ! is_active_sidebar( $strSidebarID ) 
+		) 
 			add_settings_error( 
 				$this->strPluginSlug, 
 				'can_be_any_string', 
