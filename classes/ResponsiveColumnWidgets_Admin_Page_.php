@@ -39,12 +39,12 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			// $this->oWidgetPage = new ResponsiveColumnWidgets_Admin_Page_Widgets;
 
 		// If the settings are updated and there are no errors without failing the validation, go to the edit page
-		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug 
-			&& ( !isset( $_GET['tab'] ) || $_GET['tab'] == 'neworedit' )
-			&& isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == true 
-			&& ! get_transient( md5( get_class( $this ) . '_' . $this->strPluginSlug ) ) 
-		) 
-			wp_redirect( admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ) );
+		// if ( isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug 
+			// && ( !isset( $_GET['tab'] ) || $_GET['tab'] == 'neworedit' )
+			// && isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == true 
+			// && ! get_transient( md5( get_class( $this ) . '_' . $this->strPluginSlug ) ) 
+		// ) 
+			// wp_redirect( admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ) );
 			
 	}
 	function Localize() {
@@ -63,7 +63,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}	
 	
 	function EnqueueAdminStyle() {
+		
 		wp_enqueue_style( 'responsive_column_widgets_enqueue_style', RESPONSIVECOLUMNWIDGETSURL . '/css/responsive_column_widgets.css' );
+	
 	}
 	function GetPluginDescriptionLinks() {
 		return array(
@@ -116,7 +118,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$bIsNew = $this->bIsNew;
 		$arrWidgetBoxDefaultOptions = $this->oOption->arrDefaultSidebarArgs + $this->oOption->arrDefaultParams;
 		$arrWidgetBoxDefaultOptions['message_no_widget'] = __( 'No widgetd is added yet.', 'responsive-column-widgets' ); 
-		$arrWidgetBoxOptions = $bIsNew ? $arrWidgetBoxDefaultOptions : $this->UniteArraysRecursive( $this->oOption->arrOptions['boxes'][ $strSidebarID ], $arrWidgetBoxDefaultOptions );
+		$arrWidgetBoxOptions = $bIsNew ? $arrWidgetBoxDefaultOptions : $this->oUtil->UniteArraysRecursive( $this->oOption->arrOptions['boxes'][ $strSidebarID ], $arrWidgetBoxDefaultOptions );
 			
 		// Add the form elements.
 		$this->AddFormSections(
@@ -218,16 +220,16 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						),		
 						array(
 							'id' => 'field_maxwidgets',
-							'title' => __( 'Number of Max Widgets', 'responsive-column-widgets' ),
-							'description' => __( 'Set the number of max widgets. 0 for no limit.', 'responsive-column-widgets' ) . ' e.g. 10',
+							'title' => __( 'Max Number of Widgets', 'responsive-column-widgets' ),
+							'description' => __( 'Set the max number of widgets. 0 for no limit.', 'responsive-column-widgets' ) . ' e.g. 10',
 							'type' => 'number',
 							'min' => 0,
 							'value' => $arrWidgetBoxOptions['maxwidgets'],
 						),	
 						array(
 							'id' => 'field_maxrows',
-							'title' => __( 'Number of Max Rows', 'responsive-column-widgets' ),
-							'description' => __( 'Set the number of max rows. 0 for no limit.', 'responsive-column-widgets' ) . ' e.g. 2',
+							'title' => __( 'Max Number of Rows', 'responsive-column-widgets' ),
+							'description' => __( 'Set the max number of rows. 0 for no limit.', 'responsive-column-widgets' ) . ' e.g. 2',
 							'type' => 'number',
 							'min' => 0,
 							'value' => $arrWidgetBoxOptions['maxrows'], 
@@ -262,11 +264,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							
 						),							
 						array(  // single button
-							'pre_html' => $this->oUserAds->GetTextAd(),
-							'id' => 'submit_save_1',
+							'pre_html' => '<div class="text-info">' . $this->oUserAds->GetTextAd() . '</div>',
+							'id' => 'submit_save_neworedit_middle',
 							'type' => 'submit',		// the submit type creates a button
 							'label' => $this->numPluginType == 0 || isset( $_GET['mode'] ) && $_GET['mode'] == 'edit' ? __( 'Save Changes', 'responsive-column-widgets' ) : __( 'Add New Box', 'responsive-column-widgets' ),
-							'class' => 'submit-buttons button button-primary'
+							'class' => 'neworedit-button submit-buttons button button-primary',
+							'pre_field' => '<div class="neworedit-button">',
+							'post_field' => '</div>',							
+							'redirect' => admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ),
 						),							
 					),					
 				),
@@ -330,7 +335,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(	// since 1.0.7
 							'id' => 'field_posts_positions',
 							'type' => 'checkbox',
-							'title' => __( 'Posision', 'responsive-column-widgets' ),
+							'title' => __( 'Position', 'responsive-column-widgets' ),
 							'label' => array(
 								'above' => __( 'Above Content', 'responsive-column-widgets' ),
 								'below' => __( 'Below Content', 'responsive-column-widgets' ),
@@ -375,7 +380,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(	// since 1.0.8
 							'id' => 'field_insert_in_comment_form_positions',
 							'type' => 'checkbox',
-							'title' => __( 'Posision', 'responsive-column-widgets' ),
+							'title' => __( 'Position', 'responsive-column-widgets' ),
 							'label' => array(
 								'above' => __( 'Above Comment Form', 'responsive-column-widgets' ),
 								'below' => __( 'Below Comment Form', 'responsive-column-widgets' ),
@@ -419,6 +424,16 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $arrWidgetBoxOptions['custom_style'],
 							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['custom_style'] : ( isset( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['custom_style'] ) ? $this->oOption->arrOptions['boxes'][ $strSidebarID ]['custom_style'] : ''  ),
 						),
+						array(  // single button
+							'pre_html' => $this->oUserAds->GetTextAd(),
+							'id' => 'submit_save_neworedit_bottom',
+							'type' => 'submit',		// the submit type creates a button
+							'label' => $this->numPluginType == 0 || isset( $_GET['mode'] ) && $_GET['mode'] == 'edit' ? __( 'Save Changes', 'responsive-column-widgets' ) : __( 'Add New Box', 'responsive-column-widgets' ),
+							'class' => 'submit-buttons button button-primary',
+							'pre_field' => '<div class="neworedit-button">',
+							'post_field' => '</div>',
+							'redirect' => admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ),
+						),							
 					),
 				),				
 				// General Options
@@ -576,9 +591,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			&& isset( $_GET['tab'] ) && ( $_GET['tab'] == 'neworedit' ) 
 			&& ! $bIsNew && ! is_active_sidebar( $strSidebarID ) 
 		) 
-			add_settings_error( 
-				$this->strPluginSlug, 
-				'can_be_any_string', 
+			$this->AddSettingsError( 
+				__METHOD__,
 				__( 'No widget has been added to this widget box yet.', 'responsive-column-widgets' ) . ' ' 
 				. sprintf( __( "You need to add widgets in the <a href='%s'>Widgets</a> page to the widget box.", 'responsive-column-widgets' ), admin_url( 'widgets.php' ) )
 			);			
@@ -686,16 +700,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}
  
 	function do_responsive_column_widgets_neworedit() {
-		
-		// Submit Button
-		echo '<div style="float: right; margin-right: 10px">';
-		if ( $this->numPluginType == 0 )
-			$strButtonLabel = __( 'Save Changes', 'responsive-column-widgets' );
-		else
-			$strButtonLabel = isset( $_GET['mode'] ) && $_GET['mode'] == 'edit' ? __( 'Save Changes', 'responsive-column-widgets' ) : __( 'Add New Box', 'responsive-column-widgets' ); 
-		submit_button( $strButtonLabel, 'primary' );
-		echo '</div>';
-	
+			
 		// debug
 		// $arrOptions = ( array ) get_option( RESPONSIVECOLUMNWIDGETSKEY );
 		// echo '<pre>' . htmlspecialchars( print_r( $arrOptions, true ) )  . '</pre>';
@@ -704,7 +709,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 	}
 	function head_responsive_column_widgets_manage( $strHead ) {
-		
+return $strHead;
 		// this is for the redirection from the new / edit page after saving the options.
 		$strUpdatedMsg = isset( $_GET['updated'] ) && $_GET['updated'] ? '<div class="updated"><p>' . __( 'The widget box options have been saved.', 'responsive-column-widgets' ) . '</p></div>': '';
 		return $strUpdatedMsg . $strHead;		
@@ -935,7 +940,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			// Check if the label is empty
 			if ( empty( $arrInput[ $this->strPluginSlug ]['section_sidebar']['field_label'] ) ) {
 				$arrErrors['section_sidebar']['field_label'] = '';
-				$strErrors .= '<p>' . __( 'The label cannot be empty.', 'responsive-column-widgets' ) . '</p>';
+				$strErrors .=  __( 'The label cannot be empty.', 'responsive-column-widgets' );
 				$bIsValid = False;
 			}
 			
@@ -947,18 +952,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			}
 		}
 
-		// for debug
-		// add_settings_error( $_POST['pageslug'], 
-			// 'can_be_any_string',  
-			// '<h3>Submitted Values</h3>' 
-			// . '<h4>$bIsValid:</h4><pre>' . $bIsValid . '</pre>' 
-			// . '<h4>Is New:</h4><pre>' . $_POST['isnew'] . '</pre>' 
-			// . '<h4>$strErrors:</h4><pre>' . $strErrors . '</pre>' 
-			// . '<h4>Transient Key:</h4><pre>' . get_class( $this ) . '_' . $_POST['pageslug'] . '</pre>'
-			// . '<h4>$arrInput</h4><pre>' . htmlspecialchars( print_r( $arrInput, true ) ) . '</pre>' 
-			// . '<h4>$_POST</h4><pre>' . htmlspecialchars( print_r( $_POST, true ) ) . '</pre>'
-			// ,'updated'
-		// );			
+	
 		
 		if ( !$bIsValid  ) {
 			
@@ -967,7 +961,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			set_transient( md5( get_class( $this ) . '_' . $_POST['pageslug'] ), $arrErrors, 60*5 );	// store it for 5 minutes ( 60 seconds * 5 )
 			
 			// This displays the error message
-			add_settings_error( $_POST['pageslug'], 'can_be_any_string',  $strErrors  );	
+			$this->AddSettingsError( __METHOD__,  $strErrors  );	
 			
 			// Returning an empty array will not change options.
 			return array();				
@@ -984,9 +978,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		// The data are valid. Update the box options.
 		// Setup the box option array
 		$this->UpdateBoxOptions( $arrInput[ $this->strPluginSlug ], $_POST['isnew'] );
-		add_settings_error( 
-			$_POST['pageslug'], 
-			'can_be_any_string', 
+		$this->AddSettingsError( 
+			__METHOD__, 
 			__( 'The widget box options have been saved.', 'responsive-column-widgets' ), 
 			'updated' 
 		);
@@ -1075,19 +1068,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 	}
 	function validation_responsive_column_widgets_manage( $arrInput ) {
-		// debug		
-		// file_put_contents( dirname( __FILE__ ) . '/info.txt' , 
-			// __FILE__ . PHP_EOL 
-			// . __METHOD__ . PHP_EOL
-			// . print_r( $_POST, true ) . PHP_EOL
-			// ,FILE_APPEND );		
-		// add_settings_error( $_POST['pageslug'], 
-			// 'can_be_any_string',  
-			// '<h3>Submitted Values</h3>' .
-			// '<h4>$_POST</h4><pre>' . print_r( $_POST, true ) . '</pre>' . 
-			// '<h4>$arrInput</h4><pre>' . print_r( $arrInput, true ) . '</pre>'
-			// ,'updated'
-		// );			
+		
 		
 		/*
 		 * Delete Checked Widget Box Items
@@ -1122,7 +1103,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				$this->oOption->Update();
 				update_option( 'sidebars_widgets', $arrSidebarOptions );
 				$strMsg .= __( 'The selected widget boxes have been deleted.', 'responsive-column-widgets' );
-				add_settings_error( $_POST['pageslug'], 'can_be_any_string', $strMsg, 'updated' );
+				$this->AddSettingsError( __METHOD__, $strMsg, 'updated' );
 				
 			}
 			// unless unsetting the key, it will remain in the database. 
@@ -1135,12 +1116,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 	}
 	function validation_responsive_column_widgets_general( $arrInput ) {
-		// add_settings_error( $_POST['pageslug'], 
-			// 'can_be_any_string',  
-			// '<h3>Submitted Values</h3>' .
-			// '<h4>$arrInput</h4><pre>' . htmlspecialchars( print_r( $arrInput, true ) ) . '</pre>'
-			// ,'updated'
-		// );	
 			
 		/*
 		 * Danger Zone
@@ -1193,7 +1168,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		global $allowedposttags;
 		// $arrAllowedHTML = array_replace_recursive( $allowedposttags, $arrAllowedTags );	// the second parameter takes over the first.
 		// $arrAllowedHTML = wp_parse_args( $arrAllowedTags, $allowedposttags );	// the first parameter takes over the second.
-		$arrAllowedHTML = $this->UniteArraysRecursive( $arrAllowedTags, $allowedposttags );	// the first parameter takes over the second.
+		$arrAllowedHTML = $this->oUtil->UniteArraysRecursive( $arrAllowedTags, $allowedposttags );	// the first parameter takes over the second.
 	
 		foreach ( $arrDisallowedTags as $strTag ) 		
 			if ( isset( $arrAllowedHTML[$strTag] ) ) unset( $arrAllowedHTML[$strTag] );
@@ -1311,7 +1286,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			table.fixed {
 				table-layout: auto;				
 			}
-			
 		"; 
 	}
 	function style_responsive_column_widgets_neworedit( $strStyle ) {
@@ -1319,6 +1293,10 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			input.disabled {
 				background-color: #F1F1F1;
 			}
+			.neworedit-button {
+				margin-top: 12px;
+				margin-bottom: 12px;
+			}			
 		';
 	}
 	function style_responsive_column_widgets_manage( $strStyle ) {

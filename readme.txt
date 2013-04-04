@@ -82,8 +82,12 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.0.8.6 - 04/04/2013 =
+* Fixed: typos in plugin admin pages.
+* Added: the class attributes, *responsitve_column_widgts_column_{n}* and *responsitve_column_widgts_row_{n}*, to each div tag containing a widget, where *_{n}* indicates the position of the column and row.
+
 = 1.0.8.5 - 04/01/2013 =
-* Fixed a bug that the notification which appears when no added widget is added appeared in other plugin pages.
+* Fixed: a bug that the notification which appears when no added widget is added appeared in other plugin pages.
 
 = 1.0.8.4 - 03/25/2013 =
 * Fixed: a bug that the WordPress version 3.4.x or below got Fatal error: Cannot make non static method SimplePie::sort_items() static in class ResponsiveColumnWidgets_SimplePie_ in .../wp-content/plugins/responsive-column-widgets/classes/ResponsiveColumnWidgets_SimplePie_.php on line 21.
@@ -97,7 +101,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 * Fixed: the warning that occurred in debug mode in a Not Found page, Undefined property: WP_Query::$post.
 
 = 1.0.8.1 - 03/21/2013 =
-* Fixed: a bug that the widget box was inserted below the comment form regardless the option was checked or not.
+* Fixed: a bug that the widget box was inserted below the comment form regardless of whether the option was checked or not.
 
 = 1.0.8 - 03/20/2013 =
 * Fixed: a bug that when multiple widget boxes with different sidebar IDs were present in one page, only the first widget box's custom style was loaded; the other custom styles' set to each box did not load.

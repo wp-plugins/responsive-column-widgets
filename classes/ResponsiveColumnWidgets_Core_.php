@@ -11,10 +11,10 @@
 class ResponsiveColumnWidgets_Core_ {
 	
 	// Default properties
-	private $strShortCode;
-	private $strCSSDirURL;
-	private $arrDefaultParams = array();	// will be overriden by the option object's array in the constructor.
-	private $strColPercentages = array(
+	protected $strShortCode;
+	protected $strCSSDirURL;
+	protected $arrDefaultParams = array();	// will be overriden by the option object's array in the constructor.
+	protected $strColPercentages = array(
 		1 =>	'100%',
 		2 =>	'49.2%',
 		3 =>	'32.2%',
@@ -28,18 +28,20 @@ class ResponsiveColumnWidgets_Core_ {
 		11 =>	'7.63%',
 		12 =>	'6.86%',
 	);		
-	private $strClassAttrBox ='responsive_column_widget_area responsive_column_widgets_box widget-area';
-	private $strClassAttrSidebarID = 'responsive_column_widgets';
-	private $strClassAttrNewCol = 'responsive_column_widgets_firstcol';
-	private $strClassAttrRow = 'responsive_column_widgets_row';
-	private $strClassAttrMaxColsByPixel = '';
+	protected $strClassAttrBox ='responsive_column_widget_area responsive_column_widgets_box widget-area';
+	protected $strClassAttrSidebarID = 'responsive_column_widgets';
+	protected $strClassAttrNewCol = 'responsive_column_widgets_firstcol';
+	protected $strClassAttrRow = 'responsive_column_widgets_row';
+	protected $strClassAttrColumn = 'responsive_column_widgets_column';
+	protected $strClassAttrMaxColsByPixel = '';
+	
 	
 	// Flags
-	private $bIsFormInDynamicSidebarRendered = false;
+	protected $bIsFormInDynamicSidebarRendered = false;
 	
 	// Container arrays
-	private $arrFlagsCustomStyleAdded = array();		// since 1.0.8 stores the flags to indicate whether the custom style for the widget box has been added or not. 
-	private $arrFlagsStyleMaxColsByPixel = array();		// since 1.0.8 stores the flags to indicate whether the style rule for max cols by pixel has been added or not.
+	protected $arrFlagsCustomStyleAdded = array();		// since 1.0.8 stores the flags to indicate whether the custom style for the widget box has been added or not. 
+	protected $arrFlagsStyleMaxColsByPixel = array();		// since 1.0.8 stores the flags to indicate whether the style rule for max cols by pixel has been added or not.
 	
 	function __construct( $strShortCode, &$oOption ) {
 		
@@ -339,6 +341,8 @@ class ResponsiveColumnWidgets_Core_ {
 			$strItem = ( $numColPosInRow == 0  ? '<div class="' . $this->strClassAttrRow . '">' : '' )
 				. '<div class="col element_of_' . $numMaxCols . ' ' 
 				. ( ( $numColPosInRow == 0 ) ? $this->strClassAttrNewCol : '' ) 	// if it's in the first col.
+				. $this->strClassAttrColumn . '_' . ( $numColPosInRow + 1 ) . ' ' // insert the class attribute indicationg the current column position
+				. $this->strClassAttrRow 	. '_' . ( $numRowPos + 1 ) . ' '		// insedrt the class attribute indicationg the current row position
 				. ' ">' 
 				. $strItem
 				. '</div>';
@@ -357,6 +361,7 @@ class ResponsiveColumnWidgets_Core_ {
 			
 			// add the item 
 			$strBuffer .= $strItem;			
+			
 		}
 		
 		// close the section(row) div tag in case it is ended prior to closing it

@@ -4,7 +4,7 @@
 		Plugin URI: http://wordpress.org/extend/plugins/admin-page-framework/
 		Author:  Michael Uno
 		Author URI: http://michaeluno.jp
-		Version: 1.0.2.4
+		Version: 1.0.4
 		Description: Provides simpler means of building administration pages for plugin and theme developers. 
 		Usage: 1. Extend the class 2. Override the SetUp() method. 3. Use the hook functions.
 	*/
@@ -45,19 +45,26 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 	protected $bAddedCSSStyleAdjuster = False;	// indicates whether the custom stylesheet has been added into the header or not.
 	protected $bIsImported = False;				// used to determine if the import file was uploaded and processed
 	protected $bHasRegisteredSetting = False; 	// indicates whether the register_setting() has been used.
+	protected $bLoadedSettingsErrors = false;	// indicates whether the settings errors have been loaded ( echoed ) or not. This is used to prevent multiple settings errors to be displayed. since 1.0.3.
+	protected $bUseOwnSettingsErrors = true;	// indicates whether the framework uses own settings errors and disables the Settings API's notification messages.
 	
 	// Containter arrays
+	public $arrPageTitles = array();		// stores the added page titles with key of the page slug. Must be public as referenced by oLink.
 	protected $arrSections = array();		// stores registerd form(settings) sections.
 	protected $arrFields = array();			// stores registerd form(settings) fields.
 	protected $arrTabs = array();			// a two-dimensional array with the keys of sub-page slug in the first dimension and with the key of tab slug in the second dimension.
 	protected $arrHiddenTabs = array();		// since 1.0.2.1 - a two-dimensional array similar to the above $arrTabs but stores the tab which should be hidden ( still accessible with the direct url. )
-	protected $arrPageTitles = array();		// stores the added page titles with key of the page slug.
 	protected $arrIcons = array();			// stores the page screen 32x32 icons. For the main root page, which is invisible, 16x16 icon url will be stored.
-	protected $arrCallerInfo = array();		// stores the caller script information.
+	
+	// Objects
+	public $oUtil;			// since 1.0.4. Stores the utility object instance. Make it public to be used frm the extended class.
+	public $oRedirect;		// since 1.0.4. Stores the redirect object instance.
+	public $oLink;			// since 1.0.4. Stores the link object instance.
+	public $oDebug;			// since 1.0.4. Stores the debug object instance.
 	
 	// For referencing
 	protected $arrRootMenuSlugs = array(
-		// all keys must be lower case to support caese insensitive lookups.
+		// all keys must be lower case to support case insensitive lookups.
 		'dashboard' => 			'index.php',
 		'posts' => 				'edit.php',
 		'media' => 				'upload.php',
@@ -82,25 +89,45 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 	protected $strOptionKey = null;		// determins which key to use to store options in the database.
 	protected $numRootPages = 0;		// stores the number of created root pages 
 	protected $numSubPages = 0;			// stores the number of created sub pages 
-	protected $strDefaultPageLink = '';	// stores href url link string for the setting link in a plugin listing page.
 	protected $strThickBoxTitle = '';	// stores the media upload thick box's window title.
 	protected $strThickBoxButtonUseThis = '';	// stores the media upload thick box's button label to insert the image.
-	protected $strStyle = '.updated, .settings-error { clear: both; }';	// the default css rules
+	protected $strStyle = 	// the default css rules
+		'.updated, .settings-error { clear: both; } 
+		.category-check-list li { margin: 8px 0 8px 20px; }
+		div.category-check-list {
+			padding: 8px 0 8px 10px;
+		}
+		.category-check-list ul {
+			list-style-type: none;
+			margin: 0;
+		}
+		.category-check-list ul ul {
+			margin-left: 1em;
+		}
+		.category-check-list-label {
+			margin-left: 0.5em;
+		}';	
 	protected $strScript = '';			// the default JavaScript 
-	protected $arrPluginDescriptionLinks = array();	// stores links which will be added to the description column in the plugin lising page.
-	protected $arrPluginTitleLinks = array();	// stores links which will be added to the title column in the plugin lising page.
 	protected $strCallerPath;	// stores the caller path which can be manually set by the user. If not set, the framework will try to set it. since 1.0.2.2
-
+	protected $strInPageTabTag = 'h3';	// stores the in-page tabs' tag. Default: h3. This can be set with SetInPageTabTag(). Added in 1.0.3.
+	
 	// for debugs
 	// protected $numCalled = 0;
 	// protected $arrCallbacks = array();
 	
 	function __construct( $strOptionKey=null, $strCallerPath=null ){
+		
 		/*
 		 * $strOptionKey :	Specifies the option key name to store in the option database table. 
 		 * 					If this is set, all the options will be stored in an array to the key of this passed string.
 		 * $strCallerPath :	used to retrieve the plugin ( if it's a plugin ) to retrieve the plugin data to auto-insert credit info into the footer.
 		 * */
+		
+		// Objects
+		$this->oUtil = new ResponsiveColumnWidgets_Admin_Page_Framework_Utilities;
+		$this->oRedirect = new ResponsiveColumnWidgets_Admin_Page_Framework_Redirect( $this );
+		$this->oLink = new ResponsiveColumnWidgets_Admin_Page_Framework_Link( $this, $strCallerPath );
+		$this->oDebug = new ResponsiveColumnWidgets_Admin_Page_Framework_Debug;
 		
 		// Do not set the extended class name for this. It uses a page slug name if not set.
 		$this->strClassName 	= get_class( $this );
@@ -112,6 +139,9 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		// Schedule removing the root sub-menu because it will be just a duplicate item to the root label.
 		add_action( 'admin_menu', array( $this, 'RemoveRootSubMenu' ), 999 );
 		
+		// Disables the Settings API's admin notice.
+		add_action( 'admin_menu', array( $this, 'DisableSettingsAPIAdminNotice' ), 999 );
+		
 		// Hook the menu action - adds the menu items.
 		add_action( 'admin_menu', array( $this, 'SetUp' ) );
 		
@@ -121,10 +151,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 
 		// For the media uploader.
 		add_filter( 'gettext', array( $this, 'ReplaceThickBoxText' ) , 1, 2 );	
-		
-		// Store the information of the caller file.
-		$this->arrCallerInfo = $this->GetCallerInfo( $strCallerPath ); 	
-		
+				
 		// Create global filter hooks
 		add_filter( $this->filter_global_head 	 . $this->strClassName , array( $this, $this->filter_global_head . $this->strClassName ) );
 		add_filter( $this->filter_global_content . $this->strClassName , array( $this, $this->filter_global_content . $this->strClassName ) );
@@ -137,7 +164,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		// For earlier loading than $this->Setup
 		add_action( $this->prefix_start	. $this->strClassName , array( $this, $this->prefix_start . $this->strClassName ) );
 		do_action( $this->prefix_start	. $this->strClassName );		
-							
+	
 	}	
 
 	/*
@@ -157,22 +184,15 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 	 * */
 	protected function AddLinkToPluginDescription( $vLinks ) {
 		
-		if ( !is_array( $vLinks ) )
-			$this->arrPluginDescriptionLinks[] = $vLinks;
-		else
-			$this->arrPluginDescriptionLinks = array_merge( $this->arrPluginDescriptionLinks , $vLinks );
-		add_filter( 'plugin_row_meta', array( $this, 'AddLinkToPluginDescription_Callback' ), 10, 2 );
-
+		$this->oLink->AddLinkToPluginDescription( $vLinks );
+		
 	}
 	protected function AddLinkToPluginTitle( $vLinks ) {
 		
-		if ( !is_array( $vLinks ) )
-			$this->arrPluginTitleLinks[] = $vLinks;
-		else
-			$this->arrPluginTitleLinks = array_merge( $this->arrPluginTitleLinks, $vLinks );
-		add_filter( 'plugin_action_links_' . $this->GetCallerPluginBaseName() , array( $this, 'AddLinkToPluginTitle_Callback' ) );
-
-		}
+		$this->oLink->AddLinkToPluginTitle( $vLinks );
+		
+	}
+	
 	/*
 	 * Add Menu and pages
 	 * */
@@ -189,8 +209,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			
 		}
 
-		// If it does not match the existent menus.
-		// Use the class name as the slug name.
+		// If it does not match the existent menus, use the class name as the slug name.
 		$this->strPageSlug = $this->strClassName;
 		$this->CreateRootMenu( $strRootMenu, $strPathIcon16x16 );
 
@@ -229,26 +248,25 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		
 	}
 	protected function SetMenuIcon( $strPathIcon16x16 ) {
+		
 		// Sets the menu icon.  This also can be set in the constructor.
 		$this->strPathIcon16x16 = $strPathIcon16x16;
 		$this->arrIcons[ $this->strPageSlug ] = $strPathIcon16x16;
-	}
-	protected function HideInPageTab( $strSubPageSlug, $strTabSlug, $strAltTab='' ) {
 		
-		// Just hides the in-page tab link; the page will be still accessible by the direct url.
+	}
+	protected function HideInPageTab( $strSubPageSlug, $strTabSlug, $strAltTab='' ) {	// since 1.0.2.1
+		
+		// Hides the in-page tab link; the page will be still accessible by the direct url.
 		// If $strAltTab is set, the given tab will be rendered as activated in stead of the hidden tab.
-		// since 1.0.2.1
 		
 		$this->arrHiddenTabs[ $strSubPageSlug ][ $strTabSlug ] = $strAltTab;
-		// if ( isset( $this->arrTabs[ $strSubPageSlug ][ $strTabSlug ] ) )
-			// unset( $this->arrTabs[ $strSubPageSlug ][ $strTabSlug ] );
 		
 	}
 	protected function AddInPageTabs( $strSubPageSlug, $arrTabs ) {
 
 		// Sanitize the slug strings in array keys. c.f. - => _
-		$arrTabs = $this->SanitizeArrayKeys( $arrTabs );			
-		$strSubPageSlug = $this->SanitizeSlug( $strSubPageSlug );
+		$arrTabs = $this->oUtil->SanitizeArrayKeys( $arrTabs );			
+		$strSubPageSlug = $this->oUtil->SanitizeSlug( $strSubPageSlug );
 	
 		// Adds in-page tab, which does not have a menu.
 		$this->arrTabs[ $strSubPageSlug ] = $arrTabs;	
@@ -286,11 +304,11 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		// Store the page title and icon, and how many times a top level page has been created.
 		$this->numRootPages++;
 		$this->arrPageTitles[ $this->strPageSlug ] 	= trim( $this->strPageTitle );
-		$this->arrIcons[ $this->strPageSlug ]			= $strPathIcon16x16;
+		$this->arrIcons[ $this->strPageSlug ]		= $strPathIcon16x16;
 		
 		// Add a setting link in the plugin listing 
-		if ( $this->arrCallerInfo['type'] == 'plugin' )
-			add_filter( 'plugin_action_links_' . $this->GetCallerPluginBaseName() , array( $this, 'AddLinkInPluginListingPage' ) );
+		if ( $this->oLink->arrCallerInfo['type'] == 'plugin' )
+			add_filter( 'plugin_action_links_' . $this->oLink->GetCallerPluginBaseName() , array( $this->oLink, 'AddSettingsLinkInPluginListingPage' ) );
 	
 	}	
 	protected function AddSubMenu( $strSubTitle, $strPageSlug, $strPathIcon32x32=null, $strCapability=null ) {
@@ -300,38 +318,33 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		if ( ! current_user_can( $strCapability ) ) return;
 		
 		// add the sub-menu and sub-page
-		$strPageSlug = $this->SanitizeSlug( $strPageSlug );	// - => _, . => _
+		$strPageSlug = $this->oUtil->SanitizeSlug( $strPageSlug );	// - => _, . => _
 		add_submenu_page( 
 			trim( $this->strPageSlug )			// $parent_slug
 			, $strSubTitle						// $page_title
 			, $strSubTitle						// $menu_title
 			, $strCapability				 	// $strCapability
 			, $strPageSlug						// $menu_slug
-			, array( $this, $strPageSlug ) 
-		);	// triggers the __Call method with the method name of this slug.
+			, array( $this, $strPageSlug ) 		// triggers the __Call method with the method name of this slug.
+		);	
 						
-		// Set the default page link so that it can be referred from the methods add the link to the page including AddLinkInPluginListingPage()
+		// Set the default page link so that it can be referred from the methods which add the link to the page including AddSettingsLinkInPluginListingPage()
 		if ( $this->numRootPages == 1 && $this->numSubPages == 0 )	// means only the single root menu has been added so far
-			$this->strDefaultPageLink = trim( $strPageSlug );	
-			
+			$this->oLink->SetDefaultPageSlug( $strPageSlug );
+		
 		if ( $this->numRootPages == 0 && $this->numSubPages == 0 ) { // means that this is the first time adding a page and it belongs to an existent page.
 		
 			// Add a setting link in the plugin listing 
-			$this->strDefaultPageLink = trim( $strPageSlug ) ;		// $this->strPageSlug should have been assigned the top level menu slug in SetRootMenu().
-			if ( $this->arrCallerInfo['type'] == 'plugin' )
-				add_filter( 'plugin_action_links_' . $this->GetCallerPluginBaseName() , array( $this, 'AddLinkInPluginListingPage' ) );
+			$this->oLink->SetDefaultPageSlug( $strPageSlug );	// $this->strPageSlug should have been assigned the top level menu slug in SetRootMenu().
+			if ( $this->oLink->arrCallerInfo['type'] == 'plugin' )
+				add_filter( 'plugin_action_links_' . $this->oLink->GetCallerPluginBaseName() , array( $this->oLink, 'AddSettingsLinkInPluginListingPage' ) );
 		
 		}	
-		
-		// Modify the admin footer to add the plugin name and the version.
-		add_filter( 'update_footer', array( $this, 'AddInfoInFooterRight' ), 11 );
-		if ( isset( $this->strCallerPath ) )
-			add_filter( 'admin_footer_text' , array( $this, 'AddInfoInFooterLeft' ) );
-		
+
 		// Store the page title and icon
 		$this->numSubPages++;
 		$this->arrPageTitles[ $strPageSlug ] = trim( $strSubTitle );
-		$this->arrIcons[$strPageSlug] = $strPathIcon32x32;	// if it is not set, screen_icon() will be used.
+		$this->arrIcons[ $strPageSlug ] = $strPathIcon32x32;	// if it is not set, screen_icon() will be used.
 		
 		// hook the filters for the page output
 		add_filter( $this->prefix_content	. $strPageSlug , array( $this, $this->prefix_content	. $strPageSlug ) );
@@ -358,13 +371,13 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		/*
 		 * Adds Form Section for Settings API for pages created with this class.
 		 * Slug name must be consist of alphabets and underscores. 
-		 * */
-		/* e.g. root dimension: numeric keys, second dimension: must have 'id' and 'title' keys. The 'description' key is optional.
-		$arrSections = 
-			array( 	
-				array( 'pageslug'=>, 'my_first_page', 'id' => 'pageslug_section_a', 'title' => 'Section A', 'description' => 'This is Section A.' ),
-				array( 'pageslug'=>, 'my_first_page', 'id' => 'pageslug_section_b', 'title' => 'Section B' ),
-			);
+		 * 
+			e.g. root dimension: numeric keys, second dimension: must have 'id' and 'title' keys. The 'description' key is optional.
+			$arrSections = 
+				array( 	
+					array( 'pageslug'=>, 'my_first_page', 'id' => 'pageslug_section_a', 'title' => 'Section A', 'description' => 'This is Section A.' ),
+					array( 'pageslug'=>, 'my_first_page', 'id' => 'pageslug_section_b', 'title' => 'Section B' ),
+				);
 
 		*/			
 		
@@ -385,8 +398,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 				'capability' => null,				
 			);
 
-			$arrSection['pageslug'] = $this->SanitizeSlug( $arrSection['pageslug'] );	
-			$arrSection['tabslug'] = $this->SanitizeSlug( $arrSection['tabslug'] );
+			$arrSection['pageslug'] = $this->oUtil->SanitizeSlug( $arrSection['pageslug'] );	
+			$arrSection['tabslug'] = $this->oUtil->SanitizeSlug( $arrSection['tabslug'] );
 			
 			// If the page slug does not match the current loading page, there is no need to register form sections and fields.
 			$strCurrentPageSlug = isset( $_GET['page'] ) ? $_GET['page'] : null;
@@ -408,7 +421,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			// Add the given section
 			add_settings_section( 	
 				$arrSection['id'],
-				$arrSection['title'],
+				"<a name='{$arrSection['id']}'></a>" . $arrSection['title'],	// insert the anchor in front of the title.
 				array( $this, $this->prefix_section . 'pre_' . $arrSection['id'] ),  // callback function
 				$arrSection['pageslug'] 
 			);
@@ -426,104 +439,12 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 
 	/*
 		Back-end methods - the user may not use these method unless they know what they are doing and what these methods do.
-	*/
-	protected function GetCallerInfo( $strFilePath ) {
-		
-		// since 1.0.2.2
-		$arrDebugBacktrace = debug_backtrace();
-		
-		$arrCallerInfo = array();
-		$arrCallerInfo['file'] = $strFilePath ? $strFilePath : $arrDebugBacktrace[0]['file'];
-		$arrCallerInfo['type'] = $this->GetCallerType( $arrCallerInfo['file'] );
-		
-		if ( $arrCallerInfo['type'] == 'plugin' ) {
-			
-			if ( ! function_exists( 'get_plugin_data' )  ) 
-				require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-			
-			$arrCallerInfo['data'] = get_plugin_data( $arrCallerInfo['file'], false );	// stores the plugin info array
-			$arrCallerInfo['data']['ScriptURI'] = $arrCallerInfo['data']['PluginURI'];
-			
-		} else if ( $arrCallerInfo['type'] == 'theme' ) {
+	*/	
 
-			if ( ! function_exists( 'wp_get_theme' )  ) 
-				require_once( ABSPATH . 'wp-admin/includes/theme.php' );
-		
-			$oTheme = wp_get_theme();	// stores the theme info object
-			$arrCallerInfo['data'] = array(
-				'Name'			=> $oTheme->Name,
-				'Version' 		=> $oTheme->Version,
-				'ThemeURI'		=> $oTheme->get( 'ThemeURI' ),
-				'ScriptURI'		=> $oTheme->get( 'ThemeURI' ),
-				'AuthorURI'		=> $oTheme->get( 'AuthorURI' ),
-				'Author'		=> $oTheme->get( 'Author' ),				
-			);
-			
-		}
-				
-		return $arrCallerInfo;
-		
-	}
-	protected function GetCallerType( $strPath ) {
-		
-		// since 1.0.2.2
-		// Determines what kind of script this is, theme, plugin or something else from the given path.
-		// Returns either 'theme', 'plugin', or 'unknown'
-		
-		if ( preg_match( '/[\/\\\\]themes[\/\\\\]/', $strPath, $matches ) )
-			return 'theme';
-			
-		if ( preg_match( '/[\/\\\\]plugins[\/\\\\]/', $strPath, $matches ) )
-			return 'plugin';
-			
-		return 'unknown';
-		
-	}
-	public function AddInfoInFooterLeft( $strText ) {  // method used by hooks should be public
-		
-		// since 1.0.2.2
-		// callback for the filter hook, admin_footer_text.
-		
-		if ( ! isset( $_GET['page'] ) || ! array_key_exists( $_GET['page'] , $this->arrPageTitles )  ) return $strText;
-		 
-		$strPluginInfo = $this->arrCallerInfo['data']['Name'] . ' ' . $this->arrCallerInfo['data']['Version'];
-		$strPluginInfo = empty( $this->arrCallerInfo['data']['ScriptURI'] ) ? $strPluginInfo : '<a href="' . $this->arrCallerInfo['data']['ScriptURI'] . '">' . $strPluginInfo . '</a>';
-		$strAuthorInfo = empty( $this->arrCallerInfo['data']['AuthorURI'] )	? $this->arrCallerInfo['data']['Author'] : '<a href="' . $this->arrCallerInfo['data']['AuthorURI'] . '">' . $this->arrCallerInfo['data']['Author'] . '</a>';
-		$strAuthorInfo = empty( $this->arrCallerInfo['data']['Author'] ) ? $strAuthorInfo : 'by ' . $strAuthorInfo;
-		return $strPluginInfo . ' ' . $strAuthorInfo;			
 
-	}
-	public function AddInfoInFooterRight( $strText ) {	// method used by hooks should be public
-	
-		// Adds plugin info into the footer
-		// since 1.0.2.2
-		
-		if ( ! isset( $_GET['page'] ) || ! array_key_exists( $_GET['page'] , $this->arrPageTitles )  ) return $strText;
-		
-		return __( 'Powered by', 'admin-page-framework' ) . '&nbsp;' . '<a href="http://wordpress.org/extend/plugins/admin-page-framework/">Admin Page Framework</a>'
-			. ', <a href="http://wordpress.org">WordPress</a>';
-		
-	}	
-	public function AddLinkToPluginDescription_Callback( $arrLinks, $strFile ) {	// this is a callback method so should not be protected
 
-		if ( $strFile != $this->GetCallerPluginBaseName() ) return $arrLinks;
-		return array_merge( $arrLinks, $this->arrPluginDescriptionLinks );
-		
-	}	
-	public function AddLinkToPluginTitle_Callback( $arrLinks ) {	// A callback method should not be protected.
-		
-		return array_merge( $arrLinks, $this->arrPluginTitleLinks );
+
 	
-	}
-	public function AddLinkInPluginListingPage( $arrLinks ) {		// this is a callback method so should not be protected	
-	
-		array_unshift(	
-			$arrLinks,
-			'<a href="admin.php?page=' . $this->strDefaultPageLink . '">' . __( 'Settings', 'admin-page-framework' ) . '</a>'
-		); 
-		return $arrLinks;
-		
-	}	
 	function IsTabSpecifiedForFormSection( $arrSection ) {
 		
 		// Determine: 
@@ -548,11 +469,13 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		
 	}	
 	protected function SetFormEncType( $strEncType="application/x-www-form-urlencoded" ) {
+		
 		// Sets the form tag attribute of enctype. 
 		// Set one of the followings: application/x-www-form-urlencoded, multipart/form-data, text/plain
 		$this->strFormEncType = $strEncType;
+		
 	}
-	protected function AddFormFields( $strPageSlug, $strSectionID, $arrFields ) {
+	protected function AddFormFields( $strPageSlug, $strSectionID, &$arrFields ) {
 	
 		/* e.g. root dimension: numeric keys, second dimension: must have 'id' and 'title' keys.
 		$arrFields = array(
@@ -560,7 +483,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 						array( 'id' => 'section_a_field_b', 'title' => 'Option B' )
 					);
 		*/
-		$strPageSlug = $this->SanitizeSlug( $strPageSlug );	// - => _, . => _
+		$strPageSlug = $this->oUtil->SanitizeSlug( $strPageSlug );	// - => _, . => _
 		foreach( ( array ) $arrFields as $index => $arrField ) {
 			
 			// The id and type keys are mandatory.
@@ -570,7 +493,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			if ( isset( $arrField['capability'] ) && ! current_user_can( $arrField['capability'] ) ) continue;	// since 1.0.2.1
 			
 			// Sanitize the id since it is used as a callback method name.
-			$arrField['id'] = $this->SanitizeSlug( $arrField['id'] );
+			$arrField['id'] = $this->oUtil->SanitizeSlug( $arrField['id'] );
 			
 			// If the input type is specified to file, set the enctype to 'multipart/form-data'
 			if ( in_array( $arrField['type'], array( 'file', 'import', 'image' ) ) ) $this->strFormEncType = 'multipart/form-data';
@@ -627,366 +550,69 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			
 			add_settings_field( 
 				$arrField['id'],
-				'<span title="' . strip_tags( isset( $arrField['tip'] ) ? $arrField['tip'] : $arrField['description'] ) . '">' . $arrField['title'] . '</span>',
-				array( $this, $this->prefix_field . 'pre_' . $arrField['id'] ),	// callback function
+				'<a name="' . $arrField['id'] . '"></a><span title="' . strip_tags( isset( $arrField['tip'] ) ? $arrField['tip'] : $arrField['description'] ) . '">' . $arrField['title'] . '</span>',
+				array( $this, $this->prefix_field . 'pre_' . $arrField['id'] ),	// callback function - will trigger the __call() magic method and be redirected to the RenderFormField() method.
 				$strPageSlug,
 				$strSectionID,
 				$this->arrFields[$arrField['id']] 
-			);				
+			);			
+			
 		}
 	}	
-	function RemoveRootSubMenu() {
+	public function RemoveRootSubMenu() {
+		
 		remove_submenu_page( $this->strClassName, $this->strClassName );
+				
+	}
+	protected function EnableSettingsAPIAdminNotice( $bEnable=true ) {	// since 1.0.3.2
+		
+		// Sets the flag so that the below DisableSettingsAPIAdminNotice() will / will not perform deleting the Settings API's notification messages.		
+		$this->bUseOwnSettingsErrors = ! $bEnable;
+		
+	}
+	public function DisableSettingsAPIAdminNotice() {	 // since 1.0.3.2
+		
+		// Remove the Settings API's settings error.
+		// Prevent the Settings API from automatically displaying the default update notice.
+		if ( $this->bUseOwnSettingsErrors && isset( $_GET['page'] ) && array_key_exists( $_GET['page'] , $this->arrPageTitles ) )
+			delete_transient( 'settings_errors' );	
+		
 	}
 	/*
 	 * Settings API Related
 	 * */
 	function RenderSectionDescription( $strMethodName ) {
 
-		// renders the section description and apply the filter to be extensible.
+		// Renders the section description and apply the filter to be extensible.
 		$strSectionID = substr( $strMethodName, strlen( $this->prefix_section ) + 4 );	// section_pre_X
 		if ( !isset( $this->arrSections[$strSectionID] ) ) return;	// if it is not added
 		$strDescription = '<p>' . $this->arrSections[$strSectionID]['description'] . '</p>';
 		
 		add_filter( $this->prefix_section . $strSectionID , array( $this, $this->prefix_section . $strSectionID ), 10, 2 );
 		echo apply_filters( $this->prefix_section . $strSectionID, $strDescription, $this->arrSections[$strSectionID]['description'] );	// the p-tagged description string and the original description is passed.
+	
 	}
-	function RenderFormField( $strMethodName, $arrField ) {
+	function RenderFormField( $strMethodName, &$arrField ) {
 
-		// renders the pre-defined (defined by this class as the default form field) form field by form type.
+		// Renders the pre-defined (defined by this class as the default form field) form field by form type.
 		$strFieldID = substr( $strMethodName, strlen( $this->prefix_field ) + 4 );	// field_pre_X
 		if ( !isset( $this->arrFields[$strFieldID] ) ) return;	// if it is not added, return
-		
-		// Set up the option array - case 1. option key is specified. case 2 not specified in the constructor, then use the page slug as the key.
-		$arrOptions = (array) get_option( ( empty( $this->strOptionKey ) ) ? $arrField['page_slug'] : $this->strOptionKey );
-		if ( !empty( $this->strOptionKey ) ) {	// if the custom option key is set by the user,				
-			$arrOptions = isset( $arrOptions[$arrField['page_slug']] ) ? $arrOptions[$arrField['page_slug']] : array();
-		}
-	
-		// the 'settings-updated' key will be set in the $_GET array when redirected by Settings API 
-		$arrErrors = get_transient( md5( $this->strClassName . '_' . $arrField['page_slug'] ) );
-		$arrErrors = ( isset( $_GET['settings-updated'] ) &&  $arrErrors ) ? $arrErrors  : null;		
-		$strOutput = $this->GetFormFieldsByType( $arrOptions, $arrField, $arrErrors ); 
 
+		$oFields = new AdminPageFramework_Input_Filed_Types( $arrField, $this->strOptionKey, $this->strClassName );
+		$strOutput = $oFields->GetInputField( $arrField['type'] );
+		
 		// Render the input field
-		add_filter( $this->prefix_field . $arrField['field_ID'] , array( $this, $this->prefix_field . $arrField['field_ID'] ), 10, 2 );
-		echo apply_filters( $this->prefix_field . $arrField['field_ID'], $strOutput, $arrField );	// the output and the field array is passed 
-
-	}
-	function GetFormFieldsByType( &$arrOptions, &$arrField, &$arrErrors=null ) {
-		/* 
-		 * Tag Attributes:
-		 * 	name	: the key name of the $_POST, $_GET, or $_FILES array. $strFieldName will be assigned. 
-		 * 			  For example, if $strFieldName is mysection[myfield], then the $_POST will have the key
-		 * 			  $_POST["mysection"]["myfield"].
-		 *  value	: the value which will be stored in the avove key in the $_POST, $_GET, or $_FILES array.
-		 *  type	: determins the type of input field. For textarea and select, the mentioned tags will be created instead of the input tag.
-		 *  class	: the class of CSS style. 
-		 * 
-		 * $arrField keys:
-		 *  label	: this is used to construct and render elements .
-		 *  default : this is similar to the above label key but used to specify the default values.
-		 * 
-		 * and more... ( I don't have the time to document all :/ )
-		 * */
-		// Avoid unset index warnings
-		$arrField = $arrField + array(
-			'class' => null,
-			'description' => null,
-			'default' => null,
-			'label' => null,
-			'error' => null,
-			'file_name' => null,	// used by the export custom field 
-			'transient' => null,	// used by the export custom field to look up exporting data, since 1.0.2
-			'option_key' => null,
-			'selectors' => null,
-			'disable' => null,
-			'max' => null,
-			'min' => null,
-			'size' => null,
-			'maxlength' => null,
-			'step' => null,
-			'pre_html' => null,
-			'post_html' => null,
-			'value' => null,
-			'delimiter' => '<br />', // used by filed types which accept label as array and this delimiter value will be used to delimit the elements, since 1.0.2
-			'update_message' => null,	// used by the import custom field
-			'error_message' => null,	// used by the import custom field
-			'capability' => null,	// since 1.0.2.1, used to determine whether the field should be displayed to the user; this should not be used in this method but the AddFormFields() method
-			'pre_field' => null,	// since 1.0.2.4 - pre-pends the given string before the field tag
-			'post_field' => null,	// since 1.0.2.4 - appends the given string after the field tag
+		echo $this->AddAndApplyFilter( 
+			$this->prefix_field . $arrField['field_ID'],  
+			$strOutput,
+			$arrField
 		);
-					
-		// $strValue - the retrieved value from the database option table in which currently saved 
-		$strValue = isset( $arrOptions[$arrField['section_ID']][$arrField['field_ID']] ) ? $arrOptions[$arrField['section_ID']][$arrField['field_ID']] : null;
-		if ( $strValue === null && isset( $arrField['default'] ) ) $strValue = $arrField['default'];
-		$strValue = isset( $arrField['value'] ) ? $arrField['value'] : $strValue;	// override the value if it is explicitly set
-
-		$bIsDisabled = is_array( $arrField['disable'] ) ? $arrField['disable'] : ( $arrField['disable'] ? 'disabled="Disabled"' : '' );
-		
-		// $strFieldName - case 1: the option key is set, case 2: the option key is not set by the user and the page slug is used 
-		$tmp = $this->strOptionKey;	// something looking like a bug occurs with the direct assignment in the ternary below.
-		$strOptionKey = empty( $this->strOptionKey ) ? $arrField['page_slug'] : $tmp;	// it seems a bug occurs without assigning to a different variable
-		$strFieldName = empty( $this->strOptionKey ) ? 
-			"{$strOptionKey}[{$arrField['section_ID']}][{$arrField['field_ID']}]" :
-			"{$strOptionKey}[{$arrField['page_slug']}][{$arrField['section_ID']}][{$arrField['field_ID']}]";
-		$strOptionKeyForReference = empty( $this->strOptionKey ) ? 
-			"{$strOptionKey}|{$arrField['section_ID']}|{$arrField['field_ID']}" :
-			"{$strOptionKey}|{$arrField['page_slug']}|{$arrField['section_ID']}|{$arrField['field_ID']}";
-		$strTagID = "{$arrField['section_ID']}_{$arrField['field_ID']}";
-		
-		// Error message handling
-		$strOutput = isset( $arrErrors[ $arrField['section_ID'] ][ $arrField['field_ID'] ] ) ? '<span style="color:red;">*&nbsp;' . $arrField['error'] . $arrErrors[$arrField['section_ID']][$arrField['field_ID']] . '</span><br />' : '';
-		// $strOutput = isset( $arrErrors[$arrField['page_slug']][$arrField['section_ID']][$arrField['field_ID']] ) ? '<span style="color:red;">*&nbsp;' . $arrField['error'] . '</span><br />' : '';
-		
-		// Start diverging
-		switch ( $arrField['type'] ) {
-			case 'text':
-			case 'password':
-			case 'color':
-			case 'date':    
-			case 'datetime':
-			case 'datetime-local':
-			case 'email':
-			case 'month':
-			case 'search':
-			case 'tel':
-			case 'time':
-			case 'url':
-			case 'week':	// attributes: size					
-				$arrField['size'] = empty( $arrField['size'] ) ? 30 : $arrField['size']; 
-				$strInputField = "<input id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' size='{$arrField['size']}' type='{$arrField['type']}' value='{$strValue}' {$bIsDisabled} />"; 
-				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];				
-				break;
-			case 'number':	// HTML5, attributes: min, max, step,
-				$arrField['size'] = empty( $arrField['size'] ) ? 30 : $arrField['size']; 
-				$numMaxLength = isset( $arrField['maxlength'] ) ? $arrField['maxlength'] : $arrField['size'];
-			case 'range':						
-				$strInputField = "<input id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' min='{$arrField['min']}' max='{$arrField['max']}' step='{$arrField['step']}' type='{$arrField['type']}' value='{$strValue}' maxlength='{$numMaxLength}' {$bIsDisabled} />";
-				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
-				break;
-			case 'textarea':	// attributes: rows, cols
-				$arrField['rows'] = empty( $arrField['rows'] ) ? 4 : $arrField['rows'];
-				$arrField['cols'] = empty( $arrField['cols'] ) ? 80 : $arrField['cols'];
-				$strInputField = "<textarea id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' rows='{$arrField['rows']}' cols='{$arrField['cols']}' {$bIsDisabled} >{$strValue}</textarea>";
-				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
-				break;	
-			case 'radio':
-				$strOutput .= "<div id='{$strTagID}'>";
-				foreach ( $arrField['label'] as $strKey => $strLabel ) {
-					$strChecked = ( $strValue == $strKey ) ? 'Checked' : '';
-					$strOutput .= "<input id='{$strTagID}_{$strKey}' class='{$arrField['class']}' type='radio' name='{$strFieldName}' value='{$strKey}' {$strChecked}  {$bIsDisabled}>&nbsp;&nbsp;{$strLabel}";
-					$strOutput .= $arrField['delimiter'];
-				}
-				$strOutput .= "</div>";
-				$strOutput .= $arrField['pre_field'] . $strOutput . $arrField['post_field'];
-				break;
-			case 'checkbox':	// support multiple creation with array of label
-				if ( is_array( $arrField['label'] ) ) {
-					$arrValues = ( array ) $strValue;
-					$strOutput .= "<div id='{$strTagID}'>";
-					foreach ( $arrField['label'] as $strKey => $strLabel ) {	
-						$strChecked = ( $arrValues[ $strKey ] == 1 ) ? 'Checked' : '';
-						$strOutput .= "<input type='hidden' name='{$strFieldName}[{$strKey}]' value='0' />";
-						$strInputField = "<input id='{$strTagID}_{$strKey}' class='{$arrField['class']}' type='checkbox' name='{$strFieldName}[{$strKey}]' value='1' {$strChecked} {$bIsDisabled} />&nbsp;&nbsp;{$strLabel}";
-						$strOutput .= $this->GetCorrespondingArrayValue( $strKey, $arrField['pre_field'] ) . $strInputField . $this->GetCorrespondingArrayValue( $strKey, $arrField['pre_field'] );
-						$strOutput .= $arrField['delimiter'];
-					}
-					$strOutput .= "</div>";
-					break;
-				}
-				// if the labels key is not an array,
-				$strChecked = ( $strValue == 1 ) ? 'Checked' : '';			
-				$strOutput .= "<input type='hidden' name='{$strFieldName}' value='0' />";
-				$strInputField = "<input id='{$strTagID}' class='{$arrField['class']}' type='checkbox' name='{$strFieldName}' value='1' {$strChecked} {$bIsDisabled} />&nbsp;&nbsp;{$arrField['label']}<br />";
-				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
-				break;
-			case 'select':
-				if ( !is_array( $arrField['label'] ) ) break;	// the label key must be an array for the select type.
-				$strOutput .= "<select id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' {$bIsDisabled}>";
-				foreach ( $arrField['label'] as $strKey => $strLabel ) {
-					$strSelected = ( $strValue == $strKey ) ? 'Selected' : '';
-					$strOutput .= "<option id='{$strTagID}_{$strKey}' value='{$strKey}' {$strSelected}>{$strLabel}</option>";
-				}
-				$strOutput .= "</select>";
-				$strOutput = $arrField['pre_field'] . $strOutput . $arrField['post_field'];
-				break;
-			case 'hidden':	// support multiple creation with array of label
-				if ( is_array( $arrField['label'] ) ) {
-					$strOutput .= "<div id='{$strTagID}'>";
-					foreach( $arrField['label'] as $strArrayKey => $strArrayValue ) {
-						$strKey = 	isset( $arrField['default'][$strArrayKey] ) 	? $arrField['default'][$strArrayKey] : $strArrayKey;
-						$strValue = isset( $arrField['default'][$strArrayValue] ) ? $arrField['default'][$strArrayValue] : $strArrayValue;
-						$strValue = isset( $arrField['value'][$strArrayValue] ) ? $arrField['value'][$strArrayValue] : $strValue;
-						$strInputField = "<input id='{$strTagID}_{$strKey}' class='{$arrField['class']}' name='{$strFieldName}[{$strArrayKey}]' type='hidden' value='{$strValue}' />";
-						$strOutput .= $this->GetCorrespondingArrayValue( $strArrayKey, $arrField['pre_field'] ) . $strInputField . $this->GetCorrespondingArrayValue( $strArrayKey, $arrField['pre_field'] );
-					}
-					$strOutput .= "</div>";
-					break;
-				}
-				$strValue = isset( $arrField['value'] ) ? $arrField['value'] : $arrField['label'];
-				$strInputField = "<input id='{$strTagID}' class='{$arrField['class']}' name='{$strFieldName}' type='hidden' value='{$strValue}' />";
-				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
-				break;					
-			case 'file':	// support multiple creation with array of label
-				// $strName = ( isset( $arrField['name'] ) && !empty( $arrField['name'] ) ) ? $arrField['name'] : 'file';
-				if ( is_array( $arrField['label'] ) ) {
-					$strOutput .= "<div id='{$strTagID}'>";
-					foreach( $arrField['label'] as $strKey => $strValue ) {				
-						$strInputField = "<input id='{$strTagID}_{$strKey}' class='{$arrField['class']}' type='file' name='{$strFieldName}[{$strValue}]' />";
-						$strOutput .= $this->GetCorrespondingArrayValue( $strKey, $arrField['pre_field'] ) . $strInputField . $this->GetCorrespondingArrayValue( $strKey, $arrField['pre_field'] );						
-					}
-					$strOutput .= "</div>";
-					break;
-				}						
-				$strInputField = "<input id='{$strTagID}' class='{$arrField['class']}' type='file' name='{$strFieldName}' {$bIsDisabled}/>";
-				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
-				break;
-			case 'submit':	// support multiple creation with array of label
-				$strClass = ( $arrField['class'] ) ? $arrField['class'] : 'button button-primary';
-				if ( is_array( $arrField['label'] ) ) {
-					$strOutput .= "<div id='{$strTagID}'>";
-					foreach( $arrField['label'] as $strArrayKey => $strArrayValue ) {
-						$strLabel = ( $strArrayValue ) ? $strArrayValue : __( 'Submit', 'admin-page-framework' );
-						$strInputField = "<input id='{$strTagID}_{$strArrayKey}' class='{$strClass}' name='{$strFieldName}[{$strArrayKey}]' type='submit' value='{$strLabel}' {$bIsDisabled} />";
-						$strOutput .= $this->GetCorrespondingArrayValue( $strArrayKey, $arrField['pre_field'] ) . $strInputField . $this->GetCorrespondingArrayValue( $strArrayKey, $arrField['pre_field'] );
-						$strOutput .= $arrField['delimiter'];
-					}
-					$strOutput .= "</div>";
-					break;
-				}
-				$strLabel = ( $arrField['label'] ) ? $arrField['label'] : __( 'Submit', 'admin-page-framework' );
-				$strInputField = "<input id='{$strTagID}' class='{$strClass}' name='{$strFieldName}' type='submit' value='{$strLabel}' {$bIsDisabled} />";
-				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
-				break;
-			default:	
-				// for anything else, 
-				$strOutput = $arrField['pre_field'] . $strValue . $arrField['post_field'];
-				break;
-			case 'import':	// import options
-				$strLabel = ( $arrField['label'] ) ? $arrField['label'] : __( 'Import Options', 'admin-page-framework' );
-				$strClass = ( $arrField['class'] ) ? $arrField['class'] : 'button button-primary';
-				// $strOutput .= "<input class='{$strClass}' type='hidden' name='__import[option_key]' value='{$arrField['key']}' />";
-				$strOutput .= "<input type='hidden' name='__import[error_message]' value='{$arrField['error']}' />";
-				$strOutput .= "<input type='hidden' name='__import[update_message]' value='{$arrField['update_message']}' />";
-				$strInputField = "<input id='{$strTagID}' class='{$arrField['class']}' type='file'	name='__import' {$bIsDisabled} />";	// the file type will be stored in $_FILE 
-				$strInputField .= $arrField['delimiter'];
-				$strInputField .= "<input id='{$strTagID}_submit' class='{$strClass}' name='__import[submit]' type='submit' value='{$arrField['label']}' {$bIsDisabled} />";
-				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
-				break;	
-			case 'export':	// export options
-				if ( is_array( $arrField['label'] ) ) { 
-					foreach( $arrField['label'] as $numIndex => $strLabel ) {
-						$strInputField ='';
-						$strFileName = $this->GetCorrespondingArrayValue( $numIndex, $arrField['file_name'], $this->strClassName . '.txt' );
-						$strClass = $this->GetCorrespondingArrayValue( $numIndex, $arrField['class'], 'button button-primary' );
-						$strTransientKey = $this->GetCorrespondingArrayValue( $numIndex, $arrField['transient'], '' );	
-						$bIsDisabled_ = is_array( $bIsDisabled ) ? $this->GetCorrespondingArrayValue( $numIndex, $bIsDisabled, '' ) : $bIsDisabled;
-						if ( !empty( $strTransientKey ) )
-							$strOutput .= "<input type='hidden' name='__export[transient][{$numIndex}]' value='{$strTransientKey}' />";
-						$strOutput .= "<input type='hidden' name='__export[file_name][{$numIndex}]' value='{$strFileName}' />";
-						$strOutput .= "<input type='hidden' name='__export[option_key][{$numIndex}]' value='{$arrField['option_key']}' />";
-						$strInputField .= "<input id='{$strTagID}_{$numIndex}' class='{$strClass}' type='submit' value='{$strLabel}' name='__export[submit][{$numIndex}]' {$bIsDisabled_} />";
-						$strOutput .= $this->GetCorrespondingArrayValue( $numIndex, $arrField['pre_field'] ) . $strInputField . $this->GetCorrespondingArrayValue( $numIndex, $arrField['pre_field'] );
-						$strOutput .= $arrField['delimiter'];
-					}
-					break;
-				}
-				$strLabel = ( $arrField['label'] ) ? $arrField['label'] : __( 'Export Options', 'admin-page-framework' );
-				$strFileName = $arrField['file_name'] ? $arrField['file_name'] : $this->strClassName . '.txt';
-				$strClass = ( $arrField['class'] ) ? $arrField['class'] : 'button button-primary';
-				if ( isset( $arrField['transient'] ) && !empty( $arrField['transient'] ) )
-					$strOutput .= "<input type='hidden' name='__export[transient]' value='{$arrField['transient']}' />";
-				$strOutput .= "<input type='hidden' name='__export[file_name]' value='{$strFileName}' />";
-				$strOutput .= "<input type='hidden' name='__export[option_key]' value='{$arrField['option_key']}' />";
-				$strInputField = "<input id='{$strTagID}' class='{$strClass}' type='submit' value='{$strLabel}' name='__export[submit]' {$bIsDisabled} />";
-				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
-				break;
-			case 'image':	// image uploader
-				$strInputField = $this->FormImageField( $strFieldName, $strOptionKeyForReference, $arrOptions, $arrField );
-				$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
-				break;
-
-		}
-		$strOutput = $arrField['pre_html'] . $strOutput;
-		$strOutput .= ( !isset( $arrField['description'] ) ||  trim( $arrField['description'] ) == '' ) ? null : '<p class="field_description"><span class="description">' .  $arrField['description'] . '</span></p>';
-		return $strOutput . $arrField['post_html'];
 	}
-	protected function FormImageField( $strFieldName, $strOptionKeyForReference, &$arrOptions, &$arrField ) {
-		
-		// Setup Variables
-		$strOutput = '';		
-		
-		// $arrFieldOptions - the retrieved value from the database option table in which currently saved 					
-		$arrFieldOptions = isset( $arrOptions[$arrField['section_ID']][$arrField['field_ID']] ) ? $arrOptions[$arrField['section_ID']][$arrField['field_ID']] : array();
 
-		// the default value is assigned $strValue if $arrField['default'] is set.					
-		$strDefaultImage = isset( $arrField['default'] ) ? $arrField['default'] : null;
-		$strImageURL = ( !empty( $arrFieldOptions['imageurl'] ) ) ? esc_url( $arrFieldOptions['imageurl'] ) : $strDefaultImage;	
-		$strStyleDisplay = $strImageURL ? '' : 'display: none;'; 
-		
-		/*	
-			- Supported Labels
-				$arrField['label'] = array(
-					'title' => 'Pick an image from the Media Library or upload one.',
-					'insert' => 'Use This Image',
-					'upload' => 'Upload Image',
-					'unset' => 'Unset Image',
-					'delete' => 'Delete Image',
-				);
-			- Visibility
-				$arrField['visibility'] => array(	
-					'preview' => True,
-					'image_url' => True,
-					'unset_button' => True,
-					'delete_button' => True,
-				)	
-		*/			
-		$strLabelUploadImage = isset( $arrField['label']['upload'] ) ? $arrField['label']['upload'] : __( 'Upload Image', 'admin-page-framework' );
-		$strLabelDeleteImage = isset( $arrField['label']['delete'] ) ? $arrField['label']['delete'] : __( 'Delete Image', 'admin-page-framework' );
-		$strLabelUnsetImage =  isset( $arrField['label']['unset'] ) ? $arrField['label']['unset'] : __( 'Unset Image', 'admin-page-framework' );
-
-		// For Debug
-		// $strOutput .= '$strImageURL: ' . $strImageURL . '<br />';
-		// $strOutput .= '$arrField["defalut"]<pre>' . $arrField["defalut"] . '</pre>';
-		// $strOutput .= '<pre>' . print_r( $arrFieldOptions, true ) . '</pre>';
-		
-		// Start forming the field output
-		// Button - Upload Image
-		$strOutput .= "<input type='hidden' id='image_url_{$arrField['id']}' name='{$strFieldName}[imageurl]' value='{$strImageURL}' />";
-		$strOutput .= "<input type='button' id='upload_image_button_{$arrField['id']}' class='button-secondary button' value='{$strLabelUploadImage}' />&nbsp;&nbsp;";
-
-		// Button - Unset Image
-		if ( !isset( $arrField['visibility']['unset_button'] ) || $arrField['visibility']['unset_button'] ) {		
-			$strOutput .= "<input type='hidden' name='__image_unset[imageurl][{$arrField['id']}]' value='{$strImageURL}' />";
-			$strOutput .= "<input type='hidden' name='__image_unset[option_key][{$arrField['id']}]' value='{$strOptionKeyForReference}|imageurl' />";
-			$strOutput .= "<input style='{$strStyleDisplay}' type='submit' name='__image_unset[id][{$arrField['id']}]' id='unset_image_button_{$arrField['id']}' class='button button-secondary' value='{$strLabelUnsetImage}' />&nbsp;&nbsp;";						
-		}
-		// Button - Delete Image
-		if ( !isset( $arrField['visibility']['delete_button'] ) || $arrField['visibility']['delete_button'] ) {			
-			$strOutput .= "<input type='hidden' name='__image_delete[imageurl][{$arrField['id']}]' value='{$strImageURL}' />";
-			$strOutput .= "<input type='hidden' name='__image_delete[option_key][{$arrField['id']}]' value='{$strOptionKeyForReference}|imageurl' />";
-			$strOutput .= "<input style='{$strStyleDisplay}' type='submit' name='__image_delete[id][{$arrField['id']}]' id='delete_image_button_{$arrField['id']}' class='button button-secondary' value='{$strLabelDeleteImage}' />";
-		}		
-		// Preview Box 
-		if ( !isset( $arrField['visibility']['preview'] ) || $arrField['visibility']['preview'] ) {		
-			// $strMinHeight = $arrField['min-height'] ? $arrField['min-height'] : '100px';
-			// $strMinWidth = $arrField['min-width'] ? $arrField['min-width'] : '320px';
-			$strStyle = isset( $arrField['style'] ) ? $arrField['style'] : 'min-height: 100px;';
-			$strStyleDisplay = ( isset( $arrFieldOptions['imageurl'] ) || $strImageURL ) ? '' : 'display: none;';	// for IE
-			$strOutput .= 	"<div id='update_preview_{$arrField['id']}' style='{$strStyle}'>" .
-							"<img style='{$strStyleDisplay} border: none; max-width:100%; margin-top: 20px;' src='{$strImageURL}' />" .
-							"</div>";
-		}
-		// Image URL
-		if ( !isset( $arrField['visibility']['image_url'] ) || $arrField['visibility']['image_url'] ) {
-			$strOutput .= "<p id='upload_image_preview_url_{$arrField['id']}'>";
-			$strOutput .= $strImageURL ? $strImageURL : __( 'No url has been set.', 'admin-page-framework');
-			$strOutput .= "</p>";
-		}
-		return $strOutput;	
-	}
 	function MergeOptionArray( $strMethodName, $arrInput ) {
+	
+		// Check if the $_POST __href key set, with a submit button, and if it's set, redirect to the specified given page.
+		if ( isset( $_POST['__href'] ) ) $this->oRedirect->CheckHrefRedirect( $_POST['__href'] );
 	
 		// For debug
 		// $this->numCalled++;			
@@ -1008,8 +634,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		
 		// For Debug
 		// $strOptionKeySet = empty( $this->strOptionKey ) ? 'No' : 'Yes';
-		// add_settings_error( $_POST['pageslug'], 
-				// 'can_be_any_string',  
+		// $this->AddSettingsError( 'import_error', 
+				// 'debug',  
 				// '<h3>Submitted Values</h3>' .
 				// '<h4>$arrKeys</h4>' . $this->DumpArray( $arrKeys ) . '' .
 				// '<h4>Has Deleted?</h4><pre>' . $bDeleted . '</pre>' .
@@ -1025,11 +651,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 				// '<h4>Currently Saved Data - $arrOptions</h4>' . $this->DumpArray( $arrOptions ),
 				// 'updated'
 			// );	
-			// file_put_contents( dirname( __FILE__ ) . '/info.txt' , 
-				// __FILE__ . PHP_EOL 
-				// . __METHOD__ . PHP_EOL
-				// . print_r( $_POST, true ) . PHP_EOL
-				// ,FILE_APPEND );	
+			// $this->DumpArray( $_POST, dirname( __FILE__ ) . '/info.txt' );
 	
 		// If the passed value is explicitly set to null, it means the user has chosen to discard the options.
 		if ( is_null( $arrInput ) && ! isset( $_POST['__import']['submit'] ) && ! isset( $_POST['__export']['submit'] ) )
@@ -1057,7 +679,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			} else {
 				unset( $arrInput[$arrKeys[1]][$arrKeys[2]][$arrKeys[3]][$arrKeys[4]] );	// option key[page slug][section id][field id][imageurl]
 				unset( $arrOriginal[$arrKeys[1]][$arrKeys[2]][$arrKeys[3]][$arrKeys[4]] );	// option key[page slug][section id][field id][imageurl]
-			}				
+			}	
+			
 		}
 		if ( isset( $_POST['__image_delete']['id'] ) ) {
 			
@@ -1070,7 +693,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			}
 			
 			// Remove the data from the option in the database.
-			$arrKeys = explode("|", $_POST['__image_delete']['option_key'][$strID]);
+			$arrKeys = explode( "|", $_POST['__image_delete']['option_key'][ $strID ] );
 			if ( count( $arrKeys ) == 4 ) {	// it should be either 4 or 5. 
 				unset(  $arrInput[$arrKeys[1]][$arrKeys[2]][$arrKeys[3]] ); 	// page slug[section id][field id][imageurl]
 				unset(  $arrOriginal[$arrKeys[1]][$arrKeys[2]][$arrKeys[3]] ); 	// page slug[section id][field id][imageurl]
@@ -1079,6 +702,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 				unset( $arrOriginal[$arrKeys[1]][$arrKeys[2]][$arrKeys[3]][$arrKeys[4]] );	// option key[page slug][section id][field id][imageurl]
 			}
 			$bDeleted = true;
+			
 		}
 					
 		// For in-page tabs
@@ -1089,22 +713,16 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			);				
 
 		// For pages.
-		// Do not cast array here either. Let the validation callback return non-array and make it consider as delete the option.
-		$arrInput = $this->AddAndApplyFilter( 
-			$this->prefix_validation . $strPageSlug, 
-			$arrInput 
-		);	
+		// Do not cast array here either. Let the validation callback return non-array and make it consider as deleting the option.
+		$arrInput = $this->AddAndApplyFilter( $this->prefix_validation . $strPageSlug, $arrInput );	
 
 		/*
-		 * For the custom field types, import and export - this must be done after appluing the validation filters for pages and tabs to allow to set transients.
+		 * For the custom field types, import and export - this must be done after applying the validation filters for pages and tabs to allow to set transients.
 		 * */
 		// Check if the import file is sent. If so, do not continue and return.
-		if ( isset( $_POST['__import']['submit'] ) && !$this->bIsImported ) {
-			
+		if ( isset( $_POST['__import']['submit'] ) && !$this->bIsImported ) 			
 			return $this->ImportOptions( $_POST['__import'] + $_FILES['__import'], $arrOriginalIntact );	// if it fails, it returns back the original array
-		
-		}
-		
+
 		// Check if the export button is pressed. If so, do not continue and return.
 		if ( isset( $_POST['__export']['submit'] ) ) {
 			
@@ -1118,7 +736,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		 * */
 		// return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? wp_parse_args( $arrInput, $arrOriginal ) : $arrInput;		// <-- causes the settings get cleared in other pages
 		// return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? array_replace_recursive( $arrOriginal, $arrInput ) : $arrInput;		// <-- incompatible with PHP below 5.3
-		return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? $this->UniteArraysRecursive( $arrInput, $arrOriginal ) : $arrInput;		// merge them so that options saved in the other page slug keys will be saved as well.
+		return ( is_array( $arrOriginal ) && is_array( $arrInput ) ) ? $this->oUtil->UniteArraysRecursive( $arrInput, $arrOriginal ) : $arrInput;		// merge them so that options saved in the other page slug keys will be saved as well.
+	
 	}
 	/*
 	 * The magic method.
@@ -1187,15 +806,16 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		foreach ( $this->arrPageTitles as $strStoredPageSlug => $strStoredPageTitle ) {
 			$strOptionName = ( empty( $this->strOptionKey ) ) ? $strStoredPageSlug : $this->strOptionKey;
 			$strValidationMethodName = $this->prefix_validation . 'pre_' . $strStoredPageSlug;
-			$arrRemoved[$strValidationMethodName] = 0;
+			$arrRemoved[ $strValidationMethodName ] = 0;
 			if ( $strStoredPageSlug == $strPageSlug ) continue;				
-			$arrRemoved[$strValidationMethodName] = remove_filter( "sanitize_option_{$strOptionName}", array( $this, $strValidationMethodName ) );
+			$arrRemoved[ $strValidationMethodName ] = remove_filter( "sanitize_option_{$strOptionName}", array( $this, $strValidationMethodName ) );
 		}		
 		return $arrRemoved;
+		
 	}
 	protected function RenderPage( $strPageSlug, $strTabSlug=null ) {
-
-		// this helps to prevent multiple validation callbacks for the case that the user sets custom option key.
+			
+		// This helps to prevent multiple validation callbacks for the case that the user sets custom option key.
 		$this->RemoveValidationCallbacksExcept( $strPageSlug );	
 
 		// variables
@@ -1215,7 +835,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 				$strHeader .= ( $this->bShowPageHeadingTabs ) ? $this->AddPageHeadingTabs( $strPageSlug ) : '<h2>' . $this->arrPageTitles[$strPageSlug] . '</h2>';
 
 				// in-page tabs
-				if ( isset( $this->arrTabs[$strPageSlug] ) ) $strHeader .= $this->GetInPageTabs( $strPageSlug );
+				if ( isset( $this->arrTabs[$strPageSlug] ) ) $strHeader .= $this->GetInPageTabs( $strPageSlug, $this->strInPageTabTag );
 				
 				// Apply filters in this order, in-page tab -> page -> global.
 				$strHeader = apply_filters( $this->prefix_head . $strPageSlug . '_' . $strTabSlug, $strHeader );
@@ -1226,31 +846,33 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			<div class="admin-page-framework-container" style="">
 				<form action="options.php" method="post" enctype="<?php echo $this->strFormEncType; ?>">
 				<?php
-					// this enabels add_settings_error() to trigger the error message. Should be inside a form tab. Otherwise, the font style breaks.
-					settings_errors( $strPageSlug );	// the passed value must be the same as the first parameter of add_settings_error()
+		
+					// The settings_errors() function sometimes does not show added setting errors and if the third parameter is set to false it shows the same errors multiple times.
+					// So we use the custom settings error handler. For that reason we are not using : settings_errors( $strPageSlug, false, true );
+					$this->ShowSettingsErrors();
 							
 					// do custom actions - since 1.0.2
 					do_action( $this->prefix_do_form . $this->strClassName  );
 					do_action( $this->prefix_do_form . $strPageSlug );
 					do_action( $this->prefix_do_form . $strPageSlug . '_' . $strTabSlug );
 
-					// Capture output buffer
+					// Capture the output buffer
 					ob_start(); // start buffer
 					
-					// Renders form elements
+					// Render the form elements by Settings API
 					settings_fields( $this->strClassName );
 					do_settings_sections( $strPageSlug ); 
 					
 					$strContent = ob_get_contents(); // assign buffer contents to variable
 					ob_end_clean(); // end buffer and remove buffer contents
 								
-					// render custom contents 
+					// Render custom contents 
 					// Apply filters in this order, in-page tab -> page -> global.
 					$strContent = apply_filters( $this->prefix_content . $strPageSlug . '_' . $strTabSlug, $strContent );
 					$strContent = apply_filters( $this->prefix_content . $strPageSlug, $strContent );
 					echo apply_filters( $this->filter_global_content . $this->strClassName, $strContent );
 						
-					// do custom actions
+					// Do custom actions
 					do_action( $this->do_global . $this->strClassName  );
 					do_action( $this->prefix_do . $strPageSlug );
 					do_action( $this->prefix_do . $strPageSlug . '_' . $strTabSlug );
@@ -1266,12 +888,82 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			?>
 		</div><!-- End Wrap -->
 		<?php
-		// do action after rendering the page
+		// Do action after rendering the page
 		do_action( $this->do_global_after . $this->strClassName );				
 		do_action( $this->prefix_do_after . $strPageSlug );	
 		do_action( $this->prefix_do_after . $strPageSlug . '_' . $strTabSlug );	
-	}		
+		
+		// Clean up
+		$this->DeleteFieldErrors( $strPageSlug );
+		
+	}
+	protected function DeleteFieldErrors( $strPageSlug ) {	// since 1.0.3
+
+		// Deletes the field error transient
+		delete_transient( md5( get_class( $this ) . '_' . $strPageSlug ) ); // delete the temporary data for errors.
+		
+	}	
+	protected function SetFieldErrors( $strID, $arrErrors, $numSavingDuration=300 ) {	// since 1.0.3
+		
+		// Saves the given array in a temporary area of the option database table.
+		// $strID should be the page slug of the page that has the dealing form filed.
+		// $arrErrors should be constructed as the $_POST array submitted to the Settings API.
+		// $numSavingDuration is 300 by default which is 5 minutes ( 60 seconds * 5 ).
+		
+		// Store the error array in the transient with the name of a MD5 hash string that consists of the extended class name + _ + page slug.
+		set_transient( md5( get_class( $this ) . '_' . $strID ), $arrErrors, $numSavingDuration );	// store it for 5 minutes ( 60 seconds * 5 )
+	
+	}	
+	protected function AddSettingsError( $strID, $strMsg, $strType='error' ) {	// since 1.0.3
+		
+		// Alternative to add_settings_error() which causes multiple duplicate message to appear.
+		
+		$strTransientKey = md5( 'SettingsErrors_' . get_class( $this ) . '_' . $this->strPageSlug );
+		$arrSettingsErrors = ( array ) get_transient( $strTransientKey );
+		$strID = $this->oUtil->SanitizeString( $strID );
+		$arrSettingsErrors[ $strID ] = array(
+			'message'	=> $strMsg,
+			'type'		=> $strType,		
+		);
+		set_transient( $strTransientKey, $arrSettingsErrors, 60*5 );	// for 5 minutes
+
+	}
+	protected function ShowSettingsErrors() {	// since 1.0.3
+	
+		// Alternative to settings_errors()
+		// Displays the set settings error/notification messages set with AddSettingsError().
+
+		// Prevent multiple calls
+		if ( $this->bLoadedSettingsErrors ) return;
+		$this->bLoadedSettingsErrors = true;
+		
+		$strTransientKey = md5( 'SettingsErrors_' . get_class( $this ) . '_' . $this->strPageSlug );
+		$arrSettingsErrors = ( array ) get_transient( $strTransientKey );
+		// since it's a casted array, the 0 key will be assigened and empty() does not return true
+		// empty( $arrSettingsErrors ) will not return true for array( 0 => null )
+		if ( count( $arrSettingsErrors ) == 1 && isset( $arrSettingsErrors[0] ) && ! $arrSettingsErrors[0]  ) {		
+			
+			if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] )
+				echo '<div class="updated"><p><strong>' . __( 'Options have been updated.', 'admin-page-framework' ) . '</strong></p></div>';
+			
+			return;
+			
+		} 
+	
+		$strOutput = '';
+		foreach ( $arrSettingsErrors as $strID => $arrError ) {
+			$strCSSID = 'setting-error-' . $strID;
+			$strCSSClass = $arrError['type'] . ' settings-error';
+			$strOutput .= "<div id='$strCSSID' class='$strCSSClass'> \n";
+			$strOutput .= "<p><strong>{$arrError['message']}</strong></p>";
+			$strOutput .= "</div> \n";
+		}
+		echo $strOutput;		
+		delete_transient( $strTransientKey );
+		
+	}	
 	function GetDefaultTabSlug( $strPageSlug ) {
+		
 		// retrieves the default in-page tab slug for the page.
 		// if in-page tab is not added at all, returns nothing.
 		if ( !IsSet( $this->arrTabs[$strPageSlug] ) ) return null;
@@ -1279,9 +971,12 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		// means it's set, returns the first item 
 		foreach ( $this->arrTabs[$strPageSlug] as $strTabSlug => $strTabTitle ) 
 			return $strTabSlug;	// no need to iterate all, only the first one, which is the default
+	
 	}
-	function GetCurrentSlug() {
+	function GetCurrentSlug() {	// <-- might not be used anymore; I forgot what this was for.
+		
 		return isset( $_GET['page'] ) ? trim( $_GET['page'] ) : $this->strPageSlug;
+	
 	}
 	function AddPageHeadingTabs( $strCurrentSlug ) {
 		
@@ -1298,9 +993,14 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		return $strHeadingTabs;
 		
 	}	// end of tab menu
+	protected function SetInPageTabTag( $strHeadingTag='h3' ) {		// since 1.0.3
+		
+		$this->strInPageTabTag = $strHeadingTag;	
+		
+	}
 	protected function GetInPageTabs( $strCurrentPageSlug, $strHeadingTag='h3' ) {
 		
-		$strCurrentPageSlug = $this->SanitizeSlug( $strCurrentPageSlug );
+		$strCurrentPageSlug = $this->oUtil->SanitizeSlug( $strCurrentPageSlug );
 		$strCurrentTabSlug = isset( $_GET['tab'] ) ? $_GET['tab'] : null;
 		$strInPageHeadingTabs = '<div><' . $strHeadingTag . ' class="nav-tab-wrapper in-page-tab">';			
 		
@@ -1332,6 +1032,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 	}
 	
 	function AddStyle() {		// methods used by a WordPress hook callback cannot be protected, must be public.
+
 		$strPageSlug = isset( $_GET['page'] ) ? $_GET['page'] : '';
 		
 		// If the loading page has not been registered or not the plugin page which uses this library, do nothing.
@@ -1339,17 +1040,18 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 					
 		// Add and apply filters
 		$strStyle = $this->AddAndApplyFilters( 
-			$this->prefix_style, 
+			$this->prefix_style, 	// style_
 			array(
 				'page' => $strPageSlug,
 			), 
-			$this->strStyle 
+			$this->strStyle 		// the default CSS rules
 		);
 		
 		echo '<style type="text/css" name="admin-page-framework">' . $strStyle . '</style>';
 		
 	}	
 	function AddScript() {		// methods used by a WordPress hook callback cannot be protected, must be public.
+
 		$strPageSlug = isset( $_GET['page'] ) ? $_GET['page'] : '';
 
 		// If the loading page has not been registered or not the plugin page which uses this library, do nothing.
@@ -1366,14 +1068,16 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		echo '<script type="text/javascript" name="admin-page-framework">' . $strScript . '</script>';		
 		
 	}
+	
 	/*
 	 * Image Uploader Methods
 	 * */ 
 	function DeleteFileFromMediaLibraryByURL( $strImageURL ) {
+
 		global $wpdb;
 		$strDBPrefix = $wpdb->prefix;
 		$arrAttachment = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM " . $strDBPrefix . "posts" . " WHERE guid='%s';", $strImageURL ) ); 
-		$nAttachmentID = $arrAttachment[0];
+		$nAttachmentID = isset( $arrAttachment[0] ) ? $arrAttachment[0] : null;
 		
 		if ( empty( $nAttachmentID ) )	{	// could be a thumbnail url.
 			$strImageURL = preg_replace( '/(\/.+)(-\d+x\d+)(\.\w+)$/i', '$1$3', $strImageURL );	// remove the thumbnail suffix, e.g. sunset-300x600.jpg -> sunset.jpg
@@ -1382,6 +1086,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		}
 					
 		return wp_delete_attachment( $nAttachmentID, True );
+		
 	}
 	function EnqueUploaderScripts() {	// public, not private since it is used by hooks.
 		
@@ -1392,8 +1097,10 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		wp_enqueue_script('thickbox');
 		wp_enqueue_style('thickbox');				
 		wp_enqueue_script('media-upload');
+		
 	}		 
 	function ReplaceThickBoxText( $strTranslated, $strText ) {	// called from a filter so do not protect
+
 		global $pagenow;
 
 		// replaces the button label in the popup uploader thick box.
@@ -1407,10 +1114,12 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		return $this->strThickBoxButtonUseThis ?  $this->strThickBoxButtonUseThis : __( 'Use This Image', 'admin-page-framework' );
 		
 	}		 
+	
 	/*
 	 * Export and Import Methods
 	 * */
 	protected function ImportOptions( $arrImportInfo, &$arrOriginal ) {
+		
 		/*
 		 * This method is redirected from MergeOptionArray() called from the Setting API's validation callback
 		 * when the __import key is set, which indicates that the user uploaded an import file.
@@ -1423,18 +1132,18 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			else if ( $arrImportInfo['error'] == 2 ) $strMsg =  __( 'The file is bigger than this form allows.', 'admin-page-framework' );
 			else if ( $arrImportInfo['error'] == 3 ) $strMsg =  __( 'Only part of the file was uploaded.', 'admin-page-framework' );
 			else if ( $arrImportInfo['error'] == 4 ) $strMsg =  __( 'No file was uploaded.', 'admin-page-framework' );
-			add_settings_error( $_POST['pageslug'], 'can_be_any_string', $strMsg );
+			$this->AddSettingsError( 'import_error', $strMsg );
 			return $arrOriginal;
 		}
 		if ( $arrImportInfo['type'] != 'text/plain' ) {
 			$strMsg = ( $arrImportInfo['error_message'] ) ? $arrImportInfo['error_message'] : __( 'Import Error: Wrong file type.', 'admin-page-framework' );				
-			add_settings_error( $_POST['pageslug'], 'can_be_any_string', $strMsg );
+			$this->AddSettingsError( 'import_error', $strMsg );
 			return $arrOriginal;
 		}
-		$arrImport = $this->UnserializeFromFile( $arrImportInfo['tmp_name'] );
+		$arrImport = $this->oUtil->UnserializeFromFile( $arrImportInfo['tmp_name'] );
 		if ( !$arrImport ) {
 			$strMsg = ( $arrImportInfo['error_message'] ) ? $arrImportInfo['error_message'] : __( 'Import Error: Wrong text format.', 'admin-page-framework' );
-			add_settings_error( $_POST['pageslug'], 'can_be_any_string', $strMsg );
+			$this->AddSettingsError( 'import_error', $strMsg );
 			return $arrOriginal;
 		}
 		
@@ -1456,23 +1165,23 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		// If the user returns null explicitly, consider it as to decline the import process.
 		if ( is_null( $arrImport ) ) {
 			$strMsg = __( 'The importing process has been failed.', 'admin-page-framework' );
-			add_settings_error( $_POST['pageslug'], 'can_be_any_string', $strMsg );	
+			$this->AddSettingsError( 'import_error', $strMsg );	
 			return $arrOriginal;
 		}
 		// if ( count( $arrImport ) == 0 ) {
 			// $strMsg = __( 'Nothing could be imported.', 'admin-page-framework' );
-			// add_settings_error( $_POST['pageslug'], 'can_be_any_string', $strMsg );	
+			// $this->AddSettingsError( 'import_error', $strMsg );	
 			// return $arrOriginal;			
 		// }
 		
 		// Okay, return the importing data!
 		$strMsg = ( $arrImportInfo['update_message'] ) ? $arrImportInfo['update_message'] : __( 'Options were imported.', 'admin-page-framework' );
-		add_settings_error( $_POST['pageslug'], 'can_be_any_string', $strMsg, 'updated' );	
-		return $arrImport;				
-	}
-	protected function ProcessExportOptions( $arrPostExport, $arrOriginal ) {
+		$this->AddSettingsError( 'import_error', $strMsg, 'updated' );	
+		return $arrImport;	
 		
-		// added in 1.0.2
+	}
+	protected function ProcessExportOptions( $arrPostExport, $arrOriginal ) {	// since 1.0.2
+		
 		// Avoid undefined key warnings
 		$arrPostExport = $arrPostExport + array(
 			'transient' => null,
@@ -1486,8 +1195,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			// the pressed submit button cannot be multiple as pressing buttons at the same time is impossible,
 			// so just parse the first item.
 			foreach( $arrPostExport['submit'] as $i => $v ) {
-				$strTransientKey = $this->GetCorrespondingArrayValue( $i, $arrPostExport['transient'], null ); 
-				$strFileName = $this->GetCorrespondingArrayValue( $i, $arrPostExport['file_name'], $this->strClassName . '.txt' ); 
+				$strTransientKey = $this->oUtil->GetCorrespondingArrayValue( $i, $arrPostExport['transient'], null ); 
+				$strFileName = $this->oUtil->GetCorrespondingArrayValue( $i, $arrPostExport['file_name'], $this->strClassName . '.txt' ); 
 				break;
 			}
 		} else {
@@ -1516,95 +1225,36 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		
 	}
 	function ExportOptions( $strFileName, &$arr ) {
+		
 		header( 'Content-Description: File Transfer' );
 		header( 'Content-Disposition: attachment; filename=' . $strFileName );
 		echo serialize( ( array ) $arr );
-		return true;	// should be exited 
+		return true;	// should be exited outside the method.
+		
 	}
+	
 	/*
 		Misc Methods - utility methods which can be used by the user as well.
 	*/
-	function CheckKeys( $arrMandatoryKeys, $arrSubject, $arrAllowedMissingKeys=array() ) {
-		
-		// Checks if the subject array has all the necessary keys.
-		// The $arrMandatoryKeys array must be numerically indexed with the values of necessary keys.
-		// ( use array_keys() to format the array prior to pass it to the method. )
-		
-		foreach( $arrMandatoryKeys as $strKey ) {
-			if ( in_array( $strKey, $arrAllowedMissingKeys ) ) continue;
-			if ( ! array_key_exists( $strKey, $arrSubject ) ) return false;
-		}
-		
-		return true;
-	}
-	function FixNumber( $numToFix, $numDefault, $numMin="", $numMax="" ) {
 	
-		// Checks if the passed value is a number and set it to the default if not.
-		// if it is a number and exceeds the set maximum number, it sets it to the max value.
-		// if it is a number and is below the minimum number, it sets to the minimium value.
-		// set a blank value for no limit.
-		// This is useful for form data validation.
-		
-		if ( !is_numeric( trim( $numToFix ) ) ) return $numDefault;
-			
-		if ( $numMin != "" && $numToFix < $numMin) return $numMin;
-			
-		if ( $numMax != "" && $numToFix > $numMax ) return $numMax;
-
-		return $numToFix;
-		
-	}	
-	function UniteArraysRecursive( $arrPrecedence, $arrDefault ) {
-		
-		// since 1.0.1
-		// Merges two multi-dimensional arrays recursively. The first parameter array takes its precedence.
-		// This is useful to merge default option values.
-		
-		if ( is_null( $arrPrecedence ) )
-			$arrPrecedence = array();
-		
-		if ( !is_array( $arrDefault ) || !is_array( $arrPrecedence ) ) return $arrPrecedence;
-			
-		foreach( $arrDefault as $strKey => $v ) {
-			
-			// If the precedence does not have the key, assign the default's value.
-			if ( ! array_key_exists( $strKey, $arrPrecedence ) )
-				$arrPrecedence[ $strKey ] = $v;
-			else {
-				
-				// if the preceding array key is null, set an empty array so that the function can proceed to merge the keys.
-				if ( is_null( $arrPrecedence[ $strKey ] ) )
-					$arrPrecedence[ $strKey ] = array();
-					
-				// if the both are arrays, do the recursive process.
-				if ( is_array( $arrPrecedence[ $strKey ] ) && is_array( $v ) ) 
-					$arrPrecedence[ $strKey ] = $this->UniteArraysRecursive( $arrPrecedence[ $strKey ], $v );			
-			
-			}
-		}
-		
-		return $arrPrecedence;
-		
-	}	
+	
 	/*
 	 * Utilities - designed to be used by the framework internally.
 	 * */
-	protected function GetCorrespondingArrayValue( $strKey, $vSubject, $strDefault='' ) {
+	public function IsPluginPage( $strURL ) {	// since 1.0.3.2, must be public as oRedirect refers to
 		
-		// since 1.0.2
-		// When there are multiple arrays and they have similar index struture but it's not certain,
-		// use this method to retrieve the corresponding key value. This is mainly used by the field array
-		// to insert user-defined key values.
+		$arrURLElems = parse_url( $strURL );
+		parse_str( $arrURLElems['query'], $arrQuery );
 		
-		// $vSubject must be either string or array.
-		if ( ! is_array( $vSubject ) ) return ( string ) $vSubject;	// consider it as string.
+		$arrBlogURLElems = parse_url( site_url() );
+		if ( $arrURLElems['host'] != $arrBlogURLElems['host'] ) return false;	// if the domain is different
+				
+		if ( ! $this->IsPageAdded( $arrQuery['page'] ) ) return false;
+
+		return true;
 		
-		// Consider $vSubject as array
-		if ( isset( $vSubject[ $strKey ] ) ) return ( string ) $vSubject[ $strKey ];
-		
-		return $strDefault;
-		
-	}
+	}	 
+
 	protected function AddAndApplyFilters( $strFilterPrefix, $arrSuffixes, $vInput, $vParams=null ) {
 		
 		// Creates filters of tab, page, and global and returns the filter-applied output.	 
@@ -1636,61 +1286,1190 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		
 	}
 	protected function AddAndApplyFilter( $strFilter, $vInput, $vParams=null ) {
+
 		// called from the AddAndApplyFilters() method
 		add_filter( $strFilter , array( $this, $strFilter ), 10, isset( $vParams ) ? 2 : 1 );
 		return apply_filters( $strFilter, $vInput, $vParams );	// at this point, the magic method __call(), gets triggred.
+	
 	}	
-	protected function IsPageAdded( $strPageSlug ) {
+	public function IsPageAdded( $strPageSlug ) {	// used by the oRedirect object as well so it must be public
 		
 		// returns true if the given page slug is one of the pages added by the library.
 		if ( array_key_exists( trim( $strPageSlug ), $this->arrPageTitles ) ) return true; 
+
 	}
-	function GetCallerPluginBaseName() {
-		
-		return plugin_basename( $this->arrCallerInfo['file'] );
-		
-	}	
+
 	function IsReferredFromAddedPage( $strURL ) {
-		/*
-		 * Used from the image uploader - checks the given url contains the page slug added by the library class
-		 * */
+
+		// Used from the image uploader - checks the given url contains the page slug added by the library class
+
 		foreach ( $this->arrPageTitles as $strSlug => $strTitle ) 
 			if ( stripos( $strURL, $strSlug ) ) return true;
+			
 	}	
-	function SanitizeArrayKeys( $arr ) {
-		foreach ( $arr as $key => $var ) { 
-			unset( $arr[$key] );
-			$new_key = $this->SanitizeSlug( $key ); //str_replace( "-", "_", $key );
 
-			// check if the key already exists or not, skip if exists
-			if ( isset( $arr[$new_key] ) ) continue;
-			$arr[$new_key] = $var;
-		}
-		return $arr;
-	}		
-	function SanitizeSlug( $strSlug ) {
-		$strSlug = preg_replace( '/[^a-zA-Z0-9_\x7f-\xff]/', '_', $strSlug );
-		return $strSlug;
-	}
-	function UnserializeFromFile( $strFilePath ) {
-		// returns an array from the contents of a given file
-		$arr = unserialize( file_get_contents( $strFilePath, true ) );
-		return ( $arr ) ? $arr : null; 
-	}
 	function AddAdminNotice( $strMsg, $nType=0 ) {
+		
 		// $nType - 0: update, 1: error
 		$this->strAdminNotice = '<div class="' . ( $nType == 0 ) ? 'updated' : 'error' . '"><p>' . $strMsg . '</p></div>';
 		add_action( 'admin_notices', array( $this, 'ShowAdminNotice' ) );
+		
 	}
 	function ShowAdminNotice() {
+		
 		echo $this->strAdminNotice;
+		
 	}	
+	
 	/*
 	 * Methods for Debug
 	 * */
-	function DumpArray( $arr ) {
+	function DumpArray( $arr, $strFilePath=null ) {
 		
+		return $this->oDebug->DumpArray( $arr, $strFilePath );
+	
+	}
+
+}
+
+if ( ! class_exists( 'ResponsiveColumnWidgets_Admin_Page_Framework_Debug' ) ) :
+class ResponsiveColumnWidgets_Admin_Page_Framework_Debug {
+	
+	
+    public function GetMemoryUsage() {
+       
+	   $intMemoryUsage = memory_get_usage( true );
+       
+        if ( $intMemoryUsage < 1024 ) return $intMemoryUsage . " bytes";
+        
+		if ( $intMemoryUsage < 1048576 ) return round( $intMemoryUsage/1024,2 ) . " kilobytes";
+        
+        return round( $intMemoryUsage / 1048576,2 ) . " megabytes";
+           
+    } 		
+	
+	public function DumpArray( $arr, $strFilePath=null ) {
+		if ( $strFilePath ) {
+			
+			file_put_contents( 
+				$strFilePath , 
+				date( "Y/m/d H:i:s" ) . PHP_EOL
+				. print_r( $arr, true ) . PHP_EOL . PHP_EOL
+				, FILE_APPEND 
+			);					
+			
+		}
 		return '<pre>' . esc_html( print_r( $arr, true ) ) . '</pre>';
 		
+	}	
+}
+endif;
+
+if ( ! class_exists( 'ResponsiveColumnWidgets_Admin_Page_Framework_Link' ) ) :
+class ResponsiveColumnWidgets_Admin_Page_Framework_Link {	// since 1.0.4
+	
+	// Objects
+	public $oCore;	// stores the caller core object instance.
+	
+	// Properties
+	protected $strDefaultPageSlug;
+	
+	// Array containers
+	public $arrCallerInfo = array();		// stores the caller script information. Must be public as $oLink will look up.
+	protected $arrPluginTitleLinks = array();	// stores links which will be added to the title column in the plugin lising page.
+	protected $arrPluginDescriptionLinks = array();	// stores links which will be added to the description column in the plugin lising page.
+	
+	function __construct( &$oCore, $strCallerPath ) {
+		
+		$this->oCore = $oCore;
+		
+		// Store the information of the caller file.
+		$this->arrCallerInfo = $this->GetCallerInfo( $strCallerPath ); 	
+		
+		// Modify the admin footer to add the plugin name and the version.
+		add_filter( 'update_footer', array( $this, 'AddInfoInFooterRight' ), 11 );
+		add_filter( 'admin_footer_text' , array( $this, 'AddInfoInFooterLeft' ) );	
+		
+	}
+	
+	
+	public function AddLinkToPluginDescription( $vLinks ) {
+		
+		if ( !is_array( $vLinks ) )
+			$this->arrPluginDescriptionLinks[] = $vLinks;
+		else
+			$this->arrPluginDescriptionLinks = array_merge( $this->arrPluginDescriptionLinks , $vLinks );
+	
+		add_filter( 'plugin_row_meta', array( $this, 'AddLinkToPluginDescription_Callback' ), 10, 2 );
+
+	}	
+	public function AddLinkToPluginDescription_Callback( $arrLinks, $strFile ) {	// this is a callback method so should not be protected
+
+		if ( $strFile != $this->GetCallerPluginBaseName() ) return $arrLinks;
+		return array_merge( $arrLinks, $this->arrPluginDescriptionLinks );
+		
+	}		
+	public function AddLinkToPluginTitle( $vLinks ) {
+		
+		if ( !is_array( $vLinks ) )
+			$this->arrPluginTitleLinks[] = $vLinks;
+		else
+			$this->arrPluginTitleLinks = array_merge( $this->arrPluginTitleLinks, $vLinks );
+		
+		add_filter( 'plugin_action_links_' . $this->GetCallerPluginBaseName(), array( $this, 'AddLinkToPluginTitle_Callback' ) );
+
+	}
+	public function AddLinkToPluginTitle_Callback( $arrLinks ) {	// A callback method should not be protected.
+		
+		return array_merge( $arrLinks, $this->arrPluginTitleLinks );
+	
+	}	
+	public function GetCallerPluginBaseName() {
+		
+		return plugin_basename( $this->arrCallerInfo['file'] );
+		
+	}		
+	public function SetDefaultPageSlug( $strPageSlug ) {
+		
+		$this->strDefaultPageSlug = trim( $strPageSlug );
+		
+	}	
+	public function AddSettingsLinkInPluginListingPage( $arrLinks ) {		// this is a callback method so should not be protected	
+	
+		array_unshift(	
+			$arrLinks,
+			'<a href="admin.php?page=' . $this->strDefaultPageSlug . '">' . __( 'Settings', 'admin-page-framework' ) . '</a>'
+		); 
+		return $arrLinks;
+		
+	}	
+	public function AddInfoInFooterLeft( $strText='' ) {  // since 1.0.2.2, moved from main in 1.0.4. method used by hooks should be public
+		
+		// callback for the filter hook, admin_footer_text.
+		
+		if ( ! isset( $_GET['page'] ) || ! $this->oCore->IsPageAdded( $_GET['page'] )  ) return $strText;	// $strText is given by the hook.
+		 
+		$strPluginInfo = $this->arrCallerInfo['data']['Name'] . ' ' . $this->arrCallerInfo['data']['Version'];
+		$strPluginInfo = empty( $this->arrCallerInfo['data']['ScriptURI'] ) ? $strPluginInfo : '<a href="' . $this->arrCallerInfo['data']['ScriptURI'] . '">' . $strPluginInfo . '</a>';
+		$strAuthorInfo = empty( $this->arrCallerInfo['data']['AuthorURI'] )	? $this->arrCallerInfo['data']['Author'] : '<a href="' . $this->arrCallerInfo['data']['AuthorURI'] . '">' . $this->arrCallerInfo['data']['Author'] . '</a>';
+		$strAuthorInfo = empty( $this->arrCallerInfo['data']['Author'] ) ? $strAuthorInfo : 'by ' . $strAuthorInfo;
+		return $strPluginInfo . ' ' . $strAuthorInfo;			
+
+	}	
+	public function AddInfoInFooterRight( $strText='' ) {	// since 1.0.2.2, moved from main in 1.0.4. method used by hooks should be public
+	
+		// Adds plugin info into the footer
+		
+		if ( ! isset( $_GET['page'] ) || ! $this->oCore->IsPageAdded( $_GET['page'] )  ) return $strText;	// $strText is given by the hook.
+		
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG == true )
+			$strMemoryUsage = ' Memory Usage: ' . $this->oCore->oDebug->GetMemoryUsage();
+		
+		return __( 'Powered by', 'admin-page-framework' ) . '&nbsp;' 
+			. '<a href="http://wordpress.org/extend/plugins/admin-page-framework/">Admin Page Framework</a>'
+			. ', <a href="http://wordpress.org">WordPress</a>' . $strMemoryUsage;
+		
+	}	
+	
+	public function GetCallerInfo( $strFilePath=null ) {		// since 1.0.2.2
+		
+		// Attempts to retrieve the caller script type whether it's a theme or plugin or something else
+		// so that the info can be embedded into the footer.
+				
+		$arrCallerInfo = array();
+		$arrCallerInfo['file'] = $strFilePath ? $strFilePath : $this->GetParentScriptPath( debug_backtrace() );
+		$arrCallerInfo['type'] = $this->GetCallerType( $arrCallerInfo['file'] );
+		
+		if ( $arrCallerInfo['type'] == 'plugin' ) {
+			
+			if ( ! function_exists( 'get_plugin_data' )  ) 
+				require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+			
+			$arrCallerInfo['data'] = get_plugin_data( $arrCallerInfo['file'], false );	// stores the plugin info array
+			$arrCallerInfo['data']['ScriptURI'] = $arrCallerInfo['data']['PluginURI'];
+			
+		} else if ( $arrCallerInfo['type'] == 'theme' ) {
+
+			if ( ! function_exists( 'wp_get_theme' )  ) 
+				require_once( ABSPATH . 'wp-admin/includes/theme.php' );
+		
+			$oTheme = wp_get_theme();	// stores the theme info object
+			$arrCallerInfo['data'] = array(
+				'Name'			=> $oTheme->Name,
+				'Version' 		=> $oTheme->Version,
+				'ThemeURI'		=> $oTheme->get( 'ThemeURI' ),
+				'ScriptURI'		=> $oTheme->get( 'ThemeURI' ),
+				'AuthorURI'		=> $oTheme->get( 'AuthorURI' ),
+				'Author'		=> $oTheme->get( 'Author' ),				
+			);
+			
+		}
+				
+		return $arrCallerInfo;
+		
+	}
+	protected function GetParentScriptPath( $arrDebugBacktrace ) {
+		
+		foreach( $arrDebugBacktrace as $intIndex => $arrDebugInfo )  {
+			
+			if ( $arrDebugInfo['file'] == __FILE__ ) continue;
+			
+			return $arrDebugInfo['file'];
+			
+		}
+		// isset( $arrDebugBacktrace[1] ) ? $arrDebugBacktrace[1]['file'] : $arrDebugBacktrace[0]['file'];		
+	}
+	protected function GetCallerType( $strPath ) {		// since 1.0.2.2
+		
+		// Determines what kind of script this is, theme, plugin or something else from the given path.
+		// Returns either 'theme', 'plugin', or 'unknown'
+		
+		if ( preg_match( '/[\/\\\\]themes[\/\\\\]/', $strPath, $m ) ) return 'theme';
+		if ( preg_match( '/[\/\\\\]plugins[\/\\\\]/', $strPath, $m ) ) return 'plugin';
+		return 'unknown';
+		
+	}	
+}
+endif;
+
+if ( ! class_exists( 'ResponsiveColumnWidgets_Admin_Page_Framework_Redirect' ) ) :
+class ResponsiveColumnWidgets_Admin_Page_Framework_Redirect {		// since 1.0.4
+	
+	public $oCore;	// stores the caller core object instance.
+	
+	function __construct( &$oCore ) {
+		
+		$this->oCore = $oCore;
+		
+		// Check if there is a redirect
+		add_action( 'admin_init', array( $this, 'CheckFormRedirect' ) );	// since 1.0.3.2	
+		
+	}
+	
+	public function CheckHrefRedirect( $arrHref ) {	// since 1.0.3.2, moved from the main class in 1.0.4, must be public
+	
+		// Called from MergeOptionArray() to check if the href key is set in the submit form field type, 
+		
+		foreach( $arrHref as $strFieldID => $arrHrefInfo ) {
+			
+			// $arrHrefInfo['name'] - with the delimiter |, it stores the name set in the field name attribute
+			// Case A : a submit button with a single label - keys are either three or four
+			// 		e.g. "{$strOptionKey}|{$arrField['section_ID']}|{$arrField['field_ID']}"  
+			// 		, or "{$strOptionKey}|{$arrField['page_slug']}|{$arrField['section_ID']}|{$arrField['field_ID']}"
+			// Case B : submit buttons with multiple labels - keys are either four or five
+			// 		__array|{$strOptionKeyForReference}|{$strArrayKey}			
+			$arrNameKeys = explode( '|', $arrHrefInfo['name'] );
+			if ( $arrNameKeys[0] == '__array' ) {
+				array_shift( $arrNameKeys );	//  "__array|{$strOptionKey}|{$arrField['section_ID']}|{$arrField['field_ID']}" -> "{$strOptionKey}|{$arrField['section_ID']}|{$arrField['field_ID']}" 
+				if ( count( $arrNameKeys ) == 4 ) {
+					if ( isset( $_POST[ $arrNameKeys[0] ][ $arrNameKeys[1] ][ $arrNameKeys[2] ][ $arrNameKeys[3] ] ) ) 	// means this button was pressed
+						$this->Redirect( $arrHrefInfo['url'] );
+				}
+				else if ( count( $arrNameKeys ) == 5 ) {
+					if ( isset( $_POST[ $arrNameKeys[0] ][ $arrNameKeys[1] ][ $arrNameKeys[2] ][ $arrNameKeys[3] ][ $arrNameKeys[4] ] ) ) 	// means this button was pressed
+						$this->Redirect( $arrHrefInfo['url'] );
+				}
+			}
+			if ( count( $arrNameKeys ) == 3 ) {	// a custom option key is not set by the user
+				if ( isset( $_POST[ $arrNameKeys[0] ][ $arrNameKeys[1] ][ $arrNameKeys[2] ] ) ) 	// means this button was pressed
+					$this->Redirect( $arrHrefInfo['url'] );					
+				
+			}
+			else if ( count( $arrNameKeys ) == 4 ) {
+				if ( isset( $_POST[ $arrNameKeys[0] ][ $arrNameKeys[1] ][ $arrNameKeys[2] ][ $arrNameKeys[3] ] ) ) // means this button was pressed
+					$this->Redirect( $arrHrefInfo['url'] );
+			}
+		}
+	}
+	public function CheckFormRedirect() {	// since 1.0.3.2, callback for the admin_init hook, so it has to be public, , moved from the main class in 1.0.4
+		
+		// the Settings API redirects to options.php to process the data submission. In the page, the $_GET['page'] is not set but WordPress redirects back 
+		// to the caller page with $_GET['page']. So in options.php, we save the necessary data into a transient and when the $_GET["settings-updated"] is present,
+		// check the transient for the redirect and process the redirection if it tells it should.
+		
+		// Variables
+		global $pagenow;
+		
+		// options.php
+		if ( $pagenow == 'options.php' ) {
+			
+			if ( ! ( isset( $_POST['__redirect'] ) && isset( $_POST['pageslug'] ) &&  is_array( $_POST['__redirect'] ) ) ) 
+				return;
+			
+			$strTransient = md5( 'redirect_' . $this->oCore->strClassName . '_' . $_POST['pageslug'] );
+			foreach ( $_POST['__redirect'] as $strFieldID => $arrRedirectInfo ) {
+				
+				// $arrRedirectInfo['name'] - with the delimiter |, it stores the name set in the field name attribute
+				// Case A : a submit button with a single label - keys are either three or four
+				// 		e.g. "{$strOptionKey}|{$arrField['section_ID']}|{$arrField['field_ID']}"  
+				// 		, or "{$strOptionKey}|{$arrField['page_slug']}|{$arrField['section_ID']}|{$arrField['field_ID']}"
+				// Case B : submit buttons with multiple labels - keys are either four or five
+				// 		__array|{$strOptionKeyForReference}|{$strArrayKey}
+				$arrNameKeys = explode( '|', $arrRedirectInfo['name'] );
+				if ( $arrNameKeys[0] == '__array' ) {
+					array_shift( $arrNameKeys );	//  "__array|{$strOptionKey}|{$arrField['section_ID']}|{$arrField['field_ID']}" -> "{$strOptionKey}|{$arrField['section_ID']}|{$arrField['field_ID']}" 
+					if ( count( $arrNameKeys ) == 4 ) {
+						if ( isset( $_POST[ $arrNameKeys[0] ][ $arrNameKeys[1] ][ $arrNameKeys[2] ][ $arrNameKeys[3] ] ) ) {	// means this button was pressed
+							set_transient( $strTransient, $arrRedirectInfo['url'] , 60*5 );
+							return;
+						}
+					}
+					else if ( count( $arrNameKeys ) == 5 ) {
+						if ( isset( $_POST[ $arrNameKeys[0] ][ $arrNameKeys[1] ][ $arrNameKeys[2] ][ $arrNameKeys[3] ][ $arrNameKeys[4] ] ) ) {	// means this button was pressed
+							set_transient( $strTransient, $arrRedirectInfo['url'] , 60*5 );
+							return;
+						}
+					}
+				}
+				if ( count( $arrNameKeys ) == 3 ) {	// a custom option key is not set by the user
+					if ( isset( $_POST[ $arrNameKeys[0] ][ $arrNameKeys[1] ][ $arrNameKeys[2] ] ) ) {	// means this button was pressed
+						set_transient( $strTransient, $arrRedirectInfo['url'] , 60*5 );
+						return;
+					}
+				}
+				else if ( count( $arrNameKeys ) == 4 ) {
+					if ( isset( $_POST[ $arrNameKeys[0] ][ $arrNameKeys[1] ][ $arrNameKeys[2] ][ $arrNameKeys[3] ] ) ) { // means this button was pressed
+						set_transient( $strTransient, $arrRedirectInfo['url'] , 60*5 );
+						return;
+					}
+				}
+			}
+			
+			return;
+			
+		}
+	
+		// So it's not options.php. Now check if it's one of the plugin's added page. If not, do nothing.
+		if ( ! ( isset( $_GET['page'] ) ) || ! $this->oCore->IsPageAdded( $_GET['page'] ) ) return; 
+		
+		// The settings-updated key indicates it's redirected from options.php by WordPress Settings API.
+		if ( 	
+			! ( 
+			( isset( $_GET['settings-updated'] ) && ! empty( $_GET['settings-updated'] ) )
+			&& ! get_transient( md5( $this->oCore->strClassName . '_' . $_GET['page'] ) ) 	// error transient set by this framework
+			)
+		)	return;
+
+		// Okay, it seems the submitted data have been updated successfully.
+		$strTransient = md5( 'redirect_' . $this->oCore->strClassName . '_' . $_GET['page'] );
+		$strURL = get_transient( $strTransient );
+		if ( $strURL === false ) return;
+		
+		// The redirect URL seems to be set.
+		delete_transient( $strTransient );	// we don't need it anymore.
+		
+		// if the redirect page is outside the plugin admin page, delete the plugin settings admin notices as well.
+		if ( ! $this->oCore->IsPluginPage( $strURL ) ) 	
+			delete_transient( md5( 'SettingsErrors_' . $this->oCore->strClassName . '_' . $this->oCore->strPageSlug ) );
+				
+		// Finally, go to the page! 
+		$this->Redirect( $strURL );
+	
+	}
+	
+	protected function Redirect( $strURL ) {		// since 1.0.3.2, moved from the main class in 1.0.4
+		
+		// Redirects to the given URL and exits. Meant to save the one extra line, exit;.
+		if ( ! function_exists('wp_redirect') ) include_once( ABSPATH . WPINC . '/pluggable.php' );
+		wp_redirect( $strURL );
+		exit;
+		
+	}
+	
+}
+endif;
+
+if ( ! class_exists( 'AdminPageFramework_WordPress_Utilities' ) ) :
+class AdminPageFramework_WordPress_Utilities {	// since 1.0.4
+
+	/*
+	 * Provides utility functions which uses WordPress specific functions - moved from the main class
+	 * 
+	 * */
+	
+	
+	
+}
+endif;
+
+if ( ! class_exists( 'ResponsiveColumnWidgets_Admin_Page_Framework_Utilities' ) ) :
+class ResponsiveColumnWidgets_Admin_Page_Framework_Utilities {	// since 1.0.4
+
+	/*
+	 * Provides utility functions - moved from the main class
+	 * 
+	 * */
+	public function CheckKeys( $arrMandatoryKeys, $arrSubject, $arrAllowedMissingKeys=array() ) {
+		
+		// Checks if the subject array has all the necessary keys.
+		// The $arrMandatoryKeys array must be numerically indexed with the values of necessary keys.
+		// ( use array_keys() to format the array prior to pass it to the method. )
+		
+		foreach( $arrMandatoryKeys as $strKey ) {
+			if ( in_array( $strKey, $arrAllowedMissingKeys ) ) continue;
+			if ( ! array_key_exists( $strKey, $arrSubject ) ) return false;
+		}
+		
+		return true;
+		
+	}
+	public function FixNumber( $numToFix, $numDefault, $numMin="", $numMax="" ) {
+	
+		// Checks if the passed value is a number and set it to the default if not.
+		// if it is a number and exceeds the set maximum number, it sets it to the max value.
+		// if it is a number and is below the minimum number, it sets to the minimium value.
+		// set a blank value for no limit.
+		// This is useful for form data validation.
+		
+		if ( !is_numeric( trim( $numToFix ) ) ) return $numDefault;
+			
+		if ( $numMin != "" && $numToFix < $numMin) return $numMin;
+			
+		if ( $numMax != "" && $numToFix > $numMax ) return $numMax;
+
+		return $numToFix;
+		
+	}	
+	public function UniteArraysRecursive( $arrPrecedence, $arrDefault ) {		// since 1.0.1, moved from the main class in 1.0.4, must be public
+		
+		// Merges two multi-dimensional arrays recursively. The first parameter array takes its precedence.
+		// This is useful to merge default option values.
+		
+		if ( is_null( $arrPrecedence ) )
+			$arrPrecedence = array();
+		
+		if ( !is_array( $arrDefault ) || !is_array( $arrPrecedence ) ) return $arrPrecedence;
+			
+		foreach( $arrDefault as $strKey => $v ) {
+			
+			// If the precedence does not have the key, assign the default's value.
+			if ( ! array_key_exists( $strKey, $arrPrecedence ) )
+				$arrPrecedence[ $strKey ] = $v;
+			else {
+				
+				// if the preceding array key is null, set an empty array so that the function can proceed to merge the keys.
+				if ( is_null( $arrPrecedence[ $strKey ] ) )
+					$arrPrecedence[ $strKey ] = array();
+					
+				// if the both are arrays, do the recursive process.
+				if ( is_array( $arrPrecedence[ $strKey ] ) && is_array( $v ) ) 
+					$arrPrecedence[ $strKey ] = $this->UniteArraysRecursive( $arrPrecedence[ $strKey ], $v );			
+			
+			}
+		}
+		
+		return $arrPrecedence;
+		
+	}	 
+	public function GetCorrespondingArrayValue( $strKey, $vSubject, $strDefault='' ) {	// since 1.0.2, must be public
+		
+		// When there are multiple arrays and they have similar index struture but it's not certain,
+		// use this method to retrieve the corresponding key value. This is mainly used by the field array
+		// to insert user-defined key values.
+		
+		// $vSubject must be either string or array.
+		if ( ! is_array( $vSubject ) ) return ( string ) $vSubject;	// consider it as string.
+		
+		// Consider $vSubject as array
+		if ( isset( $vSubject[ $strKey ] ) ) return ( string ) $vSubject[ $strKey ];
+		
+		return $strDefault;
+		
+	}
+	public function UnserializeFromFile( $strFilePath ) {	// moved from the main class
+		
+		// Used for the Import functionality.
+		// Returns an array from the contents of a given file
+		$arr = unserialize( file_get_contents( $strFilePath, true ) );
+		return ( $arr ) ? $arr : null; 
+		
+	}
+	public function SanitizeArrayKeys( $arr ) {		// moved from the main class in 1.0.4, must be public 
+		
+		foreach ( $arr as $key => $var ) { 
+		
+			unset( $arr[ $key ] );
+			$new_key = $this->SanitizeSlug( $key ); //str_replace( "-", "_", $key );
+
+			// check if the key already exists or not, skip if exists
+			if ( isset( $arr[ $new_key ] ) ) continue;
+			$arr[ $new_key ] = $var;
+			
+		}
+		return $arr;
+		
+	}		
+	public function SanitizeSlug( $strSlug ) {	// moved from the main class in 1.0.4, must be public 
+		
+		return preg_replace( '/[^a-zA-Z0-9_\x7f-\xff]/', '_', $strSlug );
+		
+	}
+	public function SanitizeString( $str ) {	// moved from the main class in 1.0.4, must be public 
+		
+		// Similar to the above SanitizeSlug() except that this allows hyphen.
+		return preg_replace( '/[^a-zA-Z0-9_\x7f-\xff\-]/', '_', $str );
+		
+	}	
+}
+endif;
+
+if ( ! class_exists( 'AdminPageFramework_Input_Filed_Types' ) ) :
+class AdminPageFramework_Input_Filed_Types {	// since 1.0.4
+	
+	/*
+	 * Used to retrieve the output of a given field type as a part of the Settings API field elements.
+	 * Moved from the main class in 1.0.4.
+	 * */
+	 
+	// Default values
+	protected $arrDefaultFieldKeys = array(
+		'type' => null, 		// determins the type of input field. For textarea and select, the mentioned tags will be created instead of the input tag.
+		'class' => null,		// the class of CSS style. 
+		'description' => null,
+		'label' => null,		// this is used to construct and render elements .
+		'default' => null,		// this is similar to the above label key but used to specify the default values.
+		'value' => null,		// this suppress the default key value. This is usefult to display the value saved in a custom place other thant the framework automatically saves.
+		'error' => null,
+		'file_name' => null,	// used by the export custom field 
+		'transient' => null,	// used by the export custom field to look up exporting data, since 1.0.2
+		'option_key' => null,
+		'selectors' => null,	// <-- not sure about this
+		'disable' => null,
+		'max' => null,
+		'min' => null,
+		'size' => 30,
+		'rows' => 4,
+		'cols' => 80,
+		'maxlength' => null,
+		'step' => null,
+		'pre_html' => null,
+		'post_html' => null,
+		'delimiter' => '<br />', 	// used by filed types which accept a label as array and this delimiter value will be used to delimit the elements, since 1.0.2
+		'update_message' => null,	// used by the import custom field
+		'error_message' => null,	// used by the import custom field
+		'capability' => null,		// since 1.0.2.1, used to determine whether the field should be displayed to the user; this should not be used in this method but the AddFormFields() method
+		'pre_field' => null,		// since 1.0.3 - pre-pends the given string before the field tag
+		'post_field' => null,		// since 1.0.3 - appends the given string after the field tag
+		'name'	=> null,			// sunce 1.0.3 - sets the user-defined name attribute to the input tag instead of the one that the framework automatically assignes.
+		'readonly' => null,			// since 1.0.3 - sets the readonly attribute to text and textarea input fields.
+		'href' => null,				// since 1.0.3 - for the sumbit fie;d type. That make the button serve like a hyper link.
+		'redirect' => null,			// since 1.0.3.2 - for the submit field type. Redirects to the specified url after the form data is successfully updated.
+		'max_width'	 => 400,		// since 1.0.4 - for the category checklist filed type.
+		'max_height' => 200,		// since 1.0.4 - for the category checklist filed type.
+		'remove'	=> array( 'revision', 'attachment', 'nav_menu_item' ),	// since 1.0.4 - for the posttype checklist field type
+	);
+		
+	// Array containers
+	protected $arrOptions = array();	// stores the options of the admin pages as array. The construcor will fill the values.
+	protected $arrErrors = array(); 	// stores the field errors as array. When the validation fails, it is used to display the specified message.
+	protected $arrField = array(); 		// stores the field array which contains all necessay information for the rendering input field.
+	
+	// Dynamic properties
+	public $strClassName;		// Stores the extended class name. Referenced by oRedirect so it must be public. 
+	protected $strOptionKey;	// Stores the option key to use to save the data into the option database table.
+	protected $strFieldName;	// Stores the value for the name attribute to assign.
+	protected $strTagID;		// Stores the rendering input tag ID to assign.
+	protected $vValue;			// array or string. Stores the value either string or array for the value attribute to assign.
+	protected $vDisable;		// array or string. Stores the value for the disable attribe to assign, could be stored as as array for multiple elements.
+	
+	function __construct( &$arrField, &$strOptionKey, &$strClassName ) {
+		
+		// Objects
+		$this->oUtil = new ResponsiveColumnWidgets_Admin_Page_Framework_Utilities;
+		
+		// Set up the option array - case 1. option key is specified. case 2 not specified in the constructor, then use the page slug as the key.
+		$this->arrOptions = ( array ) get_option( ( empty( $strOptionKey ) ) ? $arrField['page_slug'] : $strOptionKey );
+		if ( !empty( $strOptionKey ) ) 	// if the custom option key is set by the user,				
+			$this->arrOptions = isset( $this->arrOptions[ $arrField['page_slug'] ] ) ? $this->arrOptions[ $arrField['page_slug'] ] : array();
+	
+		// Set up the field error array
+		// The 'settings-updated' key will be set in the $_GET array when redirected by Settings API 
+		$this->arrErrors = get_transient( md5( $strClassName . '_' . $arrField['page_slug'] ) );
+		$this->arrErrors = ( isset( $_GET['settings-updated'] ) &&  $this->arrErrors ) ? $this->arrErrors  : null;		
+		
+		// Set up the field array. Merging with the default keys will prevent PHP undefined key warnings.
+		$this->arrField = $arrField + $this->arrDefaultFieldKeys;
+		
+		// Dynamic prorperties
+		$this->strOptionKey = $strOptionKey;
+		$this->strClassName = $strClassName;
+		$this->strFieldName = $this->GetInputFieldName( $this->arrField );	
+		$this->vValue = $this->GetInputFieldValue( $this->arrOptions, $this->arrField );
+		$this->strTagID = "{$this->arrField['section_ID']}_{$this->arrField['field_ID']}";
+		$this->vDisable = is_array( $this->arrField['disable'] ) ? $this->arrField['disable'] : ( $this->arrField['disable'] ? 'disabled="Disabled"' : '' );
+		
+	}
+	
+	protected function GetInputFieldNameFlat() {	// since 1.0.4, moved from GetFormFieldsByType()
+
+		$arrField = &$this->arrField;
+		$tmp = $this->strOptionKey;	// something looking like a bug occurs with the direct assignment in the ternary below.
+		$strOptionKey = empty( $this->strOptionKey ) ? $arrField['page_slug'] : $tmp;	// it seems a bug occurs without assigning to a different variable	
+		return empty( $this->strOptionKey ) ? 
+			"{$strOptionKey}|{$arrField['section_ID']}|{$arrField['field_ID']}" :
+			"{$strOptionKey}|{$arrField['page_slug']}|{$arrField['section_ID']}|{$arrField['field_ID']}";	
+		
+	}
+	protected function GetInputFieldName( &$arrField ) {	// since 1.0.4, moved from GetFormFieldsByType()
+		
+		// case 1: the option key is set
+		// case 2: the option key is not set by the user and the page slug is used.
+		// case 3: the name key is set.
+		
+		// if the name key is explicitly set, use it
+		if ( ! empty( $arrField['name'] ) ) return $arrField['name'];
+		
+		$tmp = $this->strOptionKey;	// something looking like a bug occurs with the direct assignment in the ternary below.
+		$strOptionKey = empty( $this->strOptionKey ) ? $arrField['page_slug'] : $tmp;	// it seems a bug occurs without assigning to a different variable
+		
+		if ( empty( $this->strOptionKey ) )
+			return "{$strOptionKey}[{$arrField['section_ID']}][{$arrField['field_ID']}]";
+		return "{$strOptionKey}[{$arrField['page_slug']}][{$arrField['section_ID']}][{$arrField['field_ID']}]";
+		
+	}	
+	protected function GetInputFieldValue( &$arrOptions, &$arrField ) {	// since 1.0.4, moved from GetFormFieldsByType()
+
+		// If the value key is explicitly set, use it.
+		if ( isset( $arrField['value'] ) ) return $arrField['value'];
+		
+		// Check if a previously saved data exist or not.
+		if ( isset( $arrOptions[ $arrField['section_ID'] ][ $arrField['field_ID'] ] ) )
+			return $arrOptions[ $arrField['section_ID'] ][ $arrField['field_ID'] ];
+
+		// If the default value is set,
+		if ( isset( $arrField['default'] ) ) return $arrField['default'];
+		
+	}
+	
+	public function GetInputField( $strType ) {
+		
+		// Field error message
+		$strOutput = isset( $this->arrErrors[ $this->arrField['section_ID'] ][ $this->arrField['field_ID'] ] )
+			? '<span style="color:red;">*&nbsp;' . $this->arrField['error'] . $this->arrErrors[ $this->arrField['section_ID'] ][ $this->arrField['field_ID'] ] . '</span><br />'
+			: '';
+			
+		// Start diverging
+		switch ( $strType ) {
+			case in_array( $strType, array( 'text', 'password', 'color', 'date', 'datetime', 'datetime-local', 'email', 'month', 'search', 'tel', 'time', 'url', 'week' ) ):
+				$strOutput .= $this->GetTextField();
+				break;
+			case in_array( $strType, array( 'number', 'range' ) ):	// HTML5 elements
+				$strOutput .= $this->GetNumberField();
+				break;
+			case 'textarea':	// Additional attributes: rows, cols
+				$strOutput .= $this->GetTextAreaField();
+				break;	
+			case 'radio':
+				$strOutput .= $this->GetRadioField();
+				break;
+			case 'checkbox':	// Supports multiple creation with array of label				
+				$strOutput .= $this->GetCheckBoxField();
+				break;
+			case 'select':
+				$strOutput .= $this->GetSelectField();
+				break;
+			case 'hidden':	// Supports multiple creation with array of label
+				$strOutput .= $this->GetHiddenField();
+				break;		
+			case 'file':	// Supports multiple creation with array of label
+				$strOutput .= $this->GetFileField();
+				break;
+			case 'submit':	
+				$strOutput .= $this->GetSubmitField();
+				break;
+			case 'import':	// import options
+				$strOutput .= $this->GetImportField();
+				break;	
+			case 'export':	// export options
+				$strOutput .= $this->GetExportField();
+				break;
+			case 'image':	// image uploader
+				$strOutput .= $this->GetImageField();
+				break;
+			case 'category':
+				$strOutput .= $this->GetCategoryChecklistField();
+				break;
+			case 'posttype':
+				$strOutput .= $this->GetPostTypeChecklistField();
+				break;
+			default:	// for anything else, 				
+				$strOutput .= $this->arrField['pre_field'] . $this->vValue . $this->arrField['post_field'];
+				break;				
+		}
+		
+		// Keys: pre_html, description, post_html
+		$strOutput = $this->arrField['pre_html'] . $strOutput;
+		$strOutput .= ( !isset( $this->arrField['description'] ) ||  trim( $this->arrField['description'] ) == '' ) ? null : '<p class="field_description"><span class="description">' .  $this->arrField['description'] . '</span></p>';
+		$strOutput .= $this->arrField['post_html'];
+	
+		return $strOutput;
+		
+	}
+
+	protected function GetPostTypeChecklistField() {
+
+		$arrPostTypes = $this->GetPostTypes( $this->arrField['remove'] );
+
+		$arrValues = ( array ) $this->vValue;
+		$strOutput = "<div id='{$this->strTagID}'>";
+		foreach ( $arrPostTypes as $strKey => $bValue ) {
+		
+			$bValue = $this->oUtil->GetCorrespondingArrayValue( $strKey, $arrValues, false );
+			$strChecked = ( $bValue == 1 ) ? 'Checked' : '';
+			$strDisabled = $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->vDisable );
+			$strID = $this->strTagID . '_' . esc_attr( $strKey );
+			$strLabel = ucwords( $strKey );
+			$strOutput .= "<input type='hidden' name='{$this->strFieldName}[{$strKey}]' value='0' />";
+			$strOutput .= "<input id='{$strID}' class='{$this->arrField['class']}' type='checkbox' name='{$this->strFieldName}[{$strKey}]' value='1' {$strChecked} {$this->vDisable} />&nbsp;&nbsp;{$strLabel}";
+			$strOutput .= $this->arrField['delimiter'];
+		
+		}
+		$strOutput .= "</div>";
+		return $strOutput;		
+
+	}	
+	protected function GetPostTypes( $arrRemoveNames ) {
+		
+		$arrPostTypes = get_post_types( '','names' ); 
+		$arrPostTypes = array_diff_key( $arrPostTypes, array_flip( $arrRemoveNames ) );	// remove unnecessary keys.
+		$arrPostTypes = array_fill_keys( $arrPostTypes, True );
+		return $arrPostTypes;		
+		
+	}	
+	protected function GetCategoryChecklistField() {	// since 1.0.4
+		
+		$strFieldName = &$this->strFieldName;
+		$vValue = &$this->vValue;
+		$arrField = &$this->arrField;
+		
+		$strOutput = "<div class='wp-tab-panel category-check-list' style='max-width:{$arrField['max_width']}px; max-height:{$arrField['max_height']}px;'>";
+		$strOutput .= "<ul class='list:category categorychecklist form-no-clear'>";
+		$strOutput .= wp_list_categories( 
+			array(
+				'walker' => new AdminPageFramework_Walker_Category_Checklist,
+				'name'     => $strFieldName,       // name of the input
+				'selected' => array_keys( ( array ) $vValue, True ), 		//array( 6, 10, 7, 15 ),           // checked items (category IDs)	
+				'title_li'	=> '',	// disable the Categories heading string 
+				'hide_empty' => 0,	
+				'echo'	=> false,
+			) 
+		);
+		$strOutput .= '</ul>';
+		$strOutput .= '</div>';			
+		return $arrField['pre_field'] . $strOutput . $arrField['post_field'];
+		
+	}	
+	protected function GetExportField() {
+		
+		$vValue = isset( $this->arrField['value'] ) ? $this->arrField['value'] : $this->arrField['label'];
+		$vValue = isset( $vValue ) ? $vValue : $this->arrField['default'];
+		$strOutput = '';
+		
+		// Case: array
+		if ( is_array( $vValue ) ) { 
+			
+			foreach( $vValue as $intIndex => $strValue ) {
+				
+				// Variables
+				$strValue = ( $strValue ) ? $strValue : __( 'Export Options', 'admin-page-framework' );
+				$strFileName = $this->oUtil->GetCorrespondingArrayValue( $intIndex, $this->arrField['file_name'], $this->strClassName . '.txt' );
+				$strClass = $this->oUtil->GetCorrespondingArrayValue( $intIndex, $this->arrField['class'], 'button button-primary' );
+				$strTransientKey = $this->oUtil->GetCorrespondingArrayValue( $intIndex, $this->arrField['transient'], '' );
+				$strOptionKey = $this->oUtil->GetCorrespondingArrayValue( $intIndex, $this->arrField['option_key'], '' );
+				$strDisabled = $this->oUtil->GetCorrespondingArrayValue( $intIndex, $this->arrField['disable'], '' ) ? 'disabled="Disabled"' : '';
+				$strName = $this->oUtil->GetCorrespondingArrayValue( $intIndex, $this->arrField['name'], "__export[submit][{$intIndex}]" );
+				
+				// Output
+				if ( !empty( $strTransientKey ) )
+					$strOutput .= "<input type='hidden' name='__export[transient][{$intIndex}]' value='{$strTransientKey}' />";
+				$strOutput .= "<input type='hidden' name='__export[file_name][{$intIndex}]' value='{$strFileName}' />";
+				$strOutput .= "<input type='hidden' name='__export[option_key][{$intIndex}]' value='{$strOptionKey}' />";
+				$strOutput .= $this->oUtil->GetCorrespondingArrayValue( $intIndex, $this->arrField['pre_field'] ) 
+					. "<input id='{$this->strTagID}_{$intIndex}' class='{$strClass}' type='submit' value='{$strValue}' name='{$strName}' {$strDisabled} />"
+					. $this->oUtil->GetCorrespondingArrayValue( $intIndex, $this->arrField['post_field'] )
+					. $this->arrField['delimiter'];
+				
+			}
+			return $strOutput;
+			
+		}
+		
+		// Case: string
+		if ( is_string( $vValue ) ) { 
+		
+			// Variables
+			$vValue = ( $vValue ) ? $vValue : __( 'Export Options', 'admin-page-framework' );
+			$strFileName = $this->arrField['file_name'] ? $this->arrField['file_name'] : $this->strClassName . '.txt';
+			$strClass = ( $this->arrField['class'] ) ? $this->arrField['class'] : 'button button-primary';
+			$strName = $this->arrField['name'] ? $this->arrField['name'] : "__export[submit]";
+			
+			// Output
+			if ( isset( $this->arrField['transient'] ) && !empty( $this->arrField['transient'] ) )
+				$strOutput .= "<input type='hidden' name='__export[transient]' value='{$this->arrField['transient']}' />";
+			$strOutput .= "<input type='hidden' name='__export[file_name]' value='{$strFileName}' />";
+			$strOutput .= "<input type='hidden' name='__export[option_key]' value='{$this->arrField['option_key']}' />";
+			$strOutput .= $this->arrField['pre_field'] 
+				. "<input id='{$this->strTagID}' class='{$strClass}' type='submit' value='{$vValue}' name='{$strName}' {$this->vDisable} />" 
+				. $this->arrField['post_field'];
+			return $strOutput;
+			
+		}
+	}	
+	protected function GetImportField() {
+		
+		// currently only one import field can be supported per page. 
+		$strLabel = ( $this->arrField['label'] ) ? $this->arrField['label'] : __( 'Import Options', 'admin-page-framework' );
+		$strClass = ( $this->arrField['class'] ) ? $this->arrField['class'] : 'button button-primary';
+		
+		$strOutput = "<input type='hidden' name='__import[error_message]' value='{$this->arrField['error']}' />";
+		$strOutput .= "<input type='hidden' name='__import[update_message]' value='{$this->arrField['update_message']}' />";
+		$strOutput .= $this->arrField['pre_field'] 
+			. "<input id='{$this->strTagID}' class='{$this->arrField['class']}' type='file' name='__import' {$this->vDisable} />"	// the file type will be stored in $_FILE 
+			. $this->arrField['delimiter']
+			. "<input id='{$this->strTagID}_submit' class='{$strClass}' name='__import[submit]' type='submit' value='{$this->arrField['label']}' {$this->vDisable} />"
+			. $this->arrField['post_field'];
+		return $strOutput;
+		
+	}	
+	protected function GetFileField() {
+
+		$vValue = isset( $this->arrField['value'] ) ? $this->arrField['value'] : $this->arrField['label'];
+		$vValue = isset( $vValue ) ? $vValue : $this->arrField['default'];
+		
+		// Case: array
+		if ( is_array( $vValue ) ) {
+			
+			$strOutput = "<div id='{$this->strTagID}'>";
+			foreach( $vValue as $strKey => $strValue ) 
+				$strOutput .= $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->arrField['pre_field'] ) 
+					. "<input id='{$this->strTagID}_{$strKey}' class='{$this->arrField['class']}' type='file' name='{$this->strFieldName}[{$strValue}]' />"
+					. $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->arrField['post_field'] );						
+			$strOutput .= "</div>";
+			return $strOutput;
+			
+		}		
+		
+		// Case: string
+		if ( is_string( $vValue ) ) {
+			
+			return $this->arrField['pre_field'] 
+				. "<input id='{$this->strTagID}' class='{$this->arrField['class']}' type='file' name='{$this->strFieldName}' {$this->vDisable} />"
+				. $this->arrField['post_field'];
+			
+		}
+		
+	}	
+	protected function GetHiddenField() {
+		
+		$vValue = isset( $this->arrField['value'] ) ? $this->arrField['value'] : $this->arrField['label'];
+		$vValue = isset( $vValue ) ? $vValue : $this->arrField['default'];
+		
+		// Case: array
+		if ( is_array( $vValue ) ) {
+			$strOutput = "<div id='{$this->strTagID}'>";
+			foreach( $vValue as $strArrayKey => $strArrayValue ) {
+
+				$strKey = $this->oUtil->GetCorrespondingArrayValue( $strArrayKey, $this->arrField['default'], $strArrayKey );
+				$strValue = $strArrayValue;
+				$strOutput .= $this->oUtil->GetCorrespondingArrayValue( $strArrayKey, $this->arrField['pre_field'] ) 
+					. "<input id='{$this->strTagID}_{$strKey}' class='{$this->arrField['class']}' name='{$this->strFieldName}[{$strArrayKey}]' type='hidden' value='{$strValue}' />"
+					. $this->oUtil->GetCorrespondingArrayValue( $strArrayKey, $this->arrField['post_field'] );
+
+			}
+			$strOutput .= "</div>";
+			return $strOutput;
+		}
+		
+		// Case: string
+		if ( is_string( $vValue ) ) 
+			return $this->arrField['pre_field'] 
+				. "<input id='{$this->strTagID}' class='{$this->arrField['class']}' name='{$this->strFieldName}' type='hidden' value='{$vValue}' />"
+				. $this->arrField['post_field'];
+			
+	}	
+	protected function GetSelectField() {
+		
+		// The label key must be an array for the select type.
+		if ( ! is_array( $this->arrField['label'] ) ) break;	
+		
+		$strOutput = "<select id='{$this->strTagID}' class='{$this->arrField['class']}' name='{$this->strFieldName}' {$this->vDisable}>";
+		foreach ( $this->arrField['label'] as $strKey => $strLabel ) {
+			$strSelected = ( $this->vValue == $strKey ) ? 'Selected' : '';
+			$strOutput .= "<option id='{$this->strTagID}_{$strKey}' value='{$strKey}' {$strSelected}>{$strLabel}</option>";
+		}
+		$strOutput .= "</select>";
+		return $this->arrField['pre_field'] . $strOutput . $this->arrField['post_field'];
+		
+	}	
+	protected function GetRadioField() {
+		
+		$strOutput = "<div id='{$this->strTagID}'>";
+		foreach ( $this->arrField['label'] as $strKey => $strLabel ) {
+			$strChecked = ( $this->vValue == $strKey ) ? 'Checked' : '';
+			$strOutput .= "<input id='{$this->strTagID}_{$strKey}' class='{$this->arrField['class']}' type='radio' name='{$this->strFieldName}' value='{$strKey}' {$strChecked} {$this->vDisable} />&nbsp;&nbsp;{$strLabel}";
+			$strOutput .= $this->arrField['delimiter'];
+		}
+		$strOutput .= "</div>";
+		return $this->arrField['pre_field'] . $strOutput . $this->arrField['post_field'];
+		
+	}	
+	protected function GetCheckBoxField() {
+		
+		// Case: Array
+		if ( is_array( $this->arrField['label'] ) ) {
+			$arrValues = ( array ) $this->vValue;
+			$strOutput = "<div id='{$this->strTagID}'>";
+			foreach ( $this->arrField['label'] as $strKey => $strLabel ) {	
+			
+				$strChecked = ( $arrValues[ $strKey ] == 1 ) ? 'Checked' : '';
+				$strDisabled = $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->vDisable );
+				$strOutput .= "<input type='hidden' name='{$this->strFieldName}[{$strKey}]' value='0' />";
+				$strOutput .= $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->arrField['pre_field'] ) 
+					. "<input id='{$this->strTagID}_{$strKey}' class='{$this->arrField['class']}' type='checkbox' name='{$this->strFieldName}[{$strKey}]' value='1' {$strChecked} {$strDisabled} />&nbsp;&nbsp;{$strLabel}"
+					. $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->arrField['post_field'] );
+				$strOutput .= $this->arrField['delimiter'];
+			
+			}
+			$strOutput .= "</div>";
+			return $strOutput;
+		}		
+		
+		// Case: String
+		if ( is_string( $this->arrField['label'] ) ) {
+			$strChecked = ( $this->vValue == 1 ) ? 'Checked' : '';			
+			return $this->arrField['pre_field'] 
+				. "<input type='hidden' name='{$this->strFieldName}' value='0' />"
+				. "<input id='{$this->strTagID}' class='{$this->arrField['class']}' type='checkbox' "
+				. "name='{$this->strFieldName}' value='1' {$strChecked} {$this->vDisable} />"
+				. "&nbsp;&nbsp;{$this->arrField['label']}<br />"
+				. $this->arrField['post_field'];
+		}
+		
+	}	
+	protected function GetTextAreaField() {
+		
+		$strReadOnly = isset( $arrField['readonly'] ) && $arrField['readonly'] ? 'readonly="readonly"' : '';
+		return $this->arrField['pre_field'] 
+			. "<textarea id='{$this->strTagID}' class='{$this->arrField['class']}' name='{$this->strFieldName}' "
+			. "rows='{$this->arrField['rows']}' cols='{$this->arrField['cols']}' {$this->vDisable} {$strReadOnly} >"
+			. "{$this->vValue}"
+			. "</textarea>"
+			. $this->arrField['post_field'];
+	
+	}	
+	protected function GetNumberField() {
+		
+		$strReadOnly = isset( $arrField['readonly'] ) && $arrField['readonly'] ? 'readonly="readonly"' : '';
+		$numMaxLength = isset( $this->arrField['maxlength'] ) ? $this->arrField['maxlength'] : $this->arrField['size'];
+		return $this->arrField['pre_field'] 
+			. "<input id='{$this->strTagID}' class='{$this->arrField['class']}' name='{$this->strFieldName}' "
+			. "min='{$this->arrField['min']}' max='{$this->arrField['max']}' step='{$this->arrField['step']}' "
+			. "type='{$this->arrField['type']}' value='{$this->vValue}' maxlength='{$numMaxLength}' {$this->vDisable} {$strReadOnly} />"
+			. $this->arrField['post_field'];
+		
+	}	
+	protected function GetTextField() {
+		
+		$strReadOnly = isset( $arrField['readonly'] ) && $arrField['readonly'] ? 'readonly="readonly"' : '';
+		return $this->arrField['pre_field'] 
+			. "<input id='{$this->strTagID}' "
+			. "class='{$this->arrField['class']}' name='{$this->strFieldName}' size='{$this->arrField['size']}' "
+			. "type='{$this->arrField['type']}' value='{$this->vValue}' {$this->vDisable} {$strReadOnly} />"
+			. $this->arrField['post_field'];	
+		
+	}	
+	protected function GetSubmitField() {	// since 1.0.3.2
+
+		// Returns the submit input field. Moved from GetFormFieldsByType().
+		
+		// Variables
+		$strOutput = '';
+		$arrField = &$this->arrField;
+		$strFieldName = &$this->strFieldName;
+		$strOptionKeyForReference = $this->GetInputFieldNameFlat();
+		$bIsDisabled = is_array( $arrField['disable'] ) ? $arrField['disable'] : ( $arrField['disable'] ? 'disabled="Disabled"' : '' );
+		$strTagID = "{$arrField['section_ID']}_{$arrField['field_ID']}";
+		$strClass = ( $arrField['class'] ) ? $arrField['class'] : 'button button-primary';
+		
+		// For multiple elements
+		if ( is_array( $arrField['label'] ) ) {	// supports multiple creation with array of label
+			$strOutput .= "<div id='{$strTagID}'>";
+			foreach( $arrField['label'] as $strArrayKey => $strArrayValue ) {
+				$strLabel = ( $strArrayValue ) ? $strArrayValue : __( 'Submit', 'admin-page-framework' );
+				$strRedirectURL = $this->oUtil->GetCorrespondingArrayValue( $strArrayKey, $arrField['redirect'], '' );				
+				if ( ! empty( $strRedirectURL ) ) {
+					$strOutput .= "<input type='hidden' name='__redirect[{$strTagID}_{$strArrayKey}][url]' value='{$strRedirectURL}' />";
+					$strOutput .= "<input type='hidden' name='__redirect[{$strTagID}_{$strArrayKey}][name]' value='__array|{$strOptionKeyForReference}|{$strArrayKey}' />";
+				}				
+				$strHrefURL = $this->oUtil->GetCorrespondingArrayValue( $strArrayKey, $arrField['href'], '' );				
+				if ( ! empty( $strHrefURL ) ) {
+					$strOutput .= "<input type='hidden' name='__href[{$strTagID}_{$strArrayKey}][url]' value='{$strHrefURL}' />";
+					$strOutput .= "<input type='hidden' name='__href[{$strTagID}_{$strArrayKey}][name]' value='__array|{$strOptionKeyForReference}|{$strArrayKey}' />";
+				}
+				$strInputField = "<input id='{$strTagID}_{$strArrayKey}' class='{$strClass}' name='{$strFieldName}[{$strArrayKey}]' type='submit' value='{$strLabel}' {$bIsDisabled} />";
+				$strOutput .= $this->oUtil->GetCorrespondingArrayValue( $strArrayKey, $arrField['pre_field'] ) . $strInputField . $this->oUtil->GetCorrespondingArrayValue( $strArrayKey, $arrField['post_field'] );
+				$strOutput .= $arrField['delimiter'];
+			}
+			$strOutput .= "</div>";
+			return $strOutput;
+		}
+		
+		// For a single element
+		$strLabel = ( $arrField['label'] ) ? $arrField['label'] : __( 'Submit', 'admin-page-framework' );
+		if ( $arrField['redirect'] ) {
+			$strOutput .= "<input type='hidden' name='__redirect[{$strTagID}][url]' value='{$arrField['redirect']}' />";
+			$strOutput .= "<input type='hidden' name='__redirect[{$strTagID}][name]' value='{$strOptionKeyForReference}' />";
+		}
+		if ( $arrField['href'] ) {
+			$strOutput .= "<input type='hidden' name='__href[{$strTagID}][url]' value='{$arrField['href']}' />";
+			$strOutput .= "<input type='hidden' name='__href[{$strTagID}][name]' value='{$strOptionKeyForReference}' />";	
+		} 
+		$strInputField = "<input id='{$strTagID}' class='{$strClass}' name='{$strFieldName}' type='submit' value='{$strLabel}' {$bIsDisabled} />";
+		$strOutput .= $arrField['pre_field'] . $strInputField . $arrField['post_field'];
+		return $strOutput;
+		
+	}	
+	protected function GetImageField() {
+							
+		// Setup Variables
+		$strOutput = '';	
+		$strFieldName = &$this->strFieldName;
+		$arrOptions = &$this->arrOptions;
+		$arrField = &$this->arrField;
+		$strOptionKeyForReference = $this->GetInputFieldNameFlat();
+		
+		// $arrFieldOptions - the retrieved value from the database option table in which currently saved 					
+		$arrFieldOptions = isset( $arrOptions[$arrField['section_ID']][$arrField['field_ID']] ) ? $arrOptions[$arrField['section_ID']][$arrField['field_ID']] : array();
+
+		// the default value is assigned $strValue if $arrField['default'] is set.					
+		$strDefaultImage = isset( $arrField['default'] ) ? $arrField['default'] : null;
+		$strImageURL = ( !empty( $arrFieldOptions['imageurl'] ) ) ? esc_url( $arrFieldOptions['imageurl'] ) : $strDefaultImage;	
+		$strStyleDisplay = $strImageURL ? '' : 'display: none;'; 
+		
+		/*	
+			- Supported Labels
+				$arrField['label'] = array(
+					'title' => 'Pick an image from the Media Library or upload one.',
+					'insert' => 'Use This Image',
+					'upload' => 'Upload Image',
+					'unset' => 'Unset Image',
+					'delete' => 'Delete Image',
+				);
+			- Visibility
+				$arrField['visibility'] => array(	
+					'preview' => True,
+					'image_url' => True,
+					'unset_button' => True,
+					'delete_button' => True,
+				)	
+		*/			
+		$strLabelUploadImage = isset( $arrField['label']['upload'] ) ? $arrField['label']['upload'] : __( 'Upload Image', 'admin-page-framework' );
+		$strLabelDeleteImage = isset( $arrField['label']['delete'] ) ? $arrField['label']['delete'] : __( 'Delete Image', 'admin-page-framework' );
+		$strLabelUnsetImage =  isset( $arrField['label']['unset'] ) ? $arrField['label']['unset'] : __( 'Unset Image', 'admin-page-framework' );
+
+		// For Debug
+		// $strOutput .= '$strImageURL: ' . $strImageURL . '<br />';
+		// $strOutput .= '$arrField["defalut"]<pre>' . $arrField["defalut"] . '</pre>';
+		// $strOutput .= '<pre>' . print_r( $arrFieldOptions, true ) . '</pre>';
+		
+		// Start forming the field output
+		// Button - Upload Image
+		$strOutput .= "<input type='hidden' id='image_url_{$arrField['id']}' name='{$strFieldName}[imageurl]' value='{$strImageURL}' />";
+		$strOutput .= "<input type='button' id='upload_image_button_{$arrField['id']}' class='button-secondary button' value='{$strLabelUploadImage}' />&nbsp;&nbsp;";
+
+		// Button - Unset Image
+		if ( !isset( $arrField['visibility']['unset_button'] ) || $arrField['visibility']['unset_button'] ) {		
+			$strOutput .= "<input type='hidden' name='__image_unset[imageurl][{$arrField['id']}]' value='{$strImageURL}' />";
+			$strOutput .= "<input type='hidden' name='__image_unset[option_key][{$arrField['id']}]' value='{$strOptionKeyForReference}|imageurl' />";
+			$strOutput .= "<input style='{$strStyleDisplay}' type='submit' name='__image_unset[id][{$arrField['id']}]' id='unset_image_button_{$arrField['id']}' class='button button-secondary' value='{$strLabelUnsetImage}' />&nbsp;&nbsp;";						
+		}
+		// Button - Delete Image
+		if ( !isset( $arrField['visibility']['delete_button'] ) || $arrField['visibility']['delete_button'] ) {			
+			$strOutput .= "<input type='hidden' name='__image_delete[imageurl][{$arrField['id']}]' value='{$strImageURL}' />";
+			$strOutput .= "<input type='hidden' name='__image_delete[option_key][{$arrField['id']}]' value='{$strOptionKeyForReference}|imageurl' />";
+			$strOutput .= "<input style='{$strStyleDisplay}' type='submit' name='__image_delete[id][{$arrField['id']}]' id='delete_image_button_{$arrField['id']}' class='button button-secondary' value='{$strLabelDeleteImage}' />";
+		}		
+		// Preview Box 
+		if ( !isset( $arrField['visibility']['preview'] ) || $arrField['visibility']['preview'] ) {		
+			// $strMinHeight = $arrField['min-height'] ? $arrField['min-height'] : '100px';
+			// $strMinWidth = $arrField['min-width'] ? $arrField['min-width'] : '320px';
+			$strStyle = isset( $arrField['style'] ) ? $arrField['style'] : 'min-height: 100px;';
+			$strStyleDisplay = ( isset( $arrFieldOptions['imageurl'] ) || $strImageURL ) ? '' : 'display: none;';	// for IE
+			$strOutput .= 	"<div id='update_preview_{$arrField['id']}' style='{$strStyle}'>" .
+							"<img style='{$strStyleDisplay} border: none; max-width:100%; margin-top: 20px;' src='{$strImageURL}' />" .
+							"</div>";
+		}
+		// Image URL
+		if ( !isset( $arrField['visibility']['image_url'] ) || $arrField['visibility']['image_url'] ) {
+			$strOutput .= "<p id='upload_image_preview_url_{$arrField['id']}'>";
+			$strOutput .= $strImageURL ? $strImageURL : __( 'No url has been set.', 'admin-page-framework');
+			$strOutput .= "</p>";
+		}
+
+		return $arrField['pre_field'] . $strOutput . $arrField['post_field'];
+		
+	}	
+}
+endif;
+
+if ( ! class_exists( 'AdminPageFramework_Walker_Category_Checklist' ) ) :
+class AdminPageFramework_Walker_Category_Checklist extends Walker_Category {	// since 1.0.4
+	
+	/*
+	 * Used for the wp_list_categories() function to render category hierarchical checklist.
+		Walker : wp-includes/class-wp-walker.php
+		Walker_Category : wp-includes/category-template.php
+	 * */
+	
+	function start_el( &$strOutput, $oCategory, $intDepth, $arrArgs ) {
+		
+		/*	
+		 	$arrArgs keys:
+			'show_option_all' => '', 
+			'show_option_none' => __('No categories'),
+			'orderby' => 'name', 
+			'order' => 'ASC',
+			'style' => 'list',
+			'show_count' => 0, 
+			'hide_empty' => 1,
+			'use_desc_for_title' => 1, 
+			'child_of' => 0,
+			'feed' => '', 
+			'feed_type' => '',
+			'feed_image' => '', 
+			'exclude' => '',
+			'exclude_tree' => '', 
+			'current_category' => 0,
+			'hierarchical' => true, 
+			'title_li' => __( 'Categories' ),
+			'echo' => 1, 
+			'depth' => 0,
+			'taxonomy' => 'category'	
+
+			[class] => categories
+			[has_children] => 1
+		*/
+		
+		$arrArgs = $arrArgs + array(
+			'name' 		=> null,
+			'disabled'	=> null,
+			'selected'	=> array(),
+		);
+		
+		$intID = $oCategory->term_id;
+		$strTaxonomy = empty( $arrArgs['taxonomy'] ) ? 'category' : $arrArgs['taxonomy'];
+		$strChecked = in_array( $intID, ( array ) $arrArgs['selected'] )  ? 'Checked' : '';
+		$strDisabled = $arrArgs['disabled'] ? 'disabled="Disabled"' : '';
+		$strClass = 'category-list';
+		$strID = "{$strTaxonomy}-{$intID}";
+		$strOutput .= "\n"
+			. "<li id='{$strID}' $strClass>" 
+			. "<input value='0' type='hidden' name='{$arrArgs['name']}[{$intID}]' />"
+			. "<input id='{$strID}' value='1' type='checkbox' name='{$arrArgs['name']}[{$intID}]' {$strChecked} {$strDisabled} />"
+			. "<label id='{$strID}' class='category-check-list-label'>"
+			. esc_html( apply_filters( 'the_category', $oCategory->name ) ) 
+			. "</label>";	// no need to close </li> since it is done in end_el().
+			
 	}
 }
+endif;
