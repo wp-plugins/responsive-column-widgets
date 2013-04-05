@@ -339,8 +339,7 @@ class ResponsiveColumnWidgets_Core_ {
 			if ( ( $maxrows != 0 && $numRowPos >= $maxrows ) ) break;
 			$numMaxCols	= ( isset( $arrMaxCols[$numRowPos] ) ) ? $arrMaxCols[$numRowPos] :  $numMaxCols;	// set the column number of this row		
 			$strItem = ( $numColPosInRow == 0  ? '<div class="' . $this->strClassAttrRow . '">' : '' )
-				. '<div class="col element_of_' . $numMaxCols . ' ' 
-				. ( ( $numColPosInRow == 0 ) ? $this->strClassAttrNewCol : '' ) 	// if it's in the first col.
+				. '<div class="' . $this->strClassAttrColumn . ' element_of_' . $numMaxCols . ' ' 
 				. $this->strClassAttrColumn . '_' . ( $numColPosInRow + 1 ) . ' ' // insert the class attribute indicationg the current column position
 				. $this->strClassAttrRow 	. '_' . ( $numRowPos + 1 ) . ' '		// insedrt the class attribute indicationg the current row position
 				. ' ">' 

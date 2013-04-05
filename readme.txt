@@ -82,6 +82,11 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.0.8.7 - 04/05/2013 =
+* Tweaked: the form data sanitization functionality for the numeric sequence values with the comma delimiter.
+* Changed: the class attribute name for each column from, *col*, to *responsitve_column_widgts_column*, in order to avoid being too generic which may result on conflicts with other plugins or themes.
+* Fixed: a bug the *responsitve_column_widgts_column_1* class attribute was not displayed correctly introduced in 1.0.8.6.
+
 = 1.0.8.6 - 04/04/2013 =
 * Fixed: typos in plugin admin pages.
 * Added: the class attributes, *responsitve_column_widgts_column_{n}* and *responsitve_column_widgts_row_{n}*, to each div tag containing a widget, where *_{n}* indicates the position of the column and row.

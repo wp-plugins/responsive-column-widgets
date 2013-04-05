@@ -32,20 +32,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$this->strGetPro = __( 'Get Pro to enabel this feature!', 'responsive-column-widgets' );
 		$this->strGetProNow = __( 'Get Pro Now!', 'responsive-column-widgets' );
 		
-		// For the widgets tab page
-		// if ( ( isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug 
-			// && isset( $_GET['tab'] ) && $_GET['tab'] == 'widgets' )
-			// || isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug && ! isset( $_GET['tab'] )  )
-			// $this->oWidgetPage = new ResponsiveColumnWidgets_Admin_Page_Widgets;
-
-		// If the settings are updated and there are no errors without failing the validation, go to the edit page
-		// if ( isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug 
-			// && ( !isset( $_GET['tab'] ) || $_GET['tab'] == 'neworedit' )
-			// && isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == true 
-			// && ! get_transient( md5( get_class( $this ) . '_' . $this->strPluginSlug ) ) 
-		// ) 
-			// wp_redirect( admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ) );
-			
+		
 	}
 	function Localize() {
 		
@@ -108,9 +95,11 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$strSidebarID = $this->DetermineCurrentSidebarToEdit();	// the returned value can be empty.
 
 		// Setup the box options - in case new keys are added in newer version and old saved data do not have them, merge the array keys.
-		if ( isset( $this->oOption->arrOptions['boxes'][ $strSidebarID ] ) ) {			
+		if ( isset( $this->oOption->arrOptions['boxes'][ $strSidebarID ] ) ) {		
+		
 			$arrDefaultBoxParams = $this->oOption->arrDefaultSidebarArgs + $this->oOption->arrDefaultParams; 
 			$this->oOption->arrOptions['boxes'][ $strSidebarID ] = $this->oOption->arrOptions['boxes'][ $strSidebarID ] + $arrDefaultBoxParams;
+	
 		}
 				
 		// Determine whether it is the New or Edit page.
@@ -131,7 +120,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'title' => $bIsNew ? __( 'Add New Widget Box', 'responsive-column-widgets' ) : __( 'Edit Widget Box', 'responsive-column-widgets' ), 
 					'fields' => array(
 						array(
-							'id' => 'field_label',
+							'id' => 'label',
 							'title' => __( 'Widget Box Label', 'responsive-column-widgets' ),
 							'description' => __( 'Set a unique name for the widget box.', 'responsive-column-widgets' ),
 							'error' => __( 'The label neither cannot be empty nor use the same one that already exists.', 'responsive-column-widgets' ),
@@ -139,20 +128,26 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'size' => 60,
 							'class' => $this->numPluginType == 0 || isset( $_GET['sidebarid'] ) && $_GET['sidebarid'] == 'responsive_column_widgets' ? 'disabled' : '',
 							'disable' => $this->numPluginType == 0 || isset( $_GET['sidebarid'] ) && $_GET['sidebarid'] == 'responsive_column_widgets' ? true : false,
-							'value' => $this->numPluginType == 0 ? $this->oOption->arrDefaultParams['label'] : (  $bIsNew  ? '' : $this->oOption->arrOptions['boxes'][$strSidebarID]['label'] ),
+							'value' => $this->numPluginType == 0 ? $this->oOption->arrDefaultParams['label'] : (  $bIsNew  ? '' : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['label'] ),
+							'post_html' => "<input type='hidden' name='isnew' value='{$bIsNew}' />",
 						),
 						array(
-							'id' => 'field_sidebar',
+							'id' => 'sidebar',
 							'title' => __( 'Widget Box Sidebar ID', 'responsive-column-widgets' ),
 							'tip' => __( 'The sidebar ID associated with this widget box.', 'responsive-column-widgets' ),
-							'pre_html' => '<input class="disabled" size="60" type="text" disabled="Disabled" value="' . ( $this->numPluginType == 0 ? $this->oOption->arrDefaultParams['sidebar'] : $strSidebarID ) . '" /><br />',
-							'description' => $bIsNew ? __( 'A new ID will be automatically generated.', 'responsive-column-widgets' ) 
+							'description' => $bIsNew 
+								? __( 'A new ID will be automatically generated.', 'responsive-column-widgets' ) 
 								: __( 'The sidebar ID associated with this widget box.', 'responsive-column-widgets' ),
-							'type' => 'hidden',
-							'value' => $bIsNew ? '' : ( $this->numPluginType == 0 ? $this->oOption->arrDefaultParams['sidebar'] : $strSidebarID ),
+							'type' => 'text',
+							'size' => 60,
+							'readonly' => true,
+							'class' => 'disabled',
+							'value' => $bIsNew 
+								? '' 
+								: ( $this->numPluginType == 0 ? $this->oOption->arrDefaultParams['sidebar'] : $strSidebarID ),
 						),						
 						array(
-							'id' => 'field_description',
+							'id' => 'description',
 							'title' => __( 'Widget Box Description', 'responsive-column-widgets' ),
 							'description' => __( 'Additional notes for this box.', 'responsive-column-widgets' ),
 							'type' => 'text',
@@ -160,7 +155,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $arrWidgetBoxOptions['description'],
 						),		
 						array(
-							'id' => 'field_before_widget',
+							'id' => 'before_widget',
 							'title' => __( 'Widget Beginning Tag', 'responsive-column-widgets' ),
 							'description' => __( 'Set the before_widget html opening tag.', 'responsive-column-widgets' ),
 							'type' => 'text',
@@ -168,7 +163,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $arrWidgetBoxOptions['before_widget'],
 						),
 						array(
-							'id' => 'field_after_widget',
+							'id' => 'after_widget',
 							'title' => __( 'Widget Ending Tag', 'responsive-column-widgets' ),
 							'description' => __( 'Set the after_widget html closing tag.', 'responsive-column-widgets' ),
 							'type' => 'text',
@@ -176,7 +171,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $arrWidgetBoxOptions['after_widget'],
 						),
 						array(
-							'id' => 'field_before_title',
+							'id' => 'before_title',
 							'title' => __( 'Starting Tag for Box Title', 'responsive-column-widgets' ),
 							'description' => __( 'Set the before_title html opening tag.', 'responsive-column-widgets' ),
 							'type' => 'text',
@@ -184,7 +179,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $arrWidgetBoxOptions['before_title'],
 						),
 						array(
-							'id' => 'field_after_title',
+							'id' => 'after_title',
 							'title' => __( 'Ending Tag for Box Title', 'responsive-column-widgets' ),
 							'description' => __( 'Set the after_title html closing tag.', 'responsive-column-widgets' ),
 							'type' => 'text',
@@ -192,7 +187,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $arrWidgetBoxOptions['after_title'],
 						),
 						array(
-							'id' => 'field_message_no_widget',
+							'id' => 'message_no_widget',
 							'title' => __( 'Message for No Widget', 'responsive-column-widgets' ),
 							'description' => __( 'Set the message which appears when no widget is added; thus, nothing can be rendered.', 'responsive-column-widgets' ),
 							'type' => 'text',
@@ -208,18 +203,18 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'title' => __( 'Widget Box Parameter Values', 'responsive-column-widgets' ), 
 					'fields' => array(
 						array(
-							'id' => 'field_columns',
+							'id' => 'columns',
 							'title' => __( 'Numbers of Columns', 'responsive-column-widgets' ),
 							'description' => __( 'Set the number of columns separated by commnas. Each delimited element number corresponds to the order number of the rows.', 'responsive-column-widgets' ) 
 								. __( 'Min', 'responsive-column-widgets' ) . ' 1 '
 								. __( 'Min', 'responsive-column-widgets' ) . ' 12 '
 								. __( '( for each row )', 'responsive-column-widgets' ) . ' '
 								. 'e.g. 4, 2, 3',
-							'type' => 'text',
+							'type' => 'text',	// must not be number because it's a string containing a sequence of numbers with commas.
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'columns' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['columns'] ),
 						),		
 						array(
-							'id' => 'field_maxwidgets',
+							'id' => 'maxwidgets',
 							'title' => __( 'Max Number of Widgets', 'responsive-column-widgets' ),
 							'description' => __( 'Set the max number of widgets. 0 for no limit.', 'responsive-column-widgets' ) . ' e.g. 10',
 							'type' => 'number',
@@ -227,7 +222,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $arrWidgetBoxOptions['maxwidgets'],
 						),	
 						array(
-							'id' => 'field_maxrows',
+							'id' => 'maxrows',
 							'title' => __( 'Max Number of Rows', 'responsive-column-widgets' ),
 							'description' => __( 'Set the max number of rows. 0 for no limit.', 'responsive-column-widgets' ) . ' e.g. 2',
 							'type' => 'number',
@@ -235,7 +230,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $arrWidgetBoxOptions['maxrows'], 
 						),	
 						array(
-							'id' => 'field_omit',
+							'id' => 'omit',
 							'title' => __( 'Omitting Widgets', 'responsive-column-widgets' ),
 							'size' => 100,
 							'description' => __( 'Set the numbers of omitting widgets separated by commas.', 'responsive-column-widgets' ) 
@@ -244,7 +239,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'omit' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['omit'] ),
 						),	
 						array(
-							'id' => 'field_showonly',
+							'id' => 'showonly',
 							'title' => __( 'Show-only Widgets', 'responsive-column-widgets' ),
 							'size' => 100,
 							'description' => __( 'Set the numbers of show-only widgets separated by commas.', 'responsive-column-widgets' ) 
@@ -253,7 +248,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'showonly' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['showonly'] ),
 						),	
 						array(
-							'id' => 'field_offsets',
+							'id' => 'offsets',
 							'title' => __( 'Width Percentage Offsets', 'responsive-column-widgets' ),
 							'description' => __( 'Set the offsets for width percentage. The higher the offset nubmer is, the less will the number of clummns be displayed.', 'responsive-column-widgets' ) . ' '
 								. __( 'Format', 'responsive-column-widgets' ) . ': ' . __( 'Pixel: Offset, Pixel: Offset, ....', 'responsive-column-widgets' ) . ' '
@@ -283,7 +278,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'title' => __( 'Insert Widget Box into Footer', 'responsive-column-widgets' ), 
 					'fields' => array(
 						array(
-							'id' => 'field_footer',
+							'id' => 'footer',
 							'title' => __( 'Footer', 'responsive-column-widgets' ),
 							'tip' => __( 'Insert the widget box into the footer.', 'responsive-column-widgets' ),
 							'label' => __( 'Insert the widget box into the footer.', 'responsive-column-widgets' ),
@@ -292,7 +287,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>',
 						),
 						array(	// since 1.0.7
-							'id' => 'field_footer_disable_front',
+							'id' => 'insert_footer_disable_front',
 							'type' => 'checkbox',
 							'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
 							'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
@@ -301,7 +296,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $arrWidgetBoxOptions['insert_footer_disable_front'], 
 						),							
 						array(	// since 1.0.7
-							'id' => 'field_footer_disable_ids',
+							'id' => 'insert_footer_disable_ids',
 							'type' => 'text',
 							'size' => 100,
 							'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
@@ -321,7 +316,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'title' => __( 'Insert Widget Box into Posts and Pages', 'responsive-column-widgets' ), 
 					'fields' => array(				
 						array(	// since 1.0.7
-							'id' => 'field_posts',
+							'id' => 'insert_posts',
 							'title' => __( 'Posts and Pages', 'responsive-column-widgets' ),
 							'tip' => __( 'Insert the widget box into posts and pages.', 'responsive-column-widgets' ),
 							'label' => array(
@@ -333,7 +328,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless one of these is checked.', 'responsive-column-widgets' ) . '</span></p>',
 						),	
 						array(	// since 1.0.7
-							'id' => 'field_posts_positions',
+							'id' => 'insert_posts_positions',
 							'type' => 'checkbox',
 							'title' => __( 'Position', 'responsive-column-widgets' ),
 							'label' => array(
@@ -344,14 +339,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $arrWidgetBoxOptions['insert_posts_positions'],							
 						),	
 						array(	// since 1.0.7
-							'id' => 'field_posts_disable_front',
+							'id' => 'insert_posts_disable_front',
 							'type' => 'checkbox',
 							'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
 							'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
 							'value' => $arrWidgetBoxOptions['insert_posts_disable_front'],						
 						),							
 						array(	// since 1.0.7
-							'id' => 'field_posts_disable_ids',
+							'id' => 'insert_posts_disable_ids',
 							'type' => 'text',
 							'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
 							'size' => 100,
@@ -369,7 +364,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'title' => __( 'Insert Widget Box into Comment Form Section', 'responsive-column-widgets' ), 
 					'fields' => array(				
 						array(	// since 1.0.8
-							'id' => 'field_insert_in_comment_form',
+							'id' => 'insert_comment_form',
 							'title' => __( 'Comment Form Section', 'responsive-column-widgets' ),
 							'tip' => __( 'Insert the widget box into the comment form section.', 'responsive-column-widgets' ),
 							'label' => __( 'Insert widget box into the comment form section.', 'responsive-column-widgets' ),
@@ -378,7 +373,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>',
 						),	
 						array(	// since 1.0.8
-							'id' => 'field_insert_in_comment_form_positions',
+							'id' => 'insert_comment_form_positions',
 							'type' => 'checkbox',
 							'title' => __( 'Position', 'responsive-column-widgets' ),
 							'label' => array(
@@ -389,14 +384,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $arrWidgetBoxOptions['insert_comment_form_positions'],							
 						),	
 						array(	// since 1.0.8
-							'id' => 'field_insert_in_comment_form_disable_front',
+							'id' => 'insert_comment_form_disable_front',
 							'type' => 'checkbox',
 							'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
 							'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
 							'value' => $arrWidgetBoxOptions['insert_comment_form_disable_front'],						
 						),							
 						array(	// since 1.0.8
-							'id' => 'field_insert_in_comment_form_disable_ids',
+							'id' => 'insert_comment_form_disable_post_ids',
 							'type' => 'text',
 							'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
 							'size' => 100,
@@ -414,7 +409,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'title' => __( 'Custom Style', 'responsive-column-widgets' ), 
 					'fields' => array(
 						array(
-							'id' => 'field_custom_style',
+							'id' => 'custom_style',
 							'title' => __( 'CSS Rule', 'responsive-column-widgets' ),
 							'description' => __( 'Define your custom CSS rules here.', 'responsive-column-widgets' ) . '<br />'
 								. 'e.g. ' . esc_html( '.responsive_column_widgets_box .widget { padding: 0 20px 0 20px; }' ),
@@ -447,7 +442,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						// Dropdown List
 						array(  
 							'capability' => 'manage_options',
-							'id' => 'field_capability',
+							'id' => 'capability',
 							'title' => __( 'Access Rights', 'responsive-column-widgets' ),
 							'description' => __( 'Set the access level to this setting pages.', 'responsive-column-widgets' ),
 							'type' => 'select',
@@ -462,7 +457,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						),
 						array(
 							'capability' => 'manage_options',
-							'id' => 'field_allowedhtmltags',
+							'id' => 'allowedhtmltags',
 							'title' => __( 'Additional Allowed HTML Tags', 'responsive-column-widgets' ),
 							'description' => __( 'Specify which HTML tags are allowed to be posted in the New / Edit page to prevent them from being stripped out by the WordPress KSES filter, separated by commas. For security, many tags are not allowed by default.', 'responsive-column-widgets' ) . ' '
 								. 'e.g. "noscript, style"',
@@ -488,7 +483,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'fields' => array( 	// Field Arrays
 						// Checkbox
 						array(  
-							'id' => 'field_memory_allocation',
+							'id' => 'memory_allocation',
 							'title' => __( 'Attempt to Override Allocated Memory Size', 'responsive-column-widgets' ),
 							'description' => __( 'If the error, "Allowed memory size of ... bytes exhausted" occurs, try increasing the memory size allocated for PHP. Set 0 to use the server\'s setting.', 'responsive-column-widgets' ) . '<br />'
 								. __( 'The current memory limit set by the server:', 'responsive-column-widgets' ) . ' ' . $this->oOption->GetMemoryLimit() . '<br />'
@@ -504,7 +499,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						),									
 						// Checkbox
 						array(  
-							'id' => 'field_initializeoptions',
+							'id' => 'initializeoptions',
 							'title' => __( 'Initialize Options', 'responsive-column-widgets' ),
 							'description' => __( 'Clean all saved data and intialize to the default.', 'responsive-column-widgets' ),
 							'type' => 'checkbox',
@@ -591,8 +586,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			&& isset( $_GET['tab'] ) && ( $_GET['tab'] == 'neworedit' ) 
 			&& ! $bIsNew && ! is_active_sidebar( $strSidebarID ) 
 		) 
-			$this->AddSettingsError( 
-				__METHOD__,
+			$this->SetSettingsNotice( 
 				__( 'No widget has been added to this widget box yet.', 'responsive-column-widgets' ) . ' ' 
 				. sprintf( __( "You need to add widgets in the <a href='%s'>Widgets</a> page to the widget box.", 'responsive-column-widgets' ), admin_url( 'widgets.php' ) )
 			);			
@@ -615,13 +609,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		if ( ! isset( $this->oOption->arrOptions['boxes'][$strSidebarID] ) ) return;
 		$arrBoxOptions = $this->oOption->arrOptions['boxes'][$strSidebarID];		
 		$arrAdminOptions = ( array ) get_option( RESPONSIVECOLUMNWIDGETSKEYADMIN );
-		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['field_label']			= $arrBoxOptions['label'];
-		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['field_sidebar']		= $strSidebarID;
-		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['field_description']	= $arrBoxOptions['description'];
-		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['field_before_widget']	= $arrBoxOptions['before_widget'];
-		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['field_after_widget']	= $arrBoxOptions['after_widget'];
-		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['field_before_title']	= $arrBoxOptions['before_title'];
-		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['field_after_title']	= $arrBoxOptions['after_title'];
+		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['label']			= $arrBoxOptions['label'];
+		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['sidebar']		= $strSidebarID;
+		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['description']	= $arrBoxOptions['description'];
+		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['before_widget']	= $arrBoxOptions['before_widget'];
+		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['after_widget']	= $arrBoxOptions['after_widget'];
+		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['before_title']	= $arrBoxOptions['before_title'];
+		$arrAdminOptions['responsive_column_widgets']['section_sidebar']['after_title']	= $arrBoxOptions['after_title'];
 		
 		// Update the database so that the updated values will be displayed in the form fields
 		update_option( RESPONSIVECOLUMNWIDGETSKEYADMIN, $arrAdminOptions );
@@ -698,27 +692,10 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$this->oWidgetPage->RenderWidgetPage();
 		
 	}
- 
-	function do_responsive_column_widgets_neworedit() {
-			
-		// debug
-		// $arrOptions = ( array ) get_option( RESPONSIVECOLUMNWIDGETSKEY );
-		// echo '<pre>' . htmlspecialchars( print_r( $arrOptions, true ) )  . '</pre>';
-		// $arrOptionsAdmin = ( array ) get_option( RESPONSIVECOLUMNWIDGETSKEYADMIN );
-		// echo '<pre>' . htmlspecialchars( print_r( $arrOptionsAdmin , true ) ) . '</pre>';		
-		
-	}
-	function head_responsive_column_widgets_manage( $strHead ) {
-return $strHead;
-		// this is for the redirection from the new / edit page after saving the options.
-		$strUpdatedMsg = isset( $_GET['updated'] ) && $_GET['updated'] ? '<div class="updated"><p>' . __( 'The widget box options have been saved.', 'responsive-column-widgets' ) . '</p></div>': '';
-		return $strUpdatedMsg . $strHead;		
-		
-	}
 	function do_responsive_column_widgets_manage() {
 
-		// if ( WP_DEBUG )
-			// echo $this->DumpArray( $this->oOption->arrOptions['boxes'] );
+		if ( WP_DEBUG )
+			echo $this->DumpArray( $this->oOption->arrOptions['boxes'] );
 		
 	}
 	function do_responsive_column_widgets_general() {	
@@ -906,15 +883,6 @@ return $strHead;
 		return $strOut;
 	}
 	
-	/*
-	 * Modify Fileds
-	 * */
-	function field_field_label( $strHTML ) {
-		
-		$bIsNew =  $this->bIsNew  ? 1 : 0;			
-		return $strHTML . "<input type='hidden' name='isnew' value='{$bIsNew}' />";
-		
-	}
 	
 	/*
 	 * Validate Post Data
@@ -924,7 +892,7 @@ return $strHead;
 		// Sanitize HTML Post Data
 		$arr = array();
 		foreach( $arrInput[ $this->strPluginSlug ]['section_sidebar'] as $strField => $strHTML ) 
-			$arr[$strField] = $this->FilterPostHTMLCode( $arrInput[ $this->strPluginSlug ]['section_sidebar'][$strField] );
+			$arr[$strField] = $this->FilterPostHTMLCode( $arrInput[ $this->strPluginSlug ]['section_sidebar'][ $strField ] );
 		$arrInput[ $this->strPluginSlug ]['section_sidebar'] = $arr;
 
 		// Set the variables.
@@ -933,35 +901,36 @@ return $strHead;
 		$strErrors = '';
 		
 		// Check if the label is not empty - if the "field_label" key is not set, it means it's disabled, which occures to the default widget box.
-		if ( isset( $arrInput[ $this->strPluginSlug ]['section_sidebar']['field_label'] ) ) {
+		if ( isset( $arrInput[ $this->strPluginSlug ]['section_sidebar']['label'] ) ) {
 			
-			$arrInput[ $this->strPluginSlug ]['section_sidebar']['field_label'] = trim( $arrInput['responsive_column_widgets']['section_sidebar']['field_label'] );
+			$arrInput[ $this->strPluginSlug ]['section_sidebar']['label'] = trim( $arrInput['responsive_column_widgets']['section_sidebar']['label'] );
 			
 			// Check if the label is empty
-			if ( empty( $arrInput[ $this->strPluginSlug ]['section_sidebar']['field_label'] ) ) {
-				$arrErrors['section_sidebar']['field_label'] = '';
+			if ( empty( $arrInput[ $this->strPluginSlug ]['section_sidebar']['label'] ) ) {
+				
+				$arrErrors['section_sidebar']['label'] = '';
 				$strErrors .=  __( 'The label cannot be empty.', 'responsive-column-widgets' );
 				$bIsValid = False;
+			
 			}
 			
 			// Check if the same label name is used.
-			if ( $_POST['isnew'] == 1 && $this->IsLabelAlreadyUsed( $arrInput[ $this->strPluginSlug ]['section_sidebar']['field_label'] ) ) {
-				$arrErrors['section_sidebar']['field_label'] = $arrInput[ $this->strPluginSlug ]['section_sidebar']['field_label'];
+			if ( $_POST['isnew'] == 1 && $this->IsLabelAlreadyUsed( $arrInput[ $this->strPluginSlug ]['section_sidebar']['label'] ) ) {
+				
+				$arrErrors['section_sidebar']['label'] = $arrInput[ $this->strPluginSlug ]['section_sidebar']['label'];
 				$strErrors .= '<p>' . __( 'The same label already used.', 'responsive-column-widgets' ) . '</p>';
 				$bIsValid = False;
+			
 			}
 		}
-
-	
 		
-		if ( !$bIsValid  ) {
-			
-			// This line is reached if there are invalid values.
-			// Store the error array in the transient with the name of the extended class name + _ + page slug.
-			set_transient( md5( get_class( $this ) . '_' . $_POST['pageslug'] ), $arrErrors, 60*5 );	// store it for 5 minutes ( 60 seconds * 5 )
+		if ( ! $bIsValid  ) {	// This line is reached if there are invalid values.
+						
+			// Set the field error array.
+			$this->SetFieldErrors( $arrErrors );
 			
 			// This displays the error message
-			$this->AddSettingsError( __METHOD__,  $strErrors  );	
+			$this->SetSettingsNotice( $strErrors  );	
 			
 			// Returning an empty array will not change options.
 			return array();				
@@ -969,60 +938,66 @@ return $strHead;
 		}
 		
 		/*
-		 * Sanitize Values
-		 * */	 					
-		 // FixNumber( $numToFix, $numDefault, $numMin="", $numMax="" ) 
-		$arrInput[ $this->strPluginSlug ]['section_params']['field_maxwidgets'] = $this->FixNumber( $arrInput[ $this->strPluginSlug ]['section_params']['field_maxwidgets'], 0, 0 );
-		$arrInput[ $this->strPluginSlug ]['section_params']['field_maxrows'] = $this->FixNumber( $arrInput[ $this->strPluginSlug ]['section_params']['field_maxrows'], 0, 0 );
-
+		 * Reconstruct the submitted array to omit the sections - make it flat to consist of fields
+		 * */
+		$arrBox = array();
+		foreach ( $arrInput[ $this->strPluginSlug ] as $arrFields ) 
+			$arrBox = $arrBox + $arrFields;		 
+				
 		// The data are valid. Update the box options.
 		// Setup the box option array
-		$this->UpdateBoxOptions( $arrInput[ $this->strPluginSlug ], $_POST['isnew'] );
-		$this->AddSettingsError( 
-			__METHOD__, 
-			__( 'The widget box options have been saved.', 'responsive-column-widgets' ), 
-			'updated' 
-		);
+		$this->UpdateBoxOptions( $arrBox, $_POST['isnew'] );
+		$this->SetSettingsNotice( __( 'The widget box options have been saved.', 'responsive-column-widgets' ), 'updated' );
 		
-		delete_transient( md5( get_class( $this ) . '_' . $_POST['pageslug'] ) );
 		return $arrInput;
 			
 	}
 	function UpdateBoxOptions( $arrInput, $bIsNew ) {
 		
-		$arrBoxOptions = array();		
-		$arrBoxOptions['sidebar'] = ! empty( $bIsNew ) ? $this->GetAvailableSidebarID() : $arrInput['section_sidebar']['field_sidebar'];
-		$arrBoxOptions['label'] = isset( $arrInput['section_sidebar']['field_label'] ) ? $arrInput['section_sidebar']['field_label'] : $this->oOption->arrOptions['boxes'][ $arrInput['section_sidebar']['field_sidebar'] ]['label'];
-		$arrBoxOptions['description'] = $arrInput['section_sidebar']['field_description'];
-		$arrBoxOptions['before_widget'] = $arrInput['section_sidebar']['field_before_widget'];
-		$arrBoxOptions['after_widget'] = $arrInput['section_sidebar']['field_after_widget'];
-		$arrBoxOptions['before_title'] = $arrInput['section_sidebar']['field_before_title'];
-		$arrBoxOptions['after_title'] = $arrInput['section_sidebar']['field_after_title'];
-		$arrBoxOptions['message_no_widget'] = $arrInput['section_sidebar']['field_message_no_widget'];
-		$arrBoxOptions['columns'] = $this->oOption->ConvertStringToArray( $arrInput['section_params']['field_columns'] );
-		$arrBoxOptions['maxwidgets'] = $arrInput['section_params']['field_maxwidgets'];
-		$arrBoxOptions['maxrows'] = $arrInput['section_params']['field_maxrows'];
-		$arrBoxOptions['omit'] = $this->oOption->ConvertStringToArray( $arrInput['section_params']['field_omit'] );
-		$arrBoxOptions['showonly'] = $this->oOption->ConvertStringToArray( $arrInput['section_params']['field_showonly'] );
-		$arrBoxOptions['offsets'] = $this->oOption->ConvertStringToArray( $arrInput['section_params']['field_offsets'], ',', ':' );
-		$arrBoxOptions['custom_style'] = $arrInput['section_custom_style']['field_custom_style'];
-		$arrBoxOptions['insert_footer'] = $arrInput['section_insert_footer']['field_footer'];
-		$arrBoxOptions['insert_footer_disable_front'] = $arrInput['section_insert_footer']['field_footer_disable_front'];		// since 1.0.7
-		$arrBoxOptions['insert_footer_disable_ids'] = $this->oOption->ConvertStringToArray( $arrInput['section_insert_footer']['field_footer_disable_ids'] );		// since 1.0.7
-		$arrBoxOptions['insert_posts'] = $arrInput['section_insert_posts']['field_posts'];									// since 1.0.7
-		$arrBoxOptions['insert_posts_positions'] = $arrInput['section_insert_posts']['field_posts_positions'];				// since 1.0.7
-		$arrBoxOptions['insert_posts_disable_front'] = $arrInput['section_insert_posts']['field_posts_disable_front'];		// since 1.0.7
-		$arrBoxOptions['insert_posts_disable_ids'] = $this->oOption->ConvertStringToArray( $arrInput['section_insert_posts']['field_posts_disable_ids'] );			// since 1.0.7
-		$arrBoxOptions['insert_comment_form'] = $arrInput['section_insert_comment_form']['field_insert_in_comment_form'];									// since 1.0.8
-		$arrBoxOptions['insert_comment_form_positions'] = $arrInput['section_insert_comment_form']['field_insert_in_comment_form_positions'];				// since 1.0.8
-		$arrBoxOptions['insert_comment_form_disable_front'] = $arrInput['section_insert_comment_form']['field_insert_in_comment_form_disable_front'];		// since 1.0.8
-		$arrBoxOptions['insert_comment_form_disable_post_ids'] = $this->oOption->ConvertStringToArray( $arrInput['section_insert_comment_form']['field_insert_in_comment_form_disable_ids'] );			// since 1.0.8
-	
+		$arrInput['maxwidgets'] = $this->oUtil->FixNumber( $arrInput['maxwidgets'], 0, 0 );
+		$arrInput['maxrows'] = $this->oUtil->FixNumber( $arrInput['maxrows'], 0, 0 );
+		$arrInput['sidebar'] = ! empty( $_POST['isnew'] ) ? $this->GetAvailableSidebarID() : $arrInput['sidebar'];
+		$arrInput['label'] = isset( $arrInput['label'] ) ? $arrInput['label'] : $this->oOption->arrOptions['boxes'][ $arrInput['sidebar'] ]['label'];
+		
+		$arrInput['columns'] = $this->SanitizeNumericSequenceToArray( 
+			$arrInput['columns'], 	// subject value
+			$this->oOption->arrDefaultParams['columns'][0],		// default
+			1,	// min
+			12 	// max
+		);
+
+		$arrInput['omit'] = $this->SanitizeNumericSequenceToArray( $arrInput['omit'] );
+		$arrInput['omit'] = array_unique( $arrInput['omit'] );
+		$arrInput['showonly'] = $this->SanitizeNumericSequenceToArray( $arrInput['showonly'] );
+		$arrInput['showonly'] = array_unique( $arrInput['showonly'] );
+		$arrInput['offsets'] = $this->oOption->ConvertStringToArray( $arrInput['offsets'], ',', ':' );
+		$arrInput['offsets'] = $this->oUtil->UnsetEmptyArrayElements( $arrInput['offsets'] );	
+		$arrInput['offsets'] = empty( $arrInput['offsets'] ) ? $this->oOption->arrDefaultParams['offsets'] : $arrInput['offsets'];
+		$arrInput['insert_footer_disable_ids'] = $this->SanitizeNumericSequenceToArray( $arrInput['insert_footer_disable_ids'] );
+		$arrInput['insert_footer_disable_ids'] = array_unique( $arrInput['insert_footer_disable_ids'] );
+		$arrInput['insert_posts_disable_ids'] = $this->SanitizeNumericSequenceToArray( $arrInput['insert_posts_disable_ids'] );
+		$arrInput['insert_posts_disable_ids'] = array_unique( $arrInput['insert_posts_disable_ids'] );
+		$arrInput['insert_comment_form_disable_post_ids'] = $this->SanitizeNumericSequenceToArray( $arrInput['insert_comment_form_disable_post_ids'] );
+		$arrInput['insert_comment_form_disable_post_ids'] = array_unique( $arrInput['insert_comment_form_disable_post_ids'] );
+
 		// Update
-		$this->oOption->InsertBox( $arrBoxOptions['sidebar'], $arrBoxOptions );
+		$this->oOption->InsertBox( $arrInput['sidebar'], $arrInput );
 		$this->oOption->Update();		
 		
 	}		
+	function SanitizeNumericSequenceToArray( $str, $intDefault=null, $intMin=1, $intMax=null ) {
+		
+		// Converts the given string into array and performs sanitization.
+		// e.g. 3, 4, 63  --> array( 3, 4, 63 )
+		// e.g. ada, 9,, 4 --> array( 9, 4 ) 
+		
+		$arr = $this->oOption->ConvertStringToArray( $str );	// comma delimited
+		$arr = $this->oUtil->FixNumbers( $arr, $intDefault, $intMin, $intMax );
+		$arr = $this->oUtil->UnsetEmptyArrayElements( $arr );
+		return $arr;
+		
+	}
+	
 	function IsLabelAlreadyUsed( $strLabel ) {
 		
 		// since 1.0.4
@@ -1035,14 +1010,14 @@ return $strHead;
 		// since 1.0.4
 		$numID = '';
 		$arrBoxes = ( array ) $this->oOption->arrOptions['boxes'];
-		$arrBoxes = array_reverse( $arrBoxes, true);	// the ID number is ascending so read from the last one.
+		$arrBoxes = array_reverse( $arrBoxes, true );	// the ID number is ascending so read from the last one.
 		foreach( $arrBoxes as $strID => $v ) {
 				
 			preg_match( '/^(.+\D)(\d+)$/', $strID, $arrMatches );	// get the last digits
 			if ( ! isset( $arrMatches[2] ) ) continue;
 			
 			$numID = $arrMatches[2] + 1;
-			if ( ! isset( $this->oOption->arrOptions['boxes'][$arrMatches[1] . $numID] ) ) 
+			if ( ! isset( $this->oOption->arrOptions['boxes'][ $arrMatches[1] . $numID ] ) ) 
 				return $arrMatches[1] . $numID;
 				
 		}
@@ -1103,7 +1078,7 @@ return $strHead;
 				$this->oOption->Update();
 				update_option( 'sidebars_widgets', $arrSidebarOptions );
 				$strMsg .= __( 'The selected widget boxes have been deleted.', 'responsive-column-widgets' );
-				$this->AddSettingsError( __METHOD__, $strMsg, 'updated' );
+				$this->SetSettingsNotice( $strMsg, 'updated' );
 				
 			}
 			// unless unsetting the key, it will remain in the database. 
@@ -1130,8 +1105,8 @@ return $strHead;
 		 
 		if ( 
 			isset( $arrInput['responsive_column_widgets']['section_dangerzone']['submit_perform'] )
-			&& isset( $arrInput['responsive_column_widgets']['section_dangerzone']['field_initializeoptions'] )
-			&& $arrInput['responsive_column_widgets']['section_dangerzone']['field_initializeoptions'] == 1 
+			&& isset( $arrInput['responsive_column_widgets']['section_dangerzone']['initializeoptions'] )
+			&& $arrInput['responsive_column_widgets']['section_dangerzone']['initializeoptions'] == 1 
 		) {
 			
 			// Delete the plugin main options
@@ -1144,12 +1119,12 @@ return $strHead;
 		}	
 		
 		// Do the validations and sanitizations here.
-		$this->oOption->arrOptions['general']['capability'] = $arrInput['responsive_column_widgets']['section_general']['field_capability'];
-		$this->oOption->arrOptions['general']['allowedhtmltags'] = $this->oOption->ConvertStringToArray( $arrInput['responsive_column_widgets']['section_general']['field_allowedhtmltags'] ); 
+		$this->oOption->arrOptions['general']['capability'] = $arrInput['responsive_column_widgets']['section_general']['capability'];
+		$this->oOption->arrOptions['general']['allowedhtmltags'] = $this->oOption->ConvertStringToArray( $arrInput['responsive_column_widgets']['section_general']['allowedhtmltags'] ); 
 		
 		// Memory Allocation since 1.0.7.1
-		$this->oOption->arrOptions['general']['memory_allocation'] = empty( $arrInput['responsive_column_widgets']['section_dangerzone']['field_memory_allocation'] ) ? 0 
-			: $this->FixNumber( $arrInput['responsive_column_widgets']['section_dangerzone']['field_memory_allocation'], 
+		$this->oOption->arrOptions['general']['memory_allocation'] = empty( $arrInput['responsive_column_widgets']['section_dangerzone']['memory_allocation'] ) ? 0 
+			: $this->oUtil->FixNumber( $arrInput['responsive_column_widgets']['section_dangerzone']['memory_allocation'], 
 				intval( $strCurrentLimit ),
 				32 	// minimum
 			);

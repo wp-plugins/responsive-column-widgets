@@ -185,7 +185,7 @@ class ResponsiveColumnWidgets_Option_ {
 		return implode( $arrGlues[0], $arrInput );
 
 	}	
-	function ConvertStringToArray( $strInput, $strDelim=',', $strDelim2='' ) {
+	public function ConvertStringToArray( $strInput, $strDelim=',', $strDelim2='' ) {
 		
 		// Since 1.0.6.1
 		// explodes the given array into string and it supports up tp the second dimension.

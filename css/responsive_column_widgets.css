@@ -3,7 +3,7 @@
 	padding: 4px;
 	line-height: 1.5em;
 }
-.responsive_column_widgets_firstcol {
+.responsive_column_widgets_column_1 {
 	margin-left: 0px;
 	clear: left;
 }
@@ -29,15 +29,15 @@
     zoom:1; /* For IE 6/7 (trigger hasLayout) */
 }
 /*  GRID COLUMN SETUP   ==================================================================== */
-.col {
+.responsive_column_widgets_column {
 	display: block;
 	float:left;
 	margin: 1% 0 1% 1.6%;
 }
-.col:first-child { margin-left: 0; } /* all browsers except IE6 and lower */
+.responsive_column_widgets_column:first-child { margin-left: 0; } /* all browsers except IE6 and lower */
 /*  REMOVE MARGINS AS ALL GO FULL WIDTH AT 600 PIXELS */
 @media only screen and (max-width: 600px) {
-	.col { 
+	.responsive_column_widgets_column { 
 		margin: 1% 0 1% 0%;
 	}
 }
