@@ -694,8 +694,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}
 	function do_responsive_column_widgets_manage() {
 
-		if ( WP_DEBUG )
-			echo $this->DumpArray( $this->oOption->arrOptions['boxes'] );
+		// if ( WP_DEBUG )
+			// echo $this->DumpArray( $this->oOption->arrOptions['boxes'] );
 		
 	}
 	function do_responsive_column_widgets_general() {	
