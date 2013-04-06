@@ -68,7 +68,7 @@ There are other parameters besides *columns*.
 
 == Frequently Asked Questions ==
 
-= Can't figure out how to set it up! ARGH! Are you there? =
+= Can't figure out how to show widgets in columns! ARGH! Are you there? =
 Take a deep breath. Believe me, it's really simple. 90% of the time, you have not added any widget yet. Go to *Appearance > Widgets* and add widgets to the plugin's custom sidebar box. Then use the shortcode in a post. That's it. If you still cannot figure it out, take the screenshots of the *wp-admin/widgets.php* page and the page of the post you added the shortcode. And request a [support](http://wordpress.org/support/plugin/responsive-column-widgets) with the screenshots.
 
 = How do I customize the style? =
@@ -99,6 +99,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 * Added: the ability to add custom filter/action hooks for the widget box auto-insertion.
 * Added: the ability to restrict the widget box auto-insertion by category, post-id, post-type, and page-type.
 * Added: the ability to disable the widget box auto-insertion by category, post-id, post-type ( post, page, custom post types ), and page-type ( archives, search, 404, etc. ). 
+* Fixed: a bug in the Information page that the sub menu list items were displayed with bullet marks in WordPress 3.4.x.
 * Renewed: (**Breaking Change**) the entire Auto-Insert section of the plugin admin page. Accordingly, the previous auto-insert options should be reconfigured.
 * Removed: (**Breaking Change**) the *responsive_column_widget_area* class attribute. Those who have been using it, should simply change it to *responsive_column_widget_box* instead.
 
