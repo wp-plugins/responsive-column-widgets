@@ -21,6 +21,7 @@ When you want to display widgets horizontally, I know it’s such a headache to 
 * **Works in Posts/Pages** - with the shortcode, you can embed the responsive widgets in post and pages.
 * **PHP code and Shortcode** - use them to display the widgtes in theme template or in posts/pages.
 * **Default Sidebars Integration** - The sidebars defined by your theme also can be displayed in columns.
+* **Auto Insert Widget Box** - The widget box can be embedded automatically without the shortcode.
 * and [more](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/).
   
 == Installation ==
@@ -60,10 +61,10 @@ where 3 indicates the number of columns in the first row, 2 indicates 2 colums i
 == Frequently Asked Questions ==
 
 = How do I customize the style? =
-You can add your rules to the classes named **.responsive_column_widget_area .widget**. It's defined in *responsive-column-widgets/css/responsive_column_widgets.css* but simply you can define it in your theme's *style.css* as well.
+You can add your rules to the classes named **.responsive_column_widget_box .widget**. It's defined in *responsive-column-widgets/css/responsive_column_widgets.css* but simply you can define it in your theme's *style.css* as well.
 
 e.g. 
-`.responsive_column_widget_area .widget {
+`.responsive_column_widget_box .widget {
     padding: 4px;
     line-height: 1.5em;
     background-color: #EEE;
@@ -81,6 +82,13 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 
 == Changelog ==
+
+= 1.0.9 =
+* Added: the ability to add custom filter/action hooks for the widget box auto-insertion.
+* Added: the ability to restrict the widget box auto-insertion by category, post-id, post-type, and page-type.
+* Added: the ability to disable the widget box auto-insertion by category, post-id, post-type ( post, page, custom post types ), and page-type ( archives, search, 404, etc. ). 
+* Renewed: (**Breaking Change**) the entire Auto-Insert section of the plugin admin page. Accordingly the previous auto-insert options should be reconfigured.
+* Removed: (**Breaking Change**) the *responsive_column_widget_area* class attribute. Those who have been using it, should simply change it to *responsive_column_widget_box* instead.
 
 = 1.0.8.7 - 04/05/2013 =
 * Tweaked: the form data sanitization functionality for the numeric sequence values with the comma delimiter.

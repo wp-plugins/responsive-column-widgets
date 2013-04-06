@@ -430,7 +430,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			if ( isset( $arrSection['capability'] ) && ! current_user_can( $arrSection['capability'] ) ) continue;	// since 1.0.2.1
 			
 			// Store the registered sections internally in the class object.
-			$this->arrSections[$arrSection['id']] = array(  
+			$this->arrSections[ $arrSection['id'] ] = array(  
 				'title' => $arrSection['title'],
 				'pageslug' => $arrSection['pageslug'],
 				'description' => $arrSection['description']
@@ -627,15 +627,12 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		if ( !isset( $this->arrSections[ $strSectionID ] ) ) return;	// if it is not added
 		$strDescription = '<p>' . $this->arrSections[ $strSectionID ]['description'] . '</p>';
 		
-		$this->AddAndApplyFilter( 
+		echo $this->AddAndApplyFilter( 
 			$this->prefix_section . $strSectionID,
 			$strDescription, 	// the p-tagged description string 
 			$this->arrSections[ $strSectionID ]['description']	// the original description
 		); 
 
-		// add_filter( $this->prefix_section . $strSectionID , array( $this, $this->prefix_section . $strSectionID ), 10, 2 );
-		// echo apply_filters( $this->prefix_section . $strSectionID, $strDescription, $this->arrSections[$strSectionID]['description'] );	// the p-tagged description string and the original description is passed.
-	
 	}
 	function RenderFormField( $strMethodName, &$arrField ) {
 
@@ -2122,7 +2119,9 @@ class ResponsiveColumnWidgets_Admin_Page_Framework_Input_Filed_Types {	// since 
 			$strID = $this->strTagID . '_' . esc_attr( $strKey );
 			$strLabel = ucwords( $strKey );
 			$strOutput .= "<input type='hidden' name='{$this->strFieldName}[{$strKey}]' value='0' />";
+			$strOutput .= "<span style='display: inline-block;'>";
 			$strOutput .= "<input id='{$strID}' class='{$this->arrField['class']}' type='checkbox' name='{$this->strFieldName}[{$strKey}]' value='1' {$strChecked} {$this->vDisable} />&nbsp;&nbsp;{$strLabel}";
+			$strOutput .= "</span>";
 			$strOutput .= $this->arrField['delimiter'];
 		
 		}
@@ -2308,7 +2307,9 @@ class ResponsiveColumnWidgets_Admin_Page_Framework_Input_Filed_Types {	// since 
 		$strOutput = "<div id='{$this->strTagID}'>";
 		foreach ( $this->arrField['label'] as $strKey => $strLabel ) {
 			$strChecked = ( $this->vValue == $strKey ) ? 'Checked' : '';
+			$strOutput .= "<span style='display: inline-block;'>";
 			$strOutput .= "<input id='{$this->strTagID}_{$strKey}' class='{$this->arrField['class']}' type='radio' name='{$this->strFieldName}' value='{$strKey}' {$strChecked} {$this->vDisable} />&nbsp;&nbsp;{$strLabel}";
+			$strOutput .= "</span>";
 			$strOutput .= $this->arrField['delimiter'];
 		}
 		$strOutput .= "</div>";
@@ -2327,7 +2328,9 @@ class ResponsiveColumnWidgets_Admin_Page_Framework_Input_Filed_Types {	// since 
 				$strDisabled = $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->vDisable );
 				$strOutput .= "<input type='hidden' name='{$this->strFieldName}[{$strKey}]' value='0' />";
 				$strOutput .= $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->arrField['pre_field'] ) 
+					. "<span style='display: inline-block;'>"
 					. "<input id='{$this->strTagID}_{$strKey}' class='{$this->arrField['class']}' type='checkbox' name='{$this->strFieldName}[{$strKey}]' value='1' {$strChecked} {$strDisabled} />&nbsp;&nbsp;{$strLabel}"
+					. "</span>"
 					. $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->arrField['post_field'] );
 				$strOutput .= $this->arrField['delimiter'];
 			

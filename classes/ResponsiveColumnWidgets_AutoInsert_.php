@@ -16,84 +16,238 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 	protected $oCore;		// the core object
 	
 	// Dynamic Properties
-	protected $numPostID;	// since 1.0.7 - stores the current post ID.
-		
-	protected $bIsPost;		// since 1.0.7 - used to auto insert widgets into posts
-	protected $bIsPage;		// since 1.0.7 - used to auto insert widgets into pages
-	protected $bIsFront;	// since 1.0.7 - used to auto insert widgets into posts / pages
+	protected $intPostID;	// since 1.0.7 - stores the current post ID.	
+	protected $arrCatIDs;	// since 1.0.9 - stores the category IDs assigned to the current post ID.
+	protected $strPostType;	// since 1.0.9 - stores the current post type.
 	
-	// Container arrays - since 1.0.8
-	protected $arrAutoInsertIntoPosts = array();		// Stores the sidebar(widget box) IDs which will be inserted into post contents.
-	protected $arrAutoInsertIntoPages = array();		// Stores the sidebar(widget box) IDs which will be inserted into page contents.
-	protected $arrAutoInsertIntoFooter = array();		// Stores the sidebar(widget box) IDs which will be inserted into the footer.
-	protected $arrAutoInsertIntoComments = array();		// Stores the sidebar(widget box) IDs which will be inserted into comments.
-	protected $arrAutoInsertIntoCommentFormAbove = array();	// Stores the sidebar(widget box) IDs which will be inserted into the above comment form.
-	protected $arrAutoInsertIntoCommentFormBelow = array();	// Stores the sidebar(widget box) IDs which will be inserted into the below comment form.
-
+	// Container arrays
+	protected $arrEnabledBoxIDs = array();	// since 1.0.9 - stores widget box IDs that enable auto-insert.
+	protected $arrHookFilters = array(		// since 1.0.9 - stores all the registered filters.
+		'the_content' => array(),
+		'comment_text' => array(),
+	);	
+	protected $arrHookActions = array(		// since 1.0.9 - stores all the registered actions.
+		'wp_footer' => array(),		
+	);	
+	protected $arrDisplayedPageTypes = array(	// since 1.0.9 - stores the flags indicating the displaying page type.
+		'is_home' => false,
+		'is_archive' => false,
+		'is_404' => false,
+		'is_search' => false,
+	);
+	// protected $arrDisplayedPostTypes = array(	// since 1.0.9 - stores the flags indicating the displaying post type.
+		// 'post' => false,
+		// 'page' => false,
+	// );	
+	
 	function __construct( &$oOption, &$oCore ) {
-		
 		
 		// Objects
 		$this->oOption = $oOption;
 		$this->oCore = $oCore;
 		
-		// Auto Insertions
-		// The init hook is too early to perform the functions including is_single(), is_page() etc.
+		// Auto Insertions - The init hook is too early to perform the functions including is_single(), is_page() etc. as $wp_query is not established yet.
 		add_action( 'wp_head', array( $this, 'SetUpAutoInsertions' ) );
 
 	}
+	
 	/*
 	 *  Auto Insertions
 	 */
-	public function SetUpAutoInsertions() {
-
-		// since 1.0.7, renamed to SetUpAutoInsertions from SetUpPostInfo in 1.0.8
-		// These funcitons must be called after the query, $wp_query, has been set up.
-		$this->bIsPost = is_single();
-		$this->bIsPage = is_page();
-		$this->bIsFront = is_home() || is_front_page() ? True : False;		
-		$this->numPostID = $this->GetPostID();
+	function __Call( $strMethodName, $vArgs=null ) {	// since 1.0.9
 		
-		// Set up the container arrays
+		// Redirect the dynamic callbacks
+		// callback_filter_
+		$intLength = strlen( 'callback_filter_' );
+		if ( substr( $strMethodName, 0, $intLength ) == 'callback_filter_' ) 
+			return $this->DoFilter( substr( $strMethodName, $intLength ), $vArgs[0] );
+			
+		// callback_action_
+		$intLength = strlen( 'callback_action_' );
+		if ( substr( $strMethodName, 0, strlen( 'callback_action_' ) ) == 'callback_action_' ) 
+			return $this->DoAction( substr( $strMethodName, $intLength ), $vArgs[0] );
+		
+		// Unknown
+		return $vArgs[0];
+		
+	}
+	public function DoFilter( $strFilter, $strContent ) {	// since 1.0.9
+		
+		if ( ! isset( $this->arrHookFilters[ $strFilter ]  ) ) return;
+
+		$strPre = '';
+		$strPost = '';
+		foreach( $this->arrHookFilters[ $strFilter ] as $strSidebarID ) {
+			
+			// 'autoinsert_position'  0: above, 1: below, 2: both			
+			$intPositionType = $this->oOption->arrOptions['boxes'][ $strSidebarID ]['autoinsert_position'];
+			if ( $intPositionType == 0 || $intPositionType == 2 )
+				$strPre .= $this->oCore->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ) );
+			if ( $intPositionType == 1 || $intPositionType == 2 )
+				$strPost .= $this->oCore->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ) );
+			
+		}
+// echo $this->strPostType . '<br />';	
+// echo '<pre>Current Cat ID: ' . print_r( $this->arrCatIDs, true ) . '</pre>';
+// echo '<pre>Disabled Cat IDs: ' . print_r( $arrBoxOptions['autoinsert_disable_categories'], true ) . '</pre>';
+		return $strPre . $strContent . $strPost;
+		
+	}
+	public function DoAction( $strAction, $vArg ) {		// since 1.0.9
+		
+		if ( ! isset( $this->arrHookActions[ $strAction ]  ) ) return;
+
+		foreach( $this->arrHookActions[ $strAction ] as $strSidebarID ) 
+			$this->oCore->RenderWidgetBox( array( 'sidebar' => $strSidebarID ) );	
+		
+	}
+	
+	protected function SetupAutoInsertEnabledBoxes() {	// since 1.0.9
+		
+		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => &$arrBoxOptions ) 
+			if ( isset( $arrBoxOptions['autoinsert_enable'] ) && $arrBoxOptions['autoinsert_enable'] )
+				$this->arrEnabledBoxIDs[] = $strSidebarID;
+		
+	}
+	protected function SetupPageTypeProperties() {	// since 1.0.9
+		
+		// MUST BE CALLED AFTER $wp_query IS ESTABLISHED.
+		
+		$this->arrDisplayedPageTypes = array(
+			'is_home' => ( is_home() || is_front_page() ),
+			'is_archive' => is_archive(),
+			'is_404' => is_404(),
+			'is_search' => is_search(),			
+		);
+		// $this->arrDisplayedPostTypes = array(	// since 1.0.9 - stores the flags indicating the displaying post type.
+			// 'post' => is_single(),
+			// 'page' => is_page(),
+		// );			
+
+		$this->intPostID = $this->GetPostID();
+		$this->arrCatIDs = wp_get_post_categories( $this->intPostID );
+		$this->strPostType = get_post_type( $this->intPostID );
+		
+	}	
+	protected function IsAutoInsertEnabledPage( &$arrBoxOptions ) {
+		
+		// 'autoinsert_enable_pagetypes'	=> array( 
+			// 'is_home' => false,
+			// 'is_archives' => false,
+			// 'is_404' => false,
+			// 'is_search' => false,		
+		// ),
+		// 'autoinsert_enable_posttypes'	=> array( 'post' => false, 'page' => false ),
+		// 'autoinsert_enable_categories'	=> array(),	// the category ID, in most cases 1 is Uncategoriezed.
+		// 'autoinsert_enable_post_ids'	=> array(),	
+
+		/*
+		 *  First, check whether or not the loading page matches the disabled criteria. If so, return false.
+		 */
+		
+		// Disabled Page Types
+		foreach ( ( $arrBoxOptions['autoinsert_disable_pagetypes'] ) as $strPageType => $bDisable ) 
+			if ( $bDisable && $this->arrDisplayedPageTypes[ $strPageType ] ) return false;
+	
+		// Disabled Categories
+		$arrDisabledCatIDs = array_keys( $arrBoxOptions['autoinsert_disable_categories'], true );
+		foreach ( $this->arrCatIDs as $intCatID )
+			if ( in_array( $intCatID, $arrDisabledCatIDs ) ) 
+				return false;
+				
+		// Disabled Post IDs	
+		if ( in_array( $this->intPostID, $arrBoxOptions['autoinsert_disable_post_ids'] ) ) return false;
+		
+		// Disabled Post Types.
+		$arrDisalbedPostTypes = array_keys( $arrBoxOptions['autoinsert_disable_posttypes'], True );
+		if ( in_array( $this->strPostType, $arrDisalbedPostTypes ) ) return false;
+		
+		/*
+		 * Now, check if the user specifies the enable options and if the option is set ( at least one of the items are checked ),
+		 * apply the condition and return true or false.
+		 * */
+		
+		
+		// Enabled Page Types
+		$arrEnabledPageTypes = array_keys( $arrBoxOptions['autoinsert_enable_pagetypes'], true );		
+		foreach ( $arrEnabledPageTypes as $strPageType ) 
+			if ( $this->arrDisplayedPageTypes[ $strPageType ] ) return true;	// the current loading page is an enabled one.	
+		if ( count( $arrEnabledPageTypes ) > 0 ) return false;	// if one of the items is checked, return false.			
+			
+		// Enabled Categories - this applies only to posts. ( not for pages and custom post types ) 
+		if ( strtolower( $this->strPostType ) == strtolower( 'post' ) ) {
+			
+			$arrEnabledCatIDs = array_keys( $arrBoxOptions['autoinsert_enable_categories'], true );		
+			foreach ( $this->arrCatIDs as $intCatID )
+				if ( in_array( $intCatID, $arrEnabledCatIDs ) ) return true;				
+			if ( count( $arrEnabledCatIDs ) > 0 ) return false;	// if one of the items is checked, return false.
+			
+		}	
+			
+		// Enabled Post IDs	
+		if ( in_array( $this->intPostID, $arrBoxOptions['autoinsert_enable_post_ids'] ) ) return true;
+		if ( count( $arrBoxOptions['autoinsert_enable_post_ids'] ) > 0 ) return false;
+		
+		// Enabled Post Types.
+		$arrEnabledPostTypes = array_keys( $arrBoxOptions['autoinsert_enable_posttypes'], true );
+		
+// echo '<pre>' . print_r( $arrEnabledPostTypes, true ). '</pre>';		
+// echo '<pre>' . print_r( $arrEnabledCatIDs, true ). '</pre>';		
+// echo '<pre>' . print_r( $this->arrCatIDs, true ). '</pre>';
+		
+		if ( in_array( $this->strPostType, $arrEnabledPostTypes ) ) return true;
+		if ( count( $arrEnabledPostTypes ) > 0 ) return false;
+			
+		return true;
+		
+	}
+	protected function SetupHooks() {	// since 1.0.9
+		
+		// Set up the filter container array, and the action container array.
 		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => &$arrBoxOptions ) {
 			
-			if ( isset( $arrBoxOptions['insert_footer'] ) && $arrBoxOptions['insert_footer'] )
-				$this->arrAutoInsertIntoFooter[] = $strSidebarID;
+			if ( ! in_array( $strSidebarID, $this->arrEnabledBoxIDs ) ) continue;
 			
-			if ( isset( $arrBoxOptions['insert_posts']['post'] ) && $arrBoxOptions['insert_posts']['post'] )			
-				$this->arrAutoInsertIntoPosts[] = $strSidebarID;
-
-			if ( isset( $arrBoxOptions['insert_posts']['page'] ) && $arrBoxOptions['insert_posts']['page'] )			
-				$this->arrAutoInsertIntoPages[] = $strSidebarID;
-
-			if ( isset( $arrBoxOptions['insert_comments'] ) && $arrBoxOptions['insert_comment'] )			
-				$this->arrAutoInsertIntoComments[] = $strSidebarID;
-
-			if ( isset( $arrBoxOptions['insert_comment_form'] ) && $arrBoxOptions['insert_comment_form']
-				&& isset( $arrBoxOptions['insert_comment_form_positions'] ) ) {
-				
-				if ( $arrBoxOptions['insert_comment_form_positions']['above'] ) 
-					$this->arrAutoInsertIntoCommentFormAbove[] = $strSidebarID;
-				
-				if ( $arrBoxOptions['insert_comment_form_positions']['below'] ) 
-					$this->arrAutoInsertIntoCommentFormBelow[] = $strSidebarID;
+			// If it's not an enabled page, skip.
+			if ( ! $this->IsAutoInsertEnabledPage( $arrBoxOptions ) ) continue;
 			
-			}
+			// Add the filters into the container array.
+			if ( isset( $arrBoxOptions['autoinsert_enable_areas']['the_content'] ) && $arrBoxOptions['autoinsert_enable_areas']['the_content'] )
+				$this->arrHookFilters['the_content'][] = $strSidebarID;
+			if ( isset( $arrBoxOptions['autoinsert_enable_areas']['comment_text'] ) && $arrBoxOptions['autoinsert_enable_areas']['comment_text'] )
+				$this->arrHookFilters['comment_text'][] = $strSidebarID;	
+			foreach( $arrBoxOptions['autoinsert_enable_filters'] as $strFilter ) 
+				$this->arrHookFilters[ $strFilter ][] = $strSidebarID;
+				
+			// Add the actions into the container array.
+			if ( isset( $arrBoxOptions['autoinsert_enable_areas']['wp_footer'] ) && $arrBoxOptions['autoinsert_enable_areas']['wp_footer'] )
+				$this->arrHookActions['wp_footer'][] = $strSidebarID;
+			foreach( $arrBoxOptions['autoinsert_enable_actions'] as $strAction ) 
+				$this->arrHookActions[ $strAction ][] = $strSidebarID;
+			
 		}
-		if ( count( $this->arrAutoInsertIntoFooter ) > 0 )
-			add_action( 'wp_footer', array( $this, 'AddWidgetboxInFooter' ) );
-			
-		if ( count( $this->arrAutoInsertIntoPosts ) > 0 || count( $this->arrAutoInsertIntoPages ) > 0  )
-			add_action( 'the_content', array( $this, 'AddWidgetboxInPostContent' ) );
+
+		// Add hooks!
+		foreach ( $this->arrHookFilters as $strKey => $arrSidebarIDs ) 
+			if ( count( $arrSidebarIDs ) > 0 ) 
+				$bAdded = add_action( $strKey, array( $this, "callback_filter_{$strKey}" ) );
+				
+		foreach ( $this->arrHookActions as $strKey => $arrSidebarIDs ) 
+			if ( count( $arrSidebarIDs ) > 0 )
+				add_action( $strKey, array( $this, "callback_action_{$strKey}" ) );
+				
+	}
+	public function SetUpAutoInsertions() {		// since 1.0.7, renamed to SetUpAutoInsertions from SetUpPostInfo in 1.0.8, revised in 1.0.9, used by a hook so must be public.
+				
+		// First check if there are widget boxes that enable auto-insert.
+		$this->SetupAutoInsertEnabledBoxes();
+		if ( count( $this->arrEnabledBoxIDs ) < 1 ) return;	// if there is no boxes enabled, there is nothing to do.
 		
-		if ( count( $this->arrAutoInsertIntoComments ) > 0 )
-			add_action( 'comment_text', array( $this, 'AddWidgetBoxInComment' ), 10, 2 );	// apply_filters( 'comment_text', get_comment_text( $comment_ID ), $comment );
-		
-		if ( count( $this->arrAutoInsertIntoCommentFormAbove ) > 0 ) 
-			add_action( 'comment_form_before', array( $this, 'AddWidgetBoxInCommentFormAbove' ) );	// do_action( 'comment_form_before' );
-			
-		if ( count( $this->arrAutoInsertIntoCommentFormBelow ) > 0 ) 
-			add_action( 'comment_form_after', array( $this, 'AddWidgetBoxInCommentFormBelow' ) );	// do_action( 'comment_form_after' ); 
+		// Set up properties which stores what kind of page is displayed
+		$this->SetupPageTypeProperties();
+
+		// Extract all necessary hooks. Divide filters and actions.
+		$this->SetupHooks();
 		
 	}
 	protected function GetPostID() {	// since 1.0.7
@@ -102,86 +256,8 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		if ( isset( $wp_query->post ) && is_object( $wp_query->post ) ) return $wp_query->post->ID;	
 		
 	}
-	public function AddWidgetBoxInComment( $strCommentText, $oComment ) {
-		
-		// since 1.0.8
-	// $GLOBALS['comment']->comment_ID	
-		return $strCommentText;
-		
-	}
-	public function AddWidgetBoxInCommentFormAbove() {
-			
-		// since 1.0.8 - callback for the action hooks,  comment_form_before and comment_form_after
-		foreach ( $this->arrAutoInsertIntoCommentFormAbove as $strSidebarID ) {
-						
-			$arrBoxOptions = $this->oOption->arrOptions['boxes'][ $strSidebarID ];
-						
-			// If the disable option for the front page is enabled, skip.
-			if ( $this->bIsFront && $arrBoxOptions['insert_comment_form_disable_front'] ) continue;
-
-			// If the disable option for the post id matches the current post ID, skip.
-			if ( $this->IsPostIn( $this->numPostID, $arrBoxOptions['insert_comment_form_disable_post_ids'] ) ) continue;
-			
-			$this->RenderWidgetBox( array( 'sidebar' => $strSidebarID ) );
-					
-		}		
-	}
-	public function AddWidgetBoxInCommentFormBelow() {
-
-		// since 1.0.8 - callback for the action hooks,  comment_form_before and comment_form_after
-		foreach ( $this->arrAutoInsertIntoCommentFormBelow as $strSidebarID ) {
-						
-			$arrBoxOptions = $this->oOption->arrOptions['boxes'][ $strSidebarID ];
-						
-			// If the disable option for the front page is enabled, skip.
-			if ( $this->bIsFront && $arrBoxOptions['insert_comment_form_disable_front'] ) continue;
-
-			// If the disable option for the post id matches the current post ID, skip.
-			if ( $this->IsPostIn( $this->numPostID, $arrBoxOptions['insert_comment_form_disable_post_ids'] ) ) continue;
-			
-			$this->RenderWidgetBox( array( 'sidebar' => $strSidebarID ) );
-					
-		}			
-	}
-	public function AddWidgetboxInFooter() {
-		
-		// since 1.0.5, in 1.0.8, moved from the core object
-		foreach ( $this->arrAutoInsertIntoFooter as $strSidebarID ) {
-						
-			$arrBoxOptions = $this->oOption->arrOptions['boxes'][ $strSidebarID ];
-						
-			// If the disable option for the front page is enabled, skip.
-			if ( $this->bIsFront && $arrBoxOptions['insert_footer_disable_front'] ) continue;
-
-			// If the disable option for the post id matches the current post ID, skip.
-			if ( $this->IsPostIn( $this->numPostID, $arrBoxOptions['insert_footer_disable_ids'] ) ) continue;
-			
-			$this->RenderWidgetBox( array( 'sidebar' => $strSidebarID ) );
-					
-		}
-	}
-	public function AddWidgetboxInPostContent( $strContent ) {
-				
-		// since 1.0.7, in 1.0.8, moved from the core object
-		$arr = $this->bIsPost ? $this->arrAutoInsertIntoPosts : ( $this->bIsPage ? $this->arrAutoInsertIntoPages : array() );
-		foreach ( $arr as $strSidebarID ) {
-			
-			$arrBoxOptions = $this->oOption->arrOptions['boxes'][ $strSidebarID ];
-		
-			// If the disable option for the front page is enabled, skip.
-			if ( $this->bIsFront && $arrBoxOptions['insert_posts_disable_front'] ) continue;
-
-			// If the disable option for the post id matches the current post ID, skip.
-			if ( $this->IsPostIn( $this->numPostID, $arrBoxOptions['insert_posts_disable_ids'] ) ) continue;
-					
-			$strContent = $arrBoxOptions['insert_posts_positions']['above'] ? $this->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ) ) . $strContent : $strContent;
-			$strContent = $arrBoxOptions['insert_posts_positions']['below'] ? $strContent . $this->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ) ) : $strContent;
-		
-		} 	
-		return $strContent;
-		
-	}
-	protected function IsPostIn( $numPostID, &$arrPostIDs ) {
+	
+	protected function IsPostIn( $intPostID, &$arrPostIDs ) {
 	
 		// since 1.0.7, in 1.0.8, moved from the core object
 		if ( is_string( $arrPostIDs ) )
@@ -189,18 +265,8 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		
 		if ( ! is_array( $arrPostIDs ) ) return null;
 
-		if ( in_array( $numPostID, $arrPostIDs ) ) return True;
+		if ( in_array( $intPostID, $arrPostIDs ) ) return True;
 	
 	}	
-	
-	protected function RenderWidgetBox( $arrParams ) {	// since 1.0.8
 
-		$this->oCore->RenderWidgetBox( $arrParams );
-		
-	}
-	protected function GetWidgetBoxOutput( $arrParams ) {	// since 1.0.8
-		
-		return $this->oCore->GetWidgetBoxOutput( $arrParams );
-		
-	}
 }

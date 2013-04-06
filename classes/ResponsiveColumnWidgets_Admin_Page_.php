@@ -5,10 +5,25 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	protected $strPluginName = 'Responsive Column Widgets';
 	protected $strPluginSlug = 'responsive_column_widgets';
 	protected $arrRecentlyAddedOptionKeys = array(	// used with the CheckKeys() method to allow missing keys when an array is validated	
-		'insert_comment_form',					// since 1.0.8
-		'insert_comment_form_positions', 		// since 1.0.8
-		'insert_comment_form_disable_front',	// since 1.0.8
-		'insert_comment_form_disable_post_ids',	// since 1.0.8
+		// since 1.0.8
+		'insert_comment_form',				
+		'insert_comment_form_positions', 	
+		'insert_comment_form_disable_front',
+		'insert_comment_form_disable_post_ids',
+		// since 1.0.9
+		'autoinsert_enable',		
+		'autoinsert_enable_areas',
+		'autoinsert_position',
+		'autoinsert_enable_filters',
+		'autoinsert_enable_actions',
+		'autoinsert_enable_pagetypes',
+		'autoinsert_enable_posttypes',
+		'autoinsert_enable_categories',
+		'autoinsert_enable_post_ids',
+		'autoinsert_disable_pagetypes',
+		'autoinsert_disable_posttypes',
+		'autoinsert_disable_categories',
+		'autoinsert_disable_post_ids',
 	);
 	
 	// Flags
@@ -109,6 +124,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$arrWidgetBoxDefaultOptions['message_no_widget'] = __( 'No widgetd is added yet.', 'responsive-column-widgets' ); 
 		$arrWidgetBoxOptions = $bIsNew ? $arrWidgetBoxDefaultOptions : $this->oUtil->UniteArraysRecursive( $this->oOption->arrOptions['boxes'][ $strSidebarID ], $arrWidgetBoxDefaultOptions );
 			
+		// Clean up old versions option values and replace them if necessary
+		// $arrWidgetBoxOptions = $this->CleanOldVersionBoxOptions( $arrWidgetBoxOptions );
+		
 		// Add the form elements.
 		$this->AddFormSections(
 			// Section Arrays
@@ -252,7 +270,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'title' => __( 'Width Percentage Offsets', 'responsive-column-widgets' ),
 							'description' => __( 'Set the offsets for width percentage. The higher the offset nubmer is, the less will the number of clummns be displayed.', 'responsive-column-widgets' ) . ' '
 								. __( 'Format', 'responsive-column-widgets' ) . ': ' . __( 'Pixel: Offset, Pixel: Offset, ....', 'responsive-column-widgets' ) . ' '
-								. 'e.g. 600:3, 480:4, 400:5',
+								. 'e.g. 600:3, 480:4, 400:5<br />' 
+								. __( 'Default:', 'responsive-column-widgets' ) . '&nbsp;' . $this->oOption->GetDefaultValue( 'offsets' ),
 							'type' => 'text',
 							'size' => 100,
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'offsets' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['offsets'] ),
@@ -270,137 +289,278 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						),							
 					),					
 				),
-				// Insert Widget Box into Footer
 				array(
 					'pageslug' => $this->strPluginSlug,
 					'tabslug' => 'neworedit',
-					'id' => 'section_insert_footer',
-					'title' => __( 'Insert Widget Box into Footer', 'responsive-column-widgets' ), 
+					'id'	=> 'section_autoinsert',
+					'title'	=> __( 'Auto-Insert', 'responsive-column-widgets' ), 
 					'fields' => array(
 						array(
-							'id' => 'footer',
-							'title' => __( 'Footer', 'responsive-column-widgets' ),
-							'tip' => __( 'Insert the widget box into the footer.', 'responsive-column-widgets' ),
-							'label' => __( 'Insert the widget box into the footer.', 'responsive-column-widgets' ),
-							'type' => 'checkbox',
-							'value' => $arrWidgetBoxOptions['insert_footer'],
-							'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>',
+							'id' => 'autoinsert_enable',
+							'title' => __( 'Enable Auto-insert', 'responsive-column-widgets' ),
+							'description' => __( 'Insert the widget box automatically. If this is Off, the below settings in this section do not take effects.', 'responsive-column-widgets' ),
+							'type' => 'radio',
+							'value' => $arrWidgetBoxOptions['autoinsert_enable'],
+							'label' => array( 
+								1 => __( 'On', 'responsive-column-widgets' ),
+								0 => __( 'Off', 'responsive-column-widgets' ),
+							),
+							'delimiter' => '&nbsp;&nbsp;&nbsp;',
+							'post_html' => '<hr />',
 						),
-						array(	// since 1.0.7
-							'id' => 'insert_footer_disable_front',
+						array(
+							'id' => 'autoinsert_enable_areas',
+							'title' => __( 'Areas ( hook )', 'responsive-column-widgets' ),
 							'type' => 'checkbox',
-							'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
-							'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
-							'pre_html' => '<span title="' . $this->strGetPro . '">',
-							'post_html' => '</span>',											
-							'value' => $arrWidgetBoxOptions['insert_footer_disable_front'], 
-						),							
-						array(	// since 1.0.7
-							'id' => 'insert_footer_disable_ids',
+							'value' => $arrWidgetBoxOptions['autoinsert_enable_areas'],
+							'label' => array(
+								'the_content' => __( 'Post / Page Content ( the_content )', 'responsive-column-widgets' ),
+								'wp_footer' => __( 'Footer ( wp_footer )', 'responsive-column-widgets' ),
+								'comment_text' => __( 'Comment Text ( comment_text )', 'responsive-column-widgets' ),
+							),
+							'description' => __( 'Check where the auto-insertion should be performed.', 'responsive-column-widgtes' ),
+						),	
+						array(	
+							'id' => 'autoinsert_enable_filters',
 							'type' => 'text',
 							'size' => 100,
-							'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
-							'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
+							'title' => __( 'Filters', 'responsive-column-widgets' ),
+							'description' => sprintf( __( 'Enter the WordPress <a href="%1$s">filters</a> with which the auto-insertion is performed, separated by commas.', 'responsive-column-widgets' ), 'http://codex.wordpress.org/Plugin_API/Filter_Reference' )
+								. '<br />e.g. comment_form_before, the_excerpt, my_custom_filter, other_plugin_filter',
+							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'autoinsert_enable_filters' ) : $this->oOption->ConvertOptionArrayValueToString( $arrWidgetBoxOptions['autoinsert_enable_filters'] ),	
+						),							
+						array(
+							'id' => 'autoinsert_position',
+							'title' => __( 'Position', 'responsive-column-widgets' ),
+							'type' => 'radio',
+							'value' => $arrWidgetBoxOptions['autoinsert_position'],
+							'label' => array(
+								__( 'Above', 'responsive-column-widgets' ),
+								__( 'Below', 'responsive-column-widgets' ),
+								__( 'Both', 'responsive-column-widgets' ),
+							),
+							'delimiter' => '&nbsp;&nbsp;&nbsp;',
+							'description' => __( 'This option determines whether the widet box should be placed before or after ( above or below ) the provided contents by the hooking filters. This does not take effects for action hooks such as wp_footer.', 'responsive-column-widgets' ),
+						),
+						array(	
+							'id' => 'autoinsert_enable_actions',
+							'type' => 'text',
+							'size' => 100,
+							'title' => __( 'Actions', 'responsive-column-widgets' ),
+							'description' => sprintf( __( 'Enter the WordPress <a href="%1$s">actions</a> with which the auto-insertion is performed, separated by commas.', 'responsive-column-widgets' ), 'http://codex.wordpress.org/Plugin_API/Action_Reference' )
+								. '<br />e.g. login_form, my_custom_action, other_plugin_action',
+							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'autoinsert_enable_actions' ) : $this->oOption->ConvertOptionArrayValueToString( $arrWidgetBoxOptions['autoinsert_enable_filters'] ),	
+							'post_html' => '<hr />',
+						),							
+						array(
+							'id' => 'autoinsert_enable_pagetypes',
+							'title' => __( 'Restrict Auto-Insert to Checked Page Types', 'responsive-column-widgets' ),
+							'type' => 'checkbox',
+							'value' => $arrWidgetBoxOptions['autoinsert_enable_pagetypes'],
+							'label' => array(
+								'is_home' => __( 'Home / Front Page', 'responsive-column-widgets' ),
+								'is_archive' => __( 'Archives', 'responsive-column-widgets' ),
+								'is_404' => __( '404 Page', 'responsive-column-widgets' ),
+								'is_search' => __( 'Search Results', 'responsive-column-widgets' ),
+							),
+							'description' => __( 'Check the page types that the auto-insertion should be performed to restrict it to certain page types. Leave them all unchecked if you want the auto-insertion to perform in all types of pages.', 'responsive-column-widgets' ),							
+							'delimiter' => '&nbsp;&nbsp;&nbsp;',
+						),							
+						array(
+							'id' => 'autoinsert_enable_posttypes',
+							'title' => __( 'Restrict Auto-Insert to Checked Post Types', 'responsive-column-widgets' ),
+							'description' => __( 'Check the post types that the auto-insertion should be performed to restrict it to certain post types. Leave them all unchecked if you want the auto-insertion to perform in all types of posts.', 'responsive-column-widgets' ),
+							'type' => 'posttype',
+							'value' => $arrWidgetBoxOptions['autoinsert_enable_posttypes'],
+							'delimiter' => '&nbsp;&nbsp;&nbsp;',
+						),							
+						array(
+							'id' => 'autoinsert_enable_categories',
+							'title' => __( 'Restrict Auto-Insert to Checked Categories', 'responsive-column-widgets' ),
+							'description' => __( 'Check the categories that the auto-insertion should be performed. This only applies to posts. Leave them all unchecked to aplly the auto-insertion to all posts.', 'responsive-column-widgets' ),
+							'type' => 'category',
+							'value' => $arrWidgetBoxOptions['autoinsert_enable_categories'],
+						),	
+						array(	
+							'id' => 'autoinsert_enable_post_ids',
+							'type' => 'text',
+							'size' => 100,
+							'title' => __( 'Restrict Auto-Insert to Certain Post / Page IDs', 'responsive-column-widgets' ),
+							'description' => __( 'Enter the post IDs where the auto-insertion should be performed, separated by commas. Set empty to apply the auto-insertion to all posts.', 'responsive-column-widgets' )
 								. '<br />e.g. 98, 76, 5',
-							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_footer_disable_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_footer_disable_ids'] ),							
-							'pre_html' => '<span title="' . $this->strGetPro . '">',
-							'post_html' => '</span>',								
-						),		
-					)
+							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'autoinsert_enable_post_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $arrWidgetBoxOptions['autoinsert_enable_post_ids'] ),	
+						),	
+						array(
+							'id' => 'autoinsert_disable_pagetypes',
+							'title' => __( 'Page Types to Disable Auto-Insert', 'responsive-column-widgets' ),
+							'type' => 'checkbox',
+							'value' => $arrWidgetBoxOptions['autoinsert_disable_pagetypes'],
+							'label' => array(
+								'is_home' => __( 'Home / Front Page', 'responsive-column-widgets' ),
+								'is_archive' => __( 'Archives', 'responsive-column-widgets' ),
+								'is_404' => __( '404 Page', 'responsive-column-widgets' ),
+								'is_search' => __( 'Search Results', 'responsive-column-widgets' ),
+							),
+							'description' => __( 'Check the page types that the auto-insertion should be disabled. Leave them all unchecked if you want the auto-insertion to perform in all types of pages.', 'responsive-column-widgets' ),							
+							'delimiter' => '&nbsp;&nbsp;&nbsp;',
+						),							
+						array(
+							'id' => 'autoinsert_disable_posttypes',
+							'title' => __( 'Post Types to Disable Auto-Insert', 'responsive-column-widgets' ),
+							'description' => __( 'Check the post types that the auto-insertion should be disabled. Leave them all unchecked if you want the auto-insertion to perform in all types of posts.', 'responsive-column-widgets' ),
+							'type' => 'posttype',
+							'value' => $arrWidgetBoxOptions['autoinsert_disable_posttypes'],
+							'delimiter' => '&nbsp;&nbsp;&nbsp;',
+						),							
+						array(
+							'id' => 'autoinsert_disable_categories',
+							'title' => __( 'Categories to Disable Auto-Insert', 'responsive-column-widgets' ),
+							'description' => __( 'Check the categories that the auto-insertion should be disabled. This only applies to posts.', 'responsive-column-widgets' ),
+							'type' => 'category',
+							'value' => $arrWidgetBoxOptions['autoinsert_disable_categories'],
+						),						
+						array(	
+							'id' => 'autoinsert_disable_post_ids',
+							'type' => 'text',
+							'size' => 100,
+							'title' => __( 'Post / Page ID to Disable Auto-Insert', 'responsive-column-widgets' ),
+							'description' => __( 'Enter the post IDs where the auto-insertion should be disabled, separated by commas. Set empty not to disable the auto-insertion in any post.', 'responsive-column-widgets' )
+								. '<br />e.g. 98, 76, 5',
+							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'autoinsert_disable_post_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $arrWidgetBoxOptions['autoinsert_disable_post_ids'] ),	
+						),							
+					),
 				),
+				// Insert Widget Box into Footer
+				// array(
+					// 'pageslug' => $this->strPluginSlug,
+					// 'tabslug' => 'neworedit',
+					// 'id' => 'section_insert_footer',
+					// 'title' => __( 'Insert Widget Box into Footer', 'responsive-column-widgets' ), 
+					// 'fields' => array(
+						// array(
+							// 'id' => 'footer',
+							// 'title' => __( 'Footer', 'responsive-column-widgets' ),
+							// 'tip' => __( 'Insert the widget box into the footer.', 'responsive-column-widgets' ),
+							// 'label' => __( 'Insert the widget box into the footer.', 'responsive-column-widgets' ),
+							// 'type' => 'checkbox',
+							// 'value' => $arrWidgetBoxOptions['insert_footer'],
+							// 'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>',
+						// ),
+						// array(	// since 1.0.7
+							// 'id' => 'insert_footer_disable_front',
+							// 'type' => 'checkbox',
+							// 'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
+							// 'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
+							// 'pre_html' => '<span title="' . $this->strGetPro . '">',
+							// 'post_html' => '</span>',											
+							// 'value' => $arrWidgetBoxOptions['insert_footer_disable_front'], 
+						// ),							
+						// array(	// since 1.0.7
+							// 'id' => 'insert_footer_disable_ids',
+							// 'type' => 'text',
+							// 'size' => 100,
+							// 'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
+							// 'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
+								// . '<br />e.g. 98, 76, 5',
+							// 'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_footer_disable_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_footer_disable_ids'] ),							
+							// 'pre_html' => '<span title="' . $this->strGetPro . '">',
+							// 'post_html' => '</span>',								
+						// ),		
+					// )
+				// ),
 				// Insert Widget Box into Posts and Pages
-				array(
-					'pageslug' => $this->strPluginSlug,
-					'tabslug' => 'neworedit',
-					'id' => 'section_insert_posts',
-					'title' => __( 'Insert Widget Box into Posts and Pages', 'responsive-column-widgets' ), 
-					'fields' => array(				
-						array(	// since 1.0.7
-							'id' => 'insert_posts',
-							'title' => __( 'Posts and Pages', 'responsive-column-widgets' ),
-							'tip' => __( 'Insert the widget box into posts and pages.', 'responsive-column-widgets' ),
-							'label' => array(
-								'post' => __( 'Insert the widget box into posts.', 'responsive-column-widgets' ),
-								'page' => __( 'Insert the widget box into pages.', 'responsive-column-widgets' ),
-							),
-							'type' => 'checkbox',
-							'value' => $arrWidgetBoxOptions['insert_posts'],
-							'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless one of these is checked.', 'responsive-column-widgets' ) . '</span></p>',
-						),	
-						array(	// since 1.0.7
-							'id' => 'insert_posts_positions',
-							'type' => 'checkbox',
-							'title' => __( 'Position', 'responsive-column-widgets' ),
-							'label' => array(
-								'above' => __( 'Above Content', 'responsive-column-widgets' ),
-								'below' => __( 'Below Content', 'responsive-column-widgets' ),
-							),
-							'delimiter' => '&nbsp;&nbsp;&nbsp;',
-							'value' => $arrWidgetBoxOptions['insert_posts_positions'],							
-						),	
-						array(	// since 1.0.7
-							'id' => 'insert_posts_disable_front',
-							'type' => 'checkbox',
-							'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
-							'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
-							'value' => $arrWidgetBoxOptions['insert_posts_disable_front'],						
-						),							
-						array(	// since 1.0.7
-							'id' => 'insert_posts_disable_ids',
-							'type' => 'text',
-							'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
-							'size' => 100,
-							'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
-								. '<br />e.g. 98, 76, 5',
-							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_posts_disable_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_posts_disable_ids'] ),						
-						),							
-					),
-				),
+				// array(
+					// 'pageslug' => $this->strPluginSlug,
+					// 'tabslug' => 'neworedit',
+					// 'id' => 'section_insert_posts',
+					// 'title' => __( 'Insert Widget Box into Posts and Pages', 'responsive-column-widgets' ), 
+					// 'fields' => array(				
+						// array(	// since 1.0.7
+							// 'id' => 'insert_posts',
+							// 'title' => __( 'Posts and Pages', 'responsive-column-widgets' ),
+							// 'tip' => __( 'Insert the widget box into posts and pages.', 'responsive-column-widgets' ),
+							// 'label' => array(
+								// 'post' => __( 'Insert the widget box into posts.', 'responsive-column-widgets' ),
+								// 'page' => __( 'Insert the widget box into pages.', 'responsive-column-widgets' ),
+							// ),
+							// 'type' => 'checkbox',
+							// 'value' => $arrWidgetBoxOptions['insert_posts'],
+							// 'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless one of these is checked.', 'responsive-column-widgets' ) . '</span></p>',
+						// ),	
+						// array(	// since 1.0.7
+							// 'id' => 'insert_posts_positions',
+							// 'type' => 'checkbox',
+							// 'title' => __( 'Position', 'responsive-column-widgets' ),
+							// 'label' => array(
+								// 'above' => __( 'Above Content', 'responsive-column-widgets' ),
+								// 'below' => __( 'Below Content', 'responsive-column-widgets' ),
+							// ),
+							// 'delimiter' => '&nbsp;&nbsp;&nbsp;',
+							// 'value' => $arrWidgetBoxOptions['insert_posts_positions'],							
+						// ),	
+						// array(	// since 1.0.7
+							// 'id' => 'insert_posts_disable_front',
+							// 'type' => 'checkbox',
+							// 'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
+							// 'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
+							// 'value' => $arrWidgetBoxOptions['insert_posts_disable_front'],						
+						// ),							
+						// array(	// since 1.0.7
+							// 'id' => 'insert_posts_disable_ids',
+							// 'type' => 'text',
+							// 'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
+							// 'size' => 100,
+							// 'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
+								// . '<br />e.g. 98, 76, 5',
+							// 'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_posts_disable_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_posts_disable_ids'] ),						
+						// ),							
+					// ),
+				// ),
 				// Insert Widget Box into Comment Form Section - since 1.0.8
-				array(
-					'pageslug' => $this->strPluginSlug,
-					'tabslug' => 'neworedit',
-					'id' => 'section_insert_comment_form',
-					'title' => __( 'Insert Widget Box into Comment Form Section', 'responsive-column-widgets' ), 
-					'fields' => array(				
-						array(	// since 1.0.8
-							'id' => 'insert_comment_form',
-							'title' => __( 'Comment Form Section', 'responsive-column-widgets' ),
-							'tip' => __( 'Insert the widget box into the comment form section.', 'responsive-column-widgets' ),
-							'label' => __( 'Insert widget box into the comment form section.', 'responsive-column-widgets' ),
-							'type' => 'checkbox',
-							'value' => $arrWidgetBoxOptions['insert_comment_form'],
-							'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>',
-						),	
-						array(	// since 1.0.8
-							'id' => 'insert_comment_form_positions',
-							'type' => 'checkbox',
-							'title' => __( 'Position', 'responsive-column-widgets' ),
-							'label' => array(
-								'above' => __( 'Above Comment Form', 'responsive-column-widgets' ),
-								'below' => __( 'Below Comment Form', 'responsive-column-widgets' ),
-							),
-							'delimiter' => '&nbsp;&nbsp;&nbsp;',
-							'value' => $arrWidgetBoxOptions['insert_comment_form_positions'],							
-						),	
-						array(	// since 1.0.8
-							'id' => 'insert_comment_form_disable_front',
-							'type' => 'checkbox',
-							'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
-							'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
-							'value' => $arrWidgetBoxOptions['insert_comment_form_disable_front'],						
-						),							
-						array(	// since 1.0.8
-							'id' => 'insert_comment_form_disable_post_ids',
-							'type' => 'text',
-							'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
-							'size' => 100,
-							'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
-								. '<br />e.g. 98, 76, 5',
-							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_comment_form_disable_post_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_comment_form_disable_post_ids'] ),						
-						),							
-					),
-				),				
+				// array(
+					// 'pageslug' => $this->strPluginSlug,
+					// 'tabslug' => 'neworedit',
+					// 'id' => 'section_insert_comment_form',
+					// 'title' => __( 'Insert Widget Box into Comment Form Section', 'responsive-column-widgets' ), 
+					// 'fields' => array(				
+						// array(	// since 1.0.8
+							// 'id' => 'insert_comment_form',
+							// 'title' => __( 'Comment Form Section', 'responsive-column-widgets' ),
+							// 'tip' => __( 'Insert the widget box into the comment form section.', 'responsive-column-widgets' ),
+							// 'label' => __( 'Insert widget box into the comment form section.', 'responsive-column-widgets' ),
+							// 'type' => 'checkbox',
+							// 'value' => $arrWidgetBoxOptions['insert_comment_form'],
+							// 'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>',
+						// ),	
+						// array(	// since 1.0.8
+							// 'id' => 'insert_comment_form_positions',
+							// 'type' => 'checkbox',
+							// 'title' => __( 'Position', 'responsive-column-widgets' ),
+							// 'label' => array(
+								// 'above' => __( 'Above Comment Form', 'responsive-column-widgets' ),
+								// 'below' => __( 'Below Comment Form', 'responsive-column-widgets' ),
+							// ),
+							// 'delimiter' => '&nbsp;&nbsp;&nbsp;',
+							// 'value' => $arrWidgetBoxOptions['insert_comment_form_positions'],							
+						// ),	
+						// array(	// since 1.0.8
+							// 'id' => 'insert_comment_form_disable_front',
+							// 'type' => 'checkbox',
+							// 'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
+							// 'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
+							// 'value' => $arrWidgetBoxOptions['insert_comment_form_disable_front'],						
+						// ),							
+						// array(	// since 1.0.8
+							// 'id' => 'insert_comment_form_disable_post_ids',
+							// 'type' => 'text',
+							// 'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
+							// 'size' => 100,
+							// 'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
+								// . '<br />e.g. 98, 76, 5',
+							// 'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_comment_form_disable_post_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_comment_form_disable_post_ids'] ),						
+						// ),							
+					// ),
+				// ),				
 				// Custom Style
 				array(
 					'pageslug' => $this->strPluginSlug,
@@ -437,7 +597,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'tabslug' => 'general',
 					'id' => 'section_general', 
 					'title' => __( 'General Options', 'responsive-column-widgets' ), 
-					// 'description' => __( '', 'responsive-column-widgets' ),
+					// 'description' => __( 'test', 'responsive-column-widgets' ),
 					'fields' => array( 	// Field Arrays
 						// Dropdown List
 						array(  
@@ -937,63 +1097,128 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			
 		}
 		
-		/*
-		 * Reconstruct the submitted array to omit the sections - make it flat to consist of fields
-		 * */
-		$arrBox = array();
+		// Reconstruct the submitted array to omit the sections - make it flat to consist of fields
+		$arrBoxOptions = array();
 		foreach ( $arrInput[ $this->strPluginSlug ] as $arrFields ) 
-			$arrBox = $arrBox + $arrFields;		 
+			$arrBoxOptions = $arrBoxOptions + $arrFields;		 
 				
 		// The data are valid. Update the box options.
-		// Setup the box option array
-		$this->UpdateBoxOptions( $arrBox, $_POST['isnew'] );
+		$this->UpdateBoxOptions( $arrBoxOptions, $_POST['isnew'] );
 		$this->SetSettingsNotice( __( 'The widget box options have been saved.', 'responsive-column-widgets' ), 'updated' );
 		
 		return $arrInput;
 			
+	} 
+	protected function CleanOldVersionBoxOptions( $arrBoxOptions ) {	// since 1.0.9
+		
+		// for 1.0.5
+		$arrBoxOptions['autoinsert_enable_areas']['wp_footer'] = isset( $arrBoxOptions['insert_footer'] ) ? $arrBoxOptions['insert_footer'] : $arrBoxOptions['autoinsert_enable_areas']['wp_footer'];	
+		return $arrBoxOptions;
+		
 	}
 	function UpdateBoxOptions( $arrInput, $bIsNew ) {
 		
+		/*
+
+				'insert_footer_disable_front'		=> false,	// since 1.0.7
+				'insert_footer_disable_ids'			=> array(),	// since 1.0.7
+				'insert_posts'						=> array(	// since 1.0.7
+					'post' => false,
+					'page' => false,
+				),	
+				'insert_posts_positions'			=> array(	// since 1.0.7
+					'above' => false,
+					'below' => true,
+				),		
+				'insert_posts_disable_front'		=> false,	// since 1.0.7
+				'insert_posts_disable_ids'			=> array(),	// since 1.0.7
+				'insert_comment_form'				=> false,	// since 1.0.8
+				'insert_comment_form_positions'		=> array(	// since 1.0.8
+					'above' => false,
+					'below' => true,
+				),
+				'insert_comment_form_disable_front'		=> false,	// since 1.0.8
+				'insert_comment_form_disable_post_ids'	=> array(),	// since 1.0.8
+				
+				
+				// since 1.0.9
+				'autoinsert_enable'			=> 0,		// 0: off, 1: on
+				'autoinsert_enable_home'	=> True,	// true/false
+				'autoinsert_enable_areas'	=> array( 
+					'the_content' => false,
+					'comment_text' => false,
+					'wp_footer' => false,		
+				),
+				'autoinsert_position'	=> 1,	// 0: above, 1: below, 2: both
+				'autoinsert_enable_filters'	=> array(),
+				'autoinsert_enable_actions'	=> array(),
+				'autoinsert_enable_pagetypes'	=> array( 
+					'is_home' => false,
+					'is_archive' => false,
+					'is_404' => false,
+					'is_search' => false,		
+				),
+				'autoinsert_enable_posttypes'	=> array( 'post' => false, 'page' => false ),
+				'autoinsert_enable_categories'	=> array(),	// the category ID, in most cases 1 is Uncategoriezed.
+				'autoinsert_enable_post_ids'	=> array(),	
+				'autoinsert_disable_pagetypes'	=> array( 
+					'is_home' => false,
+					'is_archive' => false,
+					'is_404' => false,
+					'is_search' => false,		
+				),
+				'autoinsert_disable_posttypes'	=> array( 'post' => false, 'page' => false ),
+				'autoinsert_disable_categories'	=> array(),	
+				'autoinsert_disable_post_ids'	=> array(),	
+				
+		*/
+		// Sanitization for the first two sections.
 		$arrInput['maxwidgets'] = $this->oUtil->FixNumber( $arrInput['maxwidgets'], 0, 0 );
 		$arrInput['maxrows'] = $this->oUtil->FixNumber( $arrInput['maxrows'], 0, 0 );
 		$arrInput['sidebar'] = ! empty( $_POST['isnew'] ) ? $this->GetAvailableSidebarID() : $arrInput['sidebar'];
 		$arrInput['label'] = isset( $arrInput['label'] ) ? $arrInput['label'] : $this->oOption->arrOptions['boxes'][ $arrInput['sidebar'] ]['label'];
-		
 		$arrInput['columns'] = $this->SanitizeNumericSequenceToArray( 
 			$arrInput['columns'], 	// subject value
 			$this->oOption->arrDefaultParams['columns'][0],		// default
 			1,	// min
-			12 	// max
+			12, 	// max
+			false	// whether to perform array_unique()
 		);
-
 		$arrInput['omit'] = $this->SanitizeNumericSequenceToArray( $arrInput['omit'] );
-		$arrInput['omit'] = array_unique( $arrInput['omit'] );
-		$arrInput['showonly'] = $this->SanitizeNumericSequenceToArray( $arrInput['showonly'] );
-		$arrInput['showonly'] = array_unique( $arrInput['showonly'] );
-		$arrInput['offsets'] = $this->oOption->ConvertStringToArray( $arrInput['offsets'], ',', ':' );
-		$arrInput['offsets'] = $this->oUtil->UnsetEmptyArrayElements( $arrInput['offsets'] );	
+		$arrInput['showonly'] = $this->SanitizeNumericSequenceToArray( $arrInput['showonly'] );		
+		$arrInput['offsets'] = $this->SanitizeStringToArray( $arrInput['offsets'], false, ',', ':' );
 		$arrInput['offsets'] = empty( $arrInput['offsets'] ) ? $this->oOption->arrDefaultParams['offsets'] : $arrInput['offsets'];
-		$arrInput['insert_footer_disable_ids'] = $this->SanitizeNumericSequenceToArray( $arrInput['insert_footer_disable_ids'] );
-		$arrInput['insert_footer_disable_ids'] = array_unique( $arrInput['insert_footer_disable_ids'] );
-		$arrInput['insert_posts_disable_ids'] = $this->SanitizeNumericSequenceToArray( $arrInput['insert_posts_disable_ids'] );
-		$arrInput['insert_posts_disable_ids'] = array_unique( $arrInput['insert_posts_disable_ids'] );
-		$arrInput['insert_comment_form_disable_post_ids'] = $this->SanitizeNumericSequenceToArray( $arrInput['insert_comment_form_disable_post_ids'] );
-		$arrInput['insert_comment_form_disable_post_ids'] = array_unique( $arrInput['insert_comment_form_disable_post_ids'] );
 
+		// Sanitization for the auto-insert section.
+		$arrInput['autoinsert_enable_filters'] = $this->SanitizeStringToArray( $arrInput['autoinsert_enable_filters'] );
+		$arrInput['autoinsert_enable_actions'] = $this->SanitizeStringToArray( $arrInput['autoinsert_enable_actions'] );
+		$arrInput['autoinsert_enable_post_ids'] = $this->SanitizeNumericSequenceToArray( $arrInput['autoinsert_enable_post_ids'] );
+		$arrInput['autoinsert_disable_post_ids'] = $this->SanitizeNumericSequenceToArray( $arrInput['autoinsert_disable_post_ids'] );
+		
 		// Update
 		$this->oOption->InsertBox( $arrInput['sidebar'], $arrInput );
 		$this->oOption->Update();		
 		
 	}		
-	function SanitizeNumericSequenceToArray( $str, $intDefault=null, $intMin=1, $intMax=null ) {
+	function SanitizeStringToArray( $str, $bValueUnique=true, $strDelim1=',', $strDelim2='' ) {		// since 1.0.9
 		
 		// Converts the given string into array and performs sanitization.
+		$arr = $this->oOption->ConvertStringToArray( $str, $strDelim1, $strDelim2 );	// comma delimited
+		$arr = $this->oUtil->UnsetEmptyArrayElements( $arr );
+		if ( $bValueUnique ) $arr = array_unique( $arr );
+		return $arr;
+		
+	}
+	function SanitizeNumericSequenceToArray( $str, $intDefault=null, $intMin=1, $intMax=null, $bValueUnique=true ) {	// since 1.0.9
+		
+		// Converts the given string into array and performs sanitization to be a numeric sequence.
 		// e.g. 3, 4, 63  --> array( 3, 4, 63 )
 		// e.g. ada, 9,, 4 --> array( 9, 4 ) 
 		
 		$arr = $this->oOption->ConvertStringToArray( $str );	// comma delimited
 		$arr = $this->oUtil->FixNumbers( $arr, $intDefault, $intMin, $intMax );
 		$arr = $this->oUtil->UnsetEmptyArrayElements( $arr );
+		if ( $bValueUnique ) $arr = array_unique( $arr );
 		return $arr;
 		
 	}
@@ -1272,6 +1497,12 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				margin-top: 12px;
 				margin-bottom: 12px;
 			}			
+			.wrap hr {
+				border: 0; 
+				height: 1px; 
+				background: #DDD;				
+				width: 96%;
+			}
 		';
 	}
 	function style_responsive_column_widgets_manage( $strStyle ) {
@@ -1311,10 +1542,10 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}
 	function style_responsive_column_widgets_information( $strStyle ) {
 		return $strStyle . '
-			p { 
+			.wrap p { 
 				margin-left: 20px;
 			}
-			ul {
+			.wrap ul {
 				list-style: square;
 				margin-left: 44px;
 			}			

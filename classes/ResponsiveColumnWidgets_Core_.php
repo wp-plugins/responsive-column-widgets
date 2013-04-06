@@ -28,9 +28,10 @@ class ResponsiveColumnWidgets_Core_ {
 		11 =>	'7.63%',
 		12 =>	'6.86%',
 	);		
-	protected $strClassAttrBox ='responsive_column_widget_area responsive_column_widgets_box widget-area';
+	// protected $strClassAttrBox ='responsive_column_widget_area responsive_column_widgets_box widget-area';
+	protected $strClassAttrBox1 ='responsive_column_widgets_box';
+	protected $strClassAttrBox2 ='widget-area';
 	protected $strClassAttrSidebarID = 'responsive_column_widgets';
-	protected $strClassAttrNewCol = 'responsive_column_widgets_firstcol';
 	protected $strClassAttrRow = 'responsive_column_widgets_row';
 	protected $strClassAttrColumn = 'responsive_column_widgets_column';
 	protected $strClassAttrMaxColsByPixel = '';
@@ -107,9 +108,7 @@ class ResponsiveColumnWidgets_Core_ {
 	/*
 	 * Rendering form elements in dynamic sidebars in the Widgets setting page. - currently not used 
 	 * */
-	function CheckSidebarLoad( $arrSidebarParams ) {
-		
-		// since 1.0.4
+	function CheckSidebarLoad( $arrSidebarParams ) {	// since 1.0.4	
 		
 		global $pagenow;
 		
@@ -179,8 +178,8 @@ class ResponsiveColumnWidgets_Core_ {
 	
 	}
 		
-	function GetWidgetBoxSidebarIDFromParams( $arrParams ) {
-		// since 1.0.4
+	function GetWidgetBoxSidebarIDFromParams( $arrParams ) {	// since 1.0.4
+		
 		if ( isset( $arrParams['label'] ) && ! empty( $arrParams['label'] ) ) 
 			foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => &$arrBoxOptions ) 
 				if ( $arrBoxOptions['label'] == $arrParams['label'] ) return $strSidebarID;
@@ -189,9 +188,8 @@ class ResponsiveColumnWidgets_Core_ {
 		return $this->arrDefaultParams['sidebar'];
 			
 	}
-	public function GetWidgetBoxOutput( $arrParams ) {
+	public function GetWidgetBoxOutput( $arrParams ) {	// since 1.0.4
 		
-		// since 1.0.4
 		// The function callback for shortcode. Notice that the last part is returning the output.
 
 		$arrParams['sidebar'] = ! empty( $arrParams['sidebar'] ) ? $arrParams['sidebar'] : $this->GetWidgetBoxSidebarIDFromParams( $arrParams );	// $arrParams['sidebar'] = ! empty( $arrParams['sidebar'] ) ? $arrParams['sidebar'] : $this->arrDefaultParams['sidebar'];		
@@ -207,7 +205,10 @@ class ResponsiveColumnWidgets_Core_ {
 		if ( isset( $this->oOption->arrOptions['boxes'][$sidebar] ) )
 			$arrParams = $arrParams + $this->oOption->arrOptions['boxes'][$sidebar];			
 		
-		return '<div class="' . $this->strClassAttrBox . ' ' . $sidebar . '">' . $this->OutputWidgetBuffer( $sidebar, $arrParams ) . '</div>';
+		return '<div class="' . $this->strClassAttrBox1 . ' ' . $this->strClassAttrBox2 . ' ' . $sidebar . '">' 
+			. $this->OutputWidgetBuffer( $sidebar, $arrParams ) 
+			. '</div>'
+			. $this->GetCredit();
 		
 	}
 	public function RenderWidgetBox( $arrParams ) {
@@ -216,17 +217,16 @@ class ResponsiveColumnWidgets_Core_ {
 		// Notice that the last part is echo.
 		
 		echo $this->GetWidgetBoxOutput( $arrParams );
-		echo $this->GetCredit();
 		
 	}
 	protected function GetCredit() {
 		
 		$strCredit = defined( 'RESPONSIVECOLUMNWIDGETSPROFILE' ) ? 'Responsive Column Widgets Pro' : 'Responsive Column Widgets';
 		$strVendor = 'miunosoft http://michaeluno.jp';
-			echo "<!-- Rendered with {$strCredit} by {$strVendor} -->";
-		
+		return "<!-- Rendered with {$strCredit} by {$strVendor} -->";
 		
 	}
+	
 	/*
 	 * Retrieve widget output buffers.
 	 * */
@@ -377,9 +377,8 @@ class ResponsiveColumnWidgets_Core_ {
 		return $strBuffer;
 		
 	}
-	function AddCustomStyle( $strSidebarID, $strCustomStyle ) {
+	function AddCustomStyle( $strSidebarID, $strCustomStyle ) {		// since 1.0.6
 		
-		// since 1.0.6
 		$strStyleRules = '<style type="text/css" scoped>' 
 			. $strCustomStyle
 			. '</style>';
@@ -388,9 +387,8 @@ class ResponsiveColumnWidgets_Core_ {
 		return $strStyleRules;	
 		
 	}
-	function AddStyleForMaxColsByPixel( $strSidebarID, $arrOffsetsByPixel ) {
+	function AddStyleForMaxColsByPixel( $strSidebarID, $arrOffsetsByPixel ) {	// added since 1.0.3
 		
-		// added since 1.0.3
 		$strStyleRules = '<style type="text/css" scoped>';
 		
 		if ( count( $arrOffsetsByPixel ) == 0 ) { $arrOffsetsByPixel = array( array( 480, 12 ) ); }

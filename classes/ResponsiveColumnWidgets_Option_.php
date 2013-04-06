@@ -21,30 +21,54 @@ class ResponsiveColumnWidgets_Option_ {
 		'after_title'						=> '</h3>',
 		'message_no_widget'					=> 'No widget added yet.',
 		'custom_style'						=> '',		// since 1.0.6
-		'insert_footer'						=> false,	// since 1.0.5
-		'insert_footer_disable_front'		=> false,	// since 1.0.7
-		'insert_footer_disable_ids'			=> array(),	// since 1.0.7
-		'insert_posts'						=> array(	// since 1.0.7
-			'post' => false,
-			'page' => false,
-		),	
-		'insert_posts_positions'			=> array(	// since 1.0.7
-			'above' => false,
-			'below' => true,
-		),		
-		'insert_posts_disable_front'		=> false,	// since 1.0.7
-		'insert_posts_disable_ids'			=> array(),	// since 1.0.7
-		// 'insert_comments'					=> false,	// since 1.0.8
-		// 'insert_comments_disable_front'		=> false,	// since 1.0.8
-		// 'insert_comments_disable_post_ids'	=> array(),	// since 1.0.8
-		// 'insert_comments_disable_comment_ids'	=> array(),	// since 1.0.8
-		'insert_comment_form'				=> false,	// since 1.0.8
-		'insert_comment_form_positions'		=> array(	// since 1.0.8
-			'above' => false,
-			'below' => true,
+		// 'insert_footer'						=> false,	// since 1.0.5
+		// 'insert_footer_disable_front'		=> false,	// since 1.0.7
+		// 'insert_footer_disable_ids'			=> array(),	// since 1.0.7
+		// 'insert_posts'						=> array(	// since 1.0.7
+			// 'post' => false,
+			// 'page' => false,
+		// ),	
+		// 'insert_posts_positions'			=> array(	// since 1.0.7
+			// 'above' => false,
+			// 'below' => true,
+		// ),		
+		// 'insert_posts_disable_front'		=> false,	// since 1.0.7
+		// 'insert_posts_disable_ids'			=> array(),	// since 1.0.7
+		// 'insert_comment_form'				=> false,	// since 1.0.8
+		// 'insert_comment_form_positions'		=> array(	// since 1.0.8
+			// 'above' => false,
+			// 'below' => true,
+		// ),
+		// 'insert_comment_form_disable_front'		=> false,	// since 1.0.8
+		// 'insert_comment_form_disable_post_ids'	=> array(),	// since 1.0.8
+		// since 1.0.9
+		'autoinsert_enable'			=> 0,		// 0: off, 1: on
+		'autoinsert_enable_areas'	=> array( 
+			'the_content' => false,
+			'comment_text' => false,
+			'wp_footer' => false,		
 		),
-		'insert_comment_form_disable_front'		=> false,	// since 1.0.8
-		'insert_comment_form_disable_post_ids'	=> array(),	// since 1.0.8
+		'autoinsert_position'	=> 1,	// 0: above, 1: below, 2: both
+		'autoinsert_enable_filters'	=> array(),
+		'autoinsert_enable_actions'	=> array(),
+		'autoinsert_enable_pagetypes'	=> array( 
+			'is_home' => false,
+			'is_archive' => false,
+			'is_404' => false,
+			'is_search' => false,		
+		),
+		'autoinsert_enable_posttypes'	=> array( 'post' => false, 'page' => false ),
+		'autoinsert_enable_categories'	=> array(),	// the category ID, in most cases 1 is Uncategoriezed.
+		'autoinsert_enable_post_ids'	=> array(),	
+		'autoinsert_disable_pagetypes'	=> array( 
+			'is_home' => false,
+			'is_archive' => false,
+			'is_404' => false,
+			'is_search' => false,		
+		),
+		'autoinsert_disable_posttypes'	=> array( 'post' => false, 'page' => false ),
+		'autoinsert_disable_categories'	=> array(),	
+		'autoinsert_disable_post_ids'	=> array(),	
 		
 	);	
 	public $arrCapabilities = array(	// used in the drop-down list of the General Options page.
