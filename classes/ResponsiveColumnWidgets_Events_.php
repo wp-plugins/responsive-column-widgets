@@ -21,6 +21,7 @@ class ResponsiveColumnWidgets_Events_ {
 		// for SimplePie cache renewal events - since 1.0.7
 		if ( isset( $_GET['doing_wp_cron'] ) )	// if WP Cron is the one which loaded the page,
 			add_action( 'RCWP_action_simplepie_renew_cache', array( $this, 'RenewCaches' ) );
+	
 	}
 	function SetUpTransients() {
 				
@@ -50,19 +51,7 @@ class ResponsiveColumnWidgets_Events_ {
 	
 		// Set the background flag to True so that it won't trigger the event action reccursively.
 		$oFeed->SetBackground( True );
-// sleep( 3 );
 		$oFeed->init();	
-// echo '<pre>' . 'URLs: ' . print_r( $vURLs, true ) . PHP_EOL . '</pre>';	// shoud not be printed ever
-// file_put_contents( dirname( __FILE__ ) . '/info_renewed.txt' , 
-	// __FILE__ . PHP_EOL 
-	// . __METHOD__ . PHP_EOL
-	// . print_r( 'The cache has been renewed!', true ) . PHP_EOL
-	// . 'URLs: ' . print_r( $vURLs, true ) . PHP_EOL
-	// . 'URLs: ' . print_r( $_GET, true ) . PHP_EOL
-	// . 'Current Time: ' . time() . PHP_EOL
-	// . PHP_EOL . PHP_EOL
-	// , FILE_APPEND 
-// );	
 		
 	}
 }

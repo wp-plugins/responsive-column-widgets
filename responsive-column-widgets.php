@@ -79,7 +79,10 @@ class ResponsiveColumnWidgets_RegisterClasses {
 
 		// Prepare the option object	
 		global $oResponsiveColumnWidgets_Options;
-		$oResponsiveColumnWidgets_Options = new ResponsiveColumnWidgets_Option( RESPONSIVECOLUMNWIDGETSKEY );	
+		$oResponsiveColumnWidgets_Options = new ResponsiveColumnWidgets_Option( 
+			RESPONSIVECOLUMNWIDGETSKEY, 
+			defined( 'RESPONSIVECOLUMNWIDGETSPROFILE' ) ? RESPONSIVECOLUMNWIDGETSPROFILE : RESPONSIVECOLUMNWIDGETSFILE
+		);	
 		
 		// For plugin extensions
 		do_action( 'RCW_action_started', $oResponsiveColumnWidgets_Options );

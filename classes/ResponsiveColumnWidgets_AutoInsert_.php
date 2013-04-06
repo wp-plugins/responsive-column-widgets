@@ -17,7 +17,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 	
 	// Dynamic Properties
 	protected $intPostID;	// since 1.0.7 - stores the current post ID.	
-	protected $arrCatIDs;	// since 1.0.9 - stores the category IDs assigned to the current post ID.
+	protected $arrCatIDs = array();	// since 1.0.9 - stores the category IDs assigned to the current post ID.
 	protected $strPostType;	// since 1.0.9 - stores the current post type.
 	
 	// Container arrays
@@ -35,10 +35,6 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		'is_404' => false,
 		'is_search' => false,
 	);
-	// protected $arrDisplayedPostTypes = array(	// since 1.0.9 - stores the flags indicating the displaying post type.
-		// 'post' => false,
-		// 'page' => false,
-	// );	
 	
 	function __construct( &$oOption, &$oCore ) {
 		
@@ -46,8 +42,12 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		$this->oOption = $oOption;
 		$this->oCore = $oCore;
 		
-		// Auto Insertions - The init hook is too early to perform the functions including is_single(), is_page() etc. as $wp_query is not established yet.
-		add_action( 'wp_head', array( $this, 'SetUpAutoInsertions' ) );
+		// Set up hooks - add hooks regardless whether the widget box is not for the displaying page or not
+		// in order to let custom hooks being added which are loaded earlier than the $wp_query object is established.
+		add_action( 'init', array( $this, 'SetupHooks' ) );
+		
+		// Set up the properties for currently displaying page - The init hook is too early to perform the functions including is_single(), is_page() etc. as $wp_query is not established yet.
+		add_action( 'wp', array( $this, 'SetupPageTypeProperties' ) );
 
 	}
 	
@@ -74,11 +74,14 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 	public function DoFilter( $strFilter, $strContent ) {	// since 1.0.9
 		
 		if ( ! isset( $this->arrHookFilters[ $strFilter ]  ) ) return;
-
+		
 		$strPre = '';
 		$strPost = '';
 		foreach( $this->arrHookFilters[ $strFilter ] as $strSidebarID ) {
-			
+
+			if ( ! $this->IsAutoInsertEnabledPage( $this->oOption->arrOptions['boxes'][ $strSidebarID ] ) )
+				continue;	
+		
 			// 'autoinsert_position'  0: above, 1: below, 2: both			
 			$intPositionType = $this->oOption->arrOptions['boxes'][ $strSidebarID ]['autoinsert_position'];
 			if ( $intPositionType == 0 || $intPositionType == 2 )
@@ -87,9 +90,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 				$strPost .= $this->oCore->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ) );
 			
 		}
-// echo $this->strPostType . '<br />';	
-// echo '<pre>Current Cat ID: ' . print_r( $this->arrCatIDs, true ) . '</pre>';
-// echo '<pre>Disabled Cat IDs: ' . print_r( $arrBoxOptions['autoinsert_disable_categories'], true ) . '</pre>';
+		
 		return $strPre . $strContent . $strPost;
 		
 	}
@@ -97,8 +98,14 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		
 		if ( ! isset( $this->arrHookActions[ $strAction ]  ) ) return;
 
-		foreach( $this->arrHookActions[ $strAction ] as $strSidebarID ) 
+		foreach( $this->arrHookActions[ $strAction ] as $strSidebarID ) {
+			
+			if ( ! $this->IsAutoInsertEnabledPage( $this->oOption->arrOptions['boxes'][ $strSidebarID ] ) )
+				continue;	
+		
 			$this->oCore->RenderWidgetBox( array( 'sidebar' => $strSidebarID ) );	
+			
+		}
 		
 	}
 	
@@ -109,7 +116,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 				$this->arrEnabledBoxIDs[] = $strSidebarID;
 		
 	}
-	protected function SetupPageTypeProperties() {	// since 1.0.9
+	public function SetupPageTypeProperties() {	// since 1.0.9
 		
 		// MUST BE CALLED AFTER $wp_query IS ESTABLISHED.
 		
@@ -129,17 +136,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		$this->strPostType = get_post_type( $this->intPostID );
 		
 	}	
-	protected function IsAutoInsertEnabledPage( &$arrBoxOptions ) {
-		
-		// 'autoinsert_enable_pagetypes'	=> array( 
-			// 'is_home' => false,
-			// 'is_archives' => false,
-			// 'is_404' => false,
-			// 'is_search' => false,		
-		// ),
-		// 'autoinsert_enable_posttypes'	=> array( 'post' => false, 'page' => false ),
-		// 'autoinsert_enable_categories'	=> array(),	// the category ID, in most cases 1 is Uncategoriezed.
-		// 'autoinsert_enable_post_ids'	=> array(),	
+	protected function IsAutoInsertEnabledPage( &$arrBoxOptions ) {		// since 1.0.9
 
 		/*
 		 *  First, check whether or not the loading page matches the disabled criteria. If so, return false.
@@ -166,8 +163,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		 * Now, check if the user specifies the enable options and if the option is set ( at least one of the items are checked ),
 		 * apply the condition and return true or false.
 		 * */
-		
-		
+			
 		// Enabled Page Types
 		$arrEnabledPageTypes = array_keys( $arrBoxOptions['autoinsert_enable_pagetypes'], true );		
 		foreach ( $arrEnabledPageTypes as $strPageType ) 
@@ -189,28 +185,24 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		if ( count( $arrBoxOptions['autoinsert_enable_post_ids'] ) > 0 ) return false;
 		
 		// Enabled Post Types.
-		$arrEnabledPostTypes = array_keys( $arrBoxOptions['autoinsert_enable_posttypes'], true );
-		
-// echo '<pre>' . print_r( $arrEnabledPostTypes, true ). '</pre>';		
-// echo '<pre>' . print_r( $arrEnabledCatIDs, true ). '</pre>';		
-// echo '<pre>' . print_r( $this->arrCatIDs, true ). '</pre>';
-		
+		$arrEnabledPostTypes = array_keys( $arrBoxOptions['autoinsert_enable_posttypes'], true );		
 		if ( in_array( $this->strPostType, $arrEnabledPostTypes ) ) return true;
 		if ( count( $arrEnabledPostTypes ) > 0 ) return false;
 			
 		return true;
 		
 	}
-	protected function SetupHooks() {	// since 1.0.9
+	public function SetupHooks() {	// since 1.0.9, used by hooks
+		
+		// First check if there are widget boxes that enable auto-insert.
+		$this->SetupAutoInsertEnabledBoxes();
+		if ( count( $this->arrEnabledBoxIDs ) < 1 ) return;	// if there is no boxes enabled, there is nothing to do.
 		
 		// Set up the filter container array, and the action container array.
 		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => &$arrBoxOptions ) {
 			
 			if ( ! in_array( $strSidebarID, $this->arrEnabledBoxIDs ) ) continue;
-			
-			// If it's not an enabled page, skip.
-			if ( ! $this->IsAutoInsertEnabledPage( $arrBoxOptions ) ) continue;
-			
+						
 			// Add the filters into the container array.
 			if ( isset( $arrBoxOptions['autoinsert_enable_areas']['the_content'] ) && $arrBoxOptions['autoinsert_enable_areas']['the_content'] )
 				$this->arrHookFilters['the_content'][] = $strSidebarID;
@@ -237,19 +229,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 				add_action( $strKey, array( $this, "callback_action_{$strKey}" ) );
 				
 	}
-	public function SetUpAutoInsertions() {		// since 1.0.7, renamed to SetUpAutoInsertions from SetUpPostInfo in 1.0.8, revised in 1.0.9, used by a hook so must be public.
-				
-		// First check if there are widget boxes that enable auto-insert.
-		$this->SetupAutoInsertEnabledBoxes();
-		if ( count( $this->arrEnabledBoxIDs ) < 1 ) return;	// if there is no boxes enabled, there is nothing to do.
-		
-		// Set up properties which stores what kind of page is displayed
-		$this->SetupPageTypeProperties();
 
-		// Extract all necessary hooks. Divide filters and actions.
-		$this->SetupHooks();
-		
-	}
 	protected function GetPostID() {	// since 1.0.7
 		
 		global $wp_query;

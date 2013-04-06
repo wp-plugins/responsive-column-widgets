@@ -1,6 +1,10 @@
 <?php
 class ResponsiveColumnWidgets_Option_ {
 
+	// Objects
+	public $oInfo;	// stores the plugin info object.
+
+	// Default Values
 	public $arrDefaultParams = array(	// must be public; accessed in the core object.
 		'columns' => array( 3 ),		// set the default to 3 since 1.0.3; the type changed to array from string since 1.0.6.1
 		'sidebar' => 'responsive_column_widgets',
@@ -87,7 +91,7 @@ class ResponsiveColumnWidgets_Option_ {
 			'memory_allocation' => 0,	// since 1.0.7.1 - 0 means do nothing.
 		),
 	);
-	function __construct( $strOptionKey ) {
+	function __construct( $strOptionKey, $strFilePath=null ) {
 	
 		$this->strOptionKey = $strOptionKey;
 		$this->arrOptions = ( array ) get_option( $strOptionKey );
@@ -110,11 +114,8 @@ class ResponsiveColumnWidgets_Option_ {
 		);
 	
 		// store plugin data
-		if ( !function_exists( 'get_plugin_data' )  ) require_once( ABSPATH . 'wp-admin/includes/plugin.php' );	
-		$this->arrPluginData = get_plugin_data( RESPONSIVECOLUMNWIDGETSFILE, false );
-		if ( defined( 'RESPONSIVECOLUMNWIDGETSPROFILE' ) ) 
-			$this->arrPluginDataPro = get_plugin_data( RESPONSIVECOLUMNWIDGETSPROFILE, false );
-			
+		$this->oInfo = new ResponsiveColumnWidgets_PluginInfo( $strFilePath );
+					
 		// if the attempt to override the memory allocation option is set,
 		if ( ! empty( $this->arrOptions['general']['memory_allocation'] ) ) 		
 			$this->SetMemoryLimit( $this->arrOptions['general']['memory_allocation'] );

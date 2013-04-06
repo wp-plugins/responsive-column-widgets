@@ -13,6 +13,7 @@ class ResponsiveColumnWidgets_Core_ {
 	// Default properties
 	protected $strShortCode;
 	protected $strCSSDirURL;
+	protected $strPluginName = 'responsive-column-widgets';		// used to the name attribute of the script
 	protected $arrDefaultParams = array();	// will be overriden by the option object's array in the constructor.
 	protected $strColPercentages = array(
 		1 =>	'100%',
@@ -61,6 +62,9 @@ class ResponsiveColumnWidgets_Core_ {
 		
 		// add the stylesheet
 		add_action( 'wp_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );	// set the order number to 100 which is quite low to load it after others have loaded
+		add_action( 'login_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );
+		
 		
 		// add shortcode
 		add_shortcode( $this->strShortCode, array( $this, 'GetWidgetBoxOutput' ) );
@@ -78,7 +82,6 @@ class ResponsiveColumnWidgets_Core_ {
 			// add_action( 'wp_footer', array( $this, 'EchoMemoryUsage' ) );
 			
 	}
-
 	
 	/*
 	 * Registers saved sidebars
@@ -102,7 +105,8 @@ class ResponsiveColumnWidgets_Core_ {
 					'before_title' => $arrBoxOptions['before_title'],
 					'after_title' => $arrBoxOptions['after_title'],
 				) 
-			);					
+			);		
+			
 	}
 	
 	/*
@@ -171,10 +175,17 @@ class ResponsiveColumnWidgets_Core_ {
 		
 		// always return $posts; otherwise, "the page not found" will be displayed
 		return $posts;		
-	}
-	public function AddStyleSheetInHeader() {
 		
-		wp_enqueue_style( 'responsive_column_widgets_enqueue_style',  $this->strCSSDirURL . '/responsive_column_widgets.css' );
+	}
+	public function AddStyleSheetInHeader() {	// methods used by hooks must be public.
+		
+		wp_enqueue_style( 
+			'responsive_column_widgets',  
+			$this->strCSSDirURL 
+			. 'responsive_column_widgets.css?'
+			. 'rcw_version=' . $this->oOption->oInfo->Version 
+			. '&type=' . $this->oOption->oInfo->Type 
+		);
 	
 	}
 		

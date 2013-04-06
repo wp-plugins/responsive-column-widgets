@@ -34,21 +34,29 @@ When you want to display widgets horizontally, I know it’s such a headache to 
 = How to Use = 
 Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/) section.
 
-== Usage ==
-= How to Use = 
+== Basic Three Steps ==
 1. Go to Appearance > Widgets. You'll see a new custom sidebar box named **Responsive Custom Widgets**.,
 2. Add widgtes to it.,
-3. Add the following code: 
+3. Add the shortcode in a post `[responsive_column_widgets]`.
 
-**For a theme** - PHP code. e.g.
-`<?php if ( function_exists( 'ResponsiveColumnWidgets' ) ) ResponsiveColumnWidgets(array('columns' => 5 )); ?>` 
-where 5 indicates the number of columns. Change the number accordingly for your need.
 
-**For a page/post** - Shortcode e.g.
-`[responsive_column_widgets columns="3,2,5"]` 
-where 3 indicates the number of columns in the first row, 2 indicates 2 colums in the second, and 5 to the third. Change the numbers accordingly for your need.
+== More Flexible Usage ==
 
-= Parameters = 
+= Specify Different Number of Columns in Each Row = 
+By default, the widgets are displayed in 3 columns. It can be changed by setting the columns parameter. 
+
+`[responsive_column_widgets columns="4"]`  will display the widgets in 4 columns. 
+
+Optionally, if you like to change the number of columns in each row, use sequential numbers separated by commas.
+
+For instance, `[responsive_column_widgets columns="3,2,5"]` will show the widgets in 3 columns in the first row, 2 columns in the second, and 5 to the third. Change the numbers accordingly for your needs.
+
+= Use PHP code for Themes = 
+The widget box can be dispayed outside post/pages. Putting a PHP code into the theme is one way of doing it. Use the `ResponsiveColumnWidgets()` function. 
+For instance, `<?php if ( function_exists( 'ResponsiveColumnWidgets' ) ) ResponsiveColumnWidgets( array( 'columns' => 5 ) ); ?>` will display the widgets in 5 columns.
+
+= Parameters =  
+There are other parameters besides *columns*.
 * **columns** - the number of columns to show. Default: 3. If you want to specify the number of columns in each row, put the numbers separated by commas. e.g. 3, 2, 4. would display 3 columns in first row and 2 columns in the second row and four columns in the third row and so on. The rest rows fill follow the last set number.
 * **sidebar** - the ID of the sidebar to show. Default: responsive_column_widgets. For the twenty-twelve theme, sidebar-1, would show the default first sidebar contents. 
 * **maxwidgets** - the allowed number of widgets to display. Set 0 for no limitation. Default: 0.
@@ -59,6 +67,9 @@ where 3 indicates the number of columns in the first row, 2 indicates 2 colums i
 * **label** - the label name of the widget box. Default: Responsive Column Widgets.
 
 == Frequently Asked Questions ==
+
+= Can't figure out how to set it up! ARGH! Are you there? =
+Take a deep breath. Believe me, it's really simple. 90% of the time, you have not added any widget yet. Go to *Appearance > Widgets* and add widgets to the plugin's custom sidebar box. Then use the shortcode in a post. That's it. If you still cannot figure it out, take the screenshots of the *wp-admin/widgets.php* page and the page of the post you added the shortcode. And request a [support](http://wordpress.org/support/plugin/responsive-column-widgets) with the screenshots.
 
 = How do I customize the style? =
 You can add your rules to the classes named **.responsive_column_widget_box .widget**. It's defined in *responsive-column-widgets/css/responsive_column_widgets.css* but simply you can define it in your theme's *style.css* as well.
@@ -83,11 +94,12 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.0.9 =
+= 1.0.9 - 04/07/2013 =
+* Added: the ability to load the plugin CSS rules in login pages. To display the widget box in the login page, either use the PHP code or set the custom filter in the Auto-Insert section of the plugin admin page.
 * Added: the ability to add custom filter/action hooks for the widget box auto-insertion.
 * Added: the ability to restrict the widget box auto-insertion by category, post-id, post-type, and page-type.
 * Added: the ability to disable the widget box auto-insertion by category, post-id, post-type ( post, page, custom post types ), and page-type ( archives, search, 404, etc. ). 
-* Renewed: (**Breaking Change**) the entire Auto-Insert section of the plugin admin page. Accordingly the previous auto-insert options should be reconfigured.
+* Renewed: (**Breaking Change**) the entire Auto-Insert section of the plugin admin page. Accordingly, the previous auto-insert options should be reconfigured.
 * Removed: (**Breaking Change**) the *responsive_column_widget_area* class attribute. Those who have been using it, should simply change it to *responsive_column_widget_box* instead.
 
 = 1.0.8.7 - 04/05/2013 =

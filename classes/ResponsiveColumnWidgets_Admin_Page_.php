@@ -31,7 +31,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 
 	// Objects
 	public $oOption;	// stores the option object. It is set via the SetOptionObject() method.
-	protected $oWidgetPage;
 	
 	function start_ResponsiveColumnWidgets_Admin_Page() {
 							
@@ -40,9 +39,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$this->AddLinkToPluginDescription( $this->GetPluginDescriptionLinks() );				
 		
 		$this->oUserAds = new ResponsiveColumnWidgets_UserAds;
-		
-		if ( isset( $_GET['view'] ) )
-			add_action( 'admin_init', array( $this, 'EnqueueAdminStyle' ) );
 			
 		$this->strGetPro = __( 'Get Pro to enabel this feature!', 'responsive-column-widgets' );
 		$this->strGetProNow = __( 'Get Pro Now!', 'responsive-column-widgets' );
@@ -64,17 +60,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 	}	
 	
-	function EnqueueAdminStyle() {
-		
-		wp_enqueue_style( 'responsive_column_widgets_enqueue_style', RESPONSIVECOLUMNWIDGETSURL . '/css/responsive_column_widgets.css' );
-	
-	}
 	function GetPluginDescriptionLinks() {
+		
 		return array(
 			'<a href="http://en.michaeluno.jp/responsive-column-widgets/responsive-column-widgets-pro/?lang=' . ( WPLANG ? WPLANG : 'en' ) . '">' . __( 'Get Pro', 'responsive-column-widgets' ) . '</a>',
 			'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J4UJHETVAZX34">' . __( 'Donate', 'responsive-column-widgets' ) . '</a>',
 			'<a href="http://en.michaeluno.jp/contact/custom-order/?lang=' . ( WPLANG ? WPLANG : 'en' ) . '">' . __( 'Order custom plugin', 'responsive-column-widgets' ) . '</a>',
 		);
+	
 	}
 
 	
@@ -90,7 +83,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		// Build menu and pages
         $this->SetRootMenu( 'Appearance' );          // specifies to which parent menu to belong.
         $this->AddSubMenu(  
-			$this->strPluginName,    // page and menu title
+			$this->oOption->oInfo->Name,    // page and menu title
 			$this->strPluginSlug 	// page slug
 		);	 
 		
@@ -326,7 +319,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'size' => 100,
 							'title' => __( 'Filters', 'responsive-column-widgets' ),
 							'description' => sprintf( __( 'Enter the WordPress <a href="%1$s">filters</a> with which the auto-insertion is performed, separated by commas.', 'responsive-column-widgets' ), 'http://codex.wordpress.org/Plugin_API/Filter_Reference' )
-								. '<br />e.g. comment_form_before, the_excerpt, my_custom_filter, other_plugin_filter',
+								. '<br />e.g. the_excerpt, my_custom_filter, other_plugin_filter',
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'autoinsert_enable_filters' ) : $this->oOption->ConvertOptionArrayValueToString( $arrWidgetBoxOptions['autoinsert_enable_filters'] ),	
 						),							
 						array(
@@ -348,13 +341,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'size' => 100,
 							'title' => __( 'Actions', 'responsive-column-widgets' ),
 							'description' => sprintf( __( 'Enter the WordPress <a href="%1$s">actions</a> with which the auto-insertion is performed, separated by commas.', 'responsive-column-widgets' ), 'http://codex.wordpress.org/Plugin_API/Action_Reference' )
-								. '<br />e.g. login_form, my_custom_action, other_plugin_action',
-							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'autoinsert_enable_actions' ) : $this->oOption->ConvertOptionArrayValueToString( $arrWidgetBoxOptions['autoinsert_enable_filters'] ),	
+								. '<br />e.g. login_footer, comment_form_before, comment_form_after, my_custom_action, other_plugin_action',
+							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'autoinsert_enable_actions' ) : $this->oOption->ConvertOptionArrayValueToString( $arrWidgetBoxOptions['autoinsert_enable_actions'] ),	
 							'post_html' => '<hr />',
 						),							
 						array(
 							'id' => 'autoinsert_enable_pagetypes',
-							'title' => __( 'Restrict Auto-Insert to Checked Page Types', 'responsive-column-widgets' ),
+							'title' => __( 'Limit Auto-Insert to Checked Page Types', 'responsive-column-widgets' ),
 							'type' => 'checkbox',
 							'value' => $arrWidgetBoxOptions['autoinsert_enable_pagetypes'],
 							'label' => array(
@@ -368,7 +361,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						),							
 						array(
 							'id' => 'autoinsert_enable_posttypes',
-							'title' => __( 'Restrict Auto-Insert to Checked Post Types', 'responsive-column-widgets' ),
+							'title' => __( 'Limit Auto-Insert to Checked Post Types', 'responsive-column-widgets' ),
 							'description' => __( 'Check the post types that the auto-insertion should be performed to restrict it to certain post types. Leave them all unchecked if you want the auto-insertion to perform in all types of posts.', 'responsive-column-widgets' ),
 							'type' => 'posttype',
 							'value' => $arrWidgetBoxOptions['autoinsert_enable_posttypes'],
@@ -376,7 +369,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						),							
 						array(
 							'id' => 'autoinsert_enable_categories',
-							'title' => __( 'Restrict Auto-Insert to Checked Categories', 'responsive-column-widgets' ),
+							'title' => __( 'Limit Auto-Insert to Checked Categories', 'responsive-column-widgets' ),
 							'description' => __( 'Check the categories that the auto-insertion should be performed. This only applies to posts. Leave them all unchecked to aplly the auto-insertion to all posts.', 'responsive-column-widgets' ),
 							'type' => 'category',
 							'value' => $arrWidgetBoxOptions['autoinsert_enable_categories'],
@@ -385,7 +378,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'id' => 'autoinsert_enable_post_ids',
 							'type' => 'text',
 							'size' => 100,
-							'title' => __( 'Restrict Auto-Insert to Certain Post / Page IDs', 'responsive-column-widgets' ),
+							'title' => __( 'Limit Auto-Insert to Certain Post / Page IDs', 'responsive-column-widgets' ),
 							'description' => __( 'Enter the post IDs where the auto-insertion should be performed, separated by commas. Set empty to apply the auto-insertion to all posts.', 'responsive-column-widgets' )
 								. '<br />e.g. 98, 76, 5',
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'autoinsert_enable_post_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $arrWidgetBoxOptions['autoinsert_enable_post_ids'] ),	
@@ -845,13 +838,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	/*
 	 * Modify Page Body Part
 	 * */
-	function do_responsive_column_widgets_widgets() {
-		
-		// global $wp_registered_sidebars;
-		// require_once( ABSPATH . 'wp-admin/widgets.php' );
-		$this->oWidgetPage->RenderWidgetPage();
-		
-	}
 	function do_responsive_column_widgets_manage() {
 
 		// if ( WP_DEBUG )

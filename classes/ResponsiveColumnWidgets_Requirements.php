@@ -8,8 +8,10 @@
 */
 class ResponsiveColumnWidgets_Requirements {
 
+	// objects
+	protected $oPluginInfo;	// since 1.0.9 - stores the plugin info object 
+
 	// Properties
-	protected $arrPluginData = array();
 	protected $strAdminNotice = '';	// admin notice
 	protected $bSufficient = true;	// tells whether it suffices for all the requirements.
 	protected $bDeactivate = true;	// indicates whether automatically deactivate the plugin if the verification fails.
@@ -47,13 +49,11 @@ class ResponsiveColumnWidgets_Requirements {
 		$this->arrScriptInfo = debug_backtrace();
 		$this->bDeactivate = $bDeactivate;
 		
-		if ( !function_exists( 'get_plugin_data' )  )
-			require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-			
-		// $this->arrPluginData = get_plugin_data( $this->arrScriptInfo[0]['file'], false );
-		$this->arrPluginData = get_plugin_data( $this->strPluginFilePath, false );
-		
-		$this->strAdminNotice = '<strong>' . $this->arrPluginData['Name'] . '</strong><br />';
+		// Objects
+		if ( ! class_exists( 'ResponsiveColumnWidgets_PluginInfo' ) )
+			include_once( dirname( $strPluginFilePath ) . '/classes/ResponsiveColumnWidgets_PluginInfo.php'  );
+		$this->oPluginInfo = new ResponsiveColumnWidgets_PluginInfo( $strPluginFilePath );
+		$this->strAdminNotice = '<strong>' . $this->oPluginInfo->Name . '</strong><br />';
 
 		if ( ! empty( $strHook ) ) 
 			add_action( $strHook, array( $this, 'CheckRequirements' ) );
