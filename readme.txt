@@ -4,7 +4,7 @@ Donate link: http://en.michaeluno.jp/donate
 Tags: widget, widgets, sidebar, columns, responsive, post, posts, page, pages, plugin, miunosoft
 Requires at least: 3.2
 Tested up to: 3.5.1
-Stable tag: 1.0.8.5
+Stable tag: 1.0.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Creates a custom responsive column widget box.
@@ -49,7 +49,9 @@ By default, the widgets are displayed in 3 columns. It can be changed by setting
 
 Optionally, if you like to change the number of columns in each row, use sequential numbers separated by commas.
 
-For instance, `[responsive_column_widgets columns="3,2,5"]` will show the widgets in 3 columns in the first row, 2 columns in the second, and 5 to the third. Change the numbers accordingly for your needs.
+For instance, 
+
+`[responsive_column_widgets columns="3,2,5"]` will show the widgets in 3 columns in the first row, 2 columns in the second, and 5 to the third. Change the numbers accordingly for your needs.
 
 = Use PHP code for Themes = 
 The widget box can be dispayed outside post/pages. Putting a PHP code into the theme is one way of doing it. Use the `ResponsiveColumnWidgets()` function. 
@@ -57,6 +59,7 @@ For instance, `<?php if ( function_exists( 'ResponsiveColumnWidgets' ) ) Respons
 
 = Parameters =  
 There are other parameters besides *columns*.
+
 * **columns** - the number of columns to show. Default: 3. If you want to specify the number of columns in each row, put the numbers separated by commas. e.g. 3, 2, 4. would display 3 columns in first row and 2 columns in the second row and four columns in the third row and so on. The rest rows fill follow the last set number.
 * **sidebar** - the ID of the sidebar to show. Default: responsive_column_widgets. For the twenty-twelve theme, sidebar-1, would show the default first sidebar contents. 
 * **maxwidgets** - the allowed number of widgets to display. Set 0 for no limitation. Default: 0.
