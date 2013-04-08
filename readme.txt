@@ -34,13 +34,14 @@ When you want to display widgets horizontally, I know it’s such a headache to 
 = How to Use = 
 Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/) section.
 
-== Basic Three Steps ==
+== Other Notes ==
+
+= Basic Three Steps =
 1. Go to Appearance > Widgets. You'll see a new custom sidebar box named **Responsive Custom Widgets**.,
 2. Add widgtes to it.,
-3. Add the shortcode in a post `[responsive_column_widgets]`.
+3. Add the shortcode in a post.
 
-
-== More Flexible Usage ==
+`[responsive_column_widgets]`
 
 = Specify Different Number of Columns in Each Row = 
 By default, the widgets are displayed in 3 columns. It can be changed by setting the columns parameter. 
@@ -55,7 +56,10 @@ For instance,
 
 = Use PHP code for Themes = 
 The widget box can be dispayed outside post/pages. Putting a PHP code into the theme is one way of doing it. Use the `ResponsiveColumnWidgets()` function. 
-For instance, `<?php if ( function_exists( 'ResponsiveColumnWidgets' ) ) ResponsiveColumnWidgets( array( 'columns' => 5 ) ); ?>` will display the widgets in 5 columns.
+
+For instance, 
+
+`<?php if ( function_exists( 'ResponsiveColumnWidgets' ) ) ResponsiveColumnWidgets( array( 'columns' => 5 ) ); ?>` will display the widgets in 5 columns.
 
 = Parameters =  
 There are other parameters besides *columns*.
@@ -72,7 +76,7 @@ There are other parameters besides *columns*.
 == Frequently Asked Questions ==
 
 = Can't figure out how to show widgets in columns! ARGH! Are you there? =
-Take a deep breath. Believe me, it's really simple. 90% of the time, you have not added any widget yet. Go to *Appearance > Widgets* and add widgets to the plugin's custom sidebar box. Then use the shortcode in a post. That's it. If you still cannot figure it out, take the screenshots of the *wp-admin/widgets.php* page and the page of the post you added the shortcode. And request a [support](http://wordpress.org/support/plugin/responsive-column-widgets) with the screenshots.
+Take a deep breath. Believe me, it's really simple. Most likely, you have not added any widget yet. Go to *Appearance > Widgets* and add widgets to the plugin's custom sidebar box. Then use the shortcode in a post. That's it. If you still cannot figure it out, take the screenshots of the *wp-admin/widgets.php* page and the page of the post you added the shortcode. And request a [support](http://wordpress.org/support/plugin/responsive-column-widgets) with the screenshots.
 
 = How do I customize the style? =
 You can add your rules to the classes named **.responsive_column_widget_box .widget**. It's defined in *responsive-column-widgets/css/responsive_column_widgets.css* but simply you can define it in your theme's *style.css* as well.
