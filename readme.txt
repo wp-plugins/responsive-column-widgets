@@ -13,6 +13,9 @@ Creates a custom responsive column widget box.
 
 When you want to display widgets horizontally, I know it’s such a headache to edit the theme and repeat the numerous times of trial and error. If you feel the same way, this would save the time for you.
 
+<h4>How It Works</h4>
+[youtube http://www.youtube.com/watch?v=DQuMRtqCSp0]
+
 <h4>Features</h4>
 * **Displays widgets in clolums** - the main feature of this plugin.
 * **Set Number of Columns per Row** - flexibily set numbers of columns in each row.
