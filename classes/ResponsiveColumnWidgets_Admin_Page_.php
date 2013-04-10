@@ -422,138 +422,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'autoinsert_disable_post_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $arrWidgetBoxOptions['autoinsert_disable_post_ids'] ),	
 						),							
 					),
-				),
-				// Insert Widget Box into Footer
-				// array(
-					// 'pageslug' => $this->strPluginSlug,
-					// 'tabslug' => 'neworedit',
-					// 'id' => 'section_insert_footer',
-					// 'title' => __( 'Insert Widget Box into Footer', 'responsive-column-widgets' ), 
-					// 'fields' => array(
-						// array(
-							// 'id' => 'footer',
-							// 'title' => __( 'Footer', 'responsive-column-widgets' ),
-							// 'tip' => __( 'Insert the widget box into the footer.', 'responsive-column-widgets' ),
-							// 'label' => __( 'Insert the widget box into the footer.', 'responsive-column-widgets' ),
-							// 'type' => 'checkbox',
-							// 'value' => $arrWidgetBoxOptions['insert_footer'],
-							// 'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>',
-						// ),
-						// array(	// since 1.0.7
-							// 'id' => 'insert_footer_disable_front',
-							// 'type' => 'checkbox',
-							// 'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
-							// 'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
-							// 'pre_html' => '<span title="' . $this->strGetPro . '">',
-							// 'post_html' => '</span>',											
-							// 'value' => $arrWidgetBoxOptions['insert_footer_disable_front'], 
-						// ),							
-						// array(	// since 1.0.7
-							// 'id' => 'insert_footer_disable_ids',
-							// 'type' => 'text',
-							// 'size' => 100,
-							// 'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
-							// 'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
-								// . '<br />e.g. 98, 76, 5',
-							// 'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_footer_disable_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_footer_disable_ids'] ),							
-							// 'pre_html' => '<span title="' . $this->strGetPro . '">',
-							// 'post_html' => '</span>',								
-						// ),		
-					// )
-				// ),
-				// Insert Widget Box into Posts and Pages
-				// array(
-					// 'pageslug' => $this->strPluginSlug,
-					// 'tabslug' => 'neworedit',
-					// 'id' => 'section_insert_posts',
-					// 'title' => __( 'Insert Widget Box into Posts and Pages', 'responsive-column-widgets' ), 
-					// 'fields' => array(				
-						// array(	// since 1.0.7
-							// 'id' => 'insert_posts',
-							// 'title' => __( 'Posts and Pages', 'responsive-column-widgets' ),
-							// 'tip' => __( 'Insert the widget box into posts and pages.', 'responsive-column-widgets' ),
-							// 'label' => array(
-								// 'post' => __( 'Insert the widget box into posts.', 'responsive-column-widgets' ),
-								// 'page' => __( 'Insert the widget box into pages.', 'responsive-column-widgets' ),
-							// ),
-							// 'type' => 'checkbox',
-							// 'value' => $arrWidgetBoxOptions['insert_posts'],
-							// 'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless one of these is checked.', 'responsive-column-widgets' ) . '</span></p>',
-						// ),	
-						// array(	// since 1.0.7
-							// 'id' => 'insert_posts_positions',
-							// 'type' => 'checkbox',
-							// 'title' => __( 'Position', 'responsive-column-widgets' ),
-							// 'label' => array(
-								// 'above' => __( 'Above Content', 'responsive-column-widgets' ),
-								// 'below' => __( 'Below Content', 'responsive-column-widgets' ),
-							// ),
-							// 'delimiter' => '&nbsp;&nbsp;&nbsp;',
-							// 'value' => $arrWidgetBoxOptions['insert_posts_positions'],							
-						// ),	
-						// array(	// since 1.0.7
-							// 'id' => 'insert_posts_disable_front',
-							// 'type' => 'checkbox',
-							// 'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
-							// 'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
-							// 'value' => $arrWidgetBoxOptions['insert_posts_disable_front'],						
-						// ),							
-						// array(	// since 1.0.7
-							// 'id' => 'insert_posts_disable_ids',
-							// 'type' => 'text',
-							// 'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
-							// 'size' => 100,
-							// 'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
-								// . '<br />e.g. 98, 76, 5',
-							// 'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_posts_disable_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_posts_disable_ids'] ),						
-						// ),							
-					// ),
-				// ),
-				// Insert Widget Box into Comment Form Section - since 1.0.8
-				// array(
-					// 'pageslug' => $this->strPluginSlug,
-					// 'tabslug' => 'neworedit',
-					// 'id' => 'section_insert_comment_form',
-					// 'title' => __( 'Insert Widget Box into Comment Form Section', 'responsive-column-widgets' ), 
-					// 'fields' => array(				
-						// array(	// since 1.0.8
-							// 'id' => 'insert_comment_form',
-							// 'title' => __( 'Comment Form Section', 'responsive-column-widgets' ),
-							// 'tip' => __( 'Insert the widget box into the comment form section.', 'responsive-column-widgets' ),
-							// 'label' => __( 'Insert widget box into the comment form section.', 'responsive-column-widgets' ),
-							// 'type' => 'checkbox',
-							// 'value' => $arrWidgetBoxOptions['insert_comment_form'],
-							// 'post_html' => '<p><span class="description">' . __( 'The below options will not take effect unless this is checked.', 'responsive-column-widgets' ) . '</span></p>',
-						// ),	
-						// array(	// since 1.0.8
-							// 'id' => 'insert_comment_form_positions',
-							// 'type' => 'checkbox',
-							// 'title' => __( 'Position', 'responsive-column-widgets' ),
-							// 'label' => array(
-								// 'above' => __( 'Above Comment Form', 'responsive-column-widgets' ),
-								// 'below' => __( 'Below Comment Form', 'responsive-column-widgets' ),
-							// ),
-							// 'delimiter' => '&nbsp;&nbsp;&nbsp;',
-							// 'value' => $arrWidgetBoxOptions['insert_comment_form_positions'],							
-						// ),	
-						// array(	// since 1.0.8
-							// 'id' => 'insert_comment_form_disable_front',
-							// 'type' => 'checkbox',
-							// 'title' => __( 'Disable the Widget Box in', 'responsive-column-widgets' ),
-							// 'label' => __( 'Home / Front Page', 'responsive-column-widgets' ),
-							// 'value' => $arrWidgetBoxOptions['insert_comment_form_disable_front'],						
-						// ),							
-						// array(	// since 1.0.8
-							// 'id' => 'insert_comment_form_disable_post_ids',
-							// 'type' => 'text',
-							// 'title' => __( 'Post / Page ID to Disable the Widget Box', 'responsive-column-widgets' ),
-							// 'size' => 100,
-							// 'description' => __( 'Enter the post IDs where the widget box should not be displayed, separated by commas. This will take effects if the above checkbox option at the top is checked in this section.', 'responsive-column-widgets' )
-								// . '<br />e.g. 98, 76, 5',
-							// 'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'insert_comment_form_disable_post_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['insert_comment_form_disable_post_ids'] ),						
-						// ),							
-					// ),
-				// ),				
+				),			
 				// Custom Style
 				array(
 					'pageslug' => $this->strPluginSlug,
@@ -582,6 +451,53 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'post_field' => '</div>',
 							'redirect' => admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ),
 						),							
+					),
+				),				
+				array(  
+					'pageslug' => $this->strPluginSlug,
+					'tabslug' => 'general',
+					'id' => 'section_css_general', 
+					'capability' => 'manage_options',
+					'title' => __( 'CSS', 'responsive-column-widgets' ), 
+					// 'description' => __( 'test', 'responsive-column-widgets' ),
+					'fields' => array( 	// Field Arrays
+						array(  
+							'id' => 'general_css_areas_to_load',
+							'title' => __( 'Areas to Load CSS', 'responsive-column-widgets' ),
+							'description' => __( 'Select the areas to load the plugin CSS rules besides the front end pages.', 'responsive-column-widgets' ),
+							'type' => 'checkbox',
+							'label' => array( 
+								'regular' => __( 'Regular Pages', 'responsive-column-widgets' ),
+								'login' => __( 'Login Page', 'responsive-column-widgets' ),
+								'admin' => __( 'Administration Panel', 'responsive-column-widgets' ),
+							),
+							'disable' => array(
+								'regular' => true,
+								'login' => false,
+								'admin' => false,
+							),
+							'value' => $this->oOption->arrOptions['general']['general_css_areas_to_load'],
+						),	
+						array(  
+							'id' => 'general_css_class_attributes',
+							'title' => __( 'Class Names', 'responsive-column-widgets' ),
+							'pre_html' => '<span title="' . $this->strGetPro . '">',
+							'post_html' => '</span>',
+							'description' => __( 'Set the custom names for the class attributes.', 'responsive-column-widgets' ),
+							'type' => 'text',
+							'pre_field' => '<span class="text-input-field">',
+							'post_field' => '</span>',
+							'label' => array( 
+								'box' => __( 'Box', 'responsive-column-widgets' ),
+								'row' => __( 'Row', 'responsive-column-widgets' ),
+								'column' => __( 'Column', 'responsive-column-widgets' ),
+							),						
+							'disable' => true,
+							'class' => 'disabled',
+							'size' => 60,
+							'value' => $this->oOption->arrOptions['general']['general_css_class_attributes'],
+							'delimiter' => '<br />',
+						),						
 					),
 				),				
 				// General Options
@@ -845,6 +761,11 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 	}
 	function do_responsive_column_widgets_general() {	
+	
+		// if ( WP_DEBUG )
+			// echo $this->DumpArray( $this->oOption->arrOptions );
+
+	
 	}
 	
 	function GetAddNewBoxButton() {
@@ -974,7 +895,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				array( 'type' => 'image', 'value' => False, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'second-col' ),
 				array( 'type' => 'image', 'value' => True, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'third-col' ),				
 			) 			
-		);				
+		);	
+		echo $this->GetComparisionTableTR( 
+			array( 
+				array( 'type' => 'text', 'value' => __( 'Custom Class Attribute Names', 'responsive-column-widgets' ), 'align' => 'center', 'class' => 'first-col' ),
+				array( 'type' => 'image', 'value' => False, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'second-col' ),
+				array( 'type' => 'image', 'value' => True, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'third-col' ),				
+			) 			
+		);			
 		echo '</tbody>';
 		echo '</table>';
 		echo '</div>';
@@ -1303,22 +1231,15 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}
 	function validation_responsive_column_widgets_general( $arrInput ) {
 			
+		// Reconstruct the submitted array to omit(merge) the sections - make it flat to consist of fields
+		$arrValidate = array();
+		foreach ( $arrInput[ $this->strPluginSlug ] as $arrSections ) 
+			$arrValidate = $arrValidate + $arrSections;
+
 		/*
 		 * Danger Zone
-		 * */
-		/*
-		[section_dangerzone] => Array
-		(
-			[field_initializeoptions] => 0
-			[submit_perform] => Perform Checked
-		)
-		*/
-		 
-		if ( 
-			isset( $arrInput['responsive_column_widgets']['section_dangerzone']['submit_perform'] )
-			&& isset( $arrInput['responsive_column_widgets']['section_dangerzone']['initializeoptions'] )
-			&& $arrInput['responsive_column_widgets']['section_dangerzone']['initializeoptions'] == 1 
-		) {
+		 * */	 
+		if ( isset( $arrValidate['submit_perform'], $arrValidate['initializeoptions'] ) && $arrValidate['initializeoptions'] == 1 ) {
 			
 			// Delete the plugin main options
 			$this->oOption->arrOptions = null;
@@ -1329,16 +1250,17 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			
 		}	
 		
-		// Do the validations and sanitizations here.
-		$this->oOption->arrOptions['general']['capability'] = $arrInput['responsive_column_widgets']['section_general']['capability'];
-		$this->oOption->arrOptions['general']['allowedhtmltags'] = $this->oOption->ConvertStringToArray( $arrInput['responsive_column_widgets']['section_general']['allowedhtmltags'] ); 
+		// Format and sanitize values
+		$arrValidate['allowedhtmltags'] = $this->oOption->ConvertStringToArray( $arrValidate['allowedhtmltags'] ); 		
 		
 		// Memory Allocation since 1.0.7.1
-		$this->oOption->arrOptions['general']['memory_allocation'] = empty( $arrInput['responsive_column_widgets']['section_dangerzone']['memory_allocation'] ) ? 0 
-			: $this->oUtil->FixNumber( $arrInput['responsive_column_widgets']['section_dangerzone']['memory_allocation'], 
-				intval( $strCurrentLimit ),
+		$this->oOption->arrOptions['general']['memory_allocation'] = empty( $arrValidate['memory_allocation'] ) ? 0 
+			: $this->oUtil->FixNumber( $arrValidate['memory_allocation'], 
+				intval( 0 ),
 				32 	// minimum
 			);
+
+		$this->oOption->arrOptions['general'] = $arrValidate;
 		
 		// Update the value to the separate main option.
 		$this->oOption->Update();
@@ -1472,13 +1394,21 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			table.fixed {
 				table-layout: auto;				
 			}
+			input.disabled {
+				background-color: #F1F1F1;
+			}	
+			.text-label	{
+				min-width: 80px;
+				display: inline-block;
+			}
+			.text-input-field input {
+				margin-bottom: 8px;
+				
+			}
 		"; 
 	}
 	function style_responsive_column_widgets_neworedit( $strStyle ) {
 		return $strStyle . '
-			input.disabled {
-				background-color: #F1F1F1;
-			}
 			.neworedit-button {
 				margin-top: 12px;
 				margin-bottom: 12px;

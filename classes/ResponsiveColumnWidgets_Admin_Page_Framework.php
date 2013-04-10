@@ -2359,7 +2359,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework_Input_Filed_Types {	// since 
 			foreach ( $this->arrField['label'] as $strKey => $strLabel ) {	
 			
 				$strChecked = ( $arrValues[ $strKey ] == 1 ) ? 'Checked' : '';
-				$strDisabled = $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->vDisable );
+				$strDisabled = $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->vDisable ) ? 'disabled="Disabled"' : '' ;
 				$strOutput .= "<input type='hidden' name='{$this->strFieldName}[{$strKey}]' value='0' />";
 				$strOutput .= $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->arrField['pre_field'] ) 
 					. "<span style='display: inline-block;'>"
@@ -2409,13 +2409,41 @@ class ResponsiveColumnWidgets_Admin_Page_Framework_Input_Filed_Types {	// since 
 	}	
 	protected function GetTextField() {
 		
-		$strReadOnly = isset( $this->arrField['readonly'] ) && $this->arrField['readonly'] ? 'readonly="readonly"' : '';
-		return $this->arrField['pre_field'] 
-			. "<input id='{$this->strTagID}' "
-			. "class='{$this->arrField['class']}' name='{$this->strFieldName}' size='{$this->arrField['size']}' "
-			. "type='{$this->arrField['type']}' value='{$this->vValue}' {$this->vDisable} {$strReadOnly} />"
-			. $this->arrField['post_field'];	
+		if ( is_array( $this->arrField['label'] ) ) {
+			$arrValues = ( array ) $this->vValue;
+			$strOutput = "<div id='{$this->strTagID}'>";
+			foreach ( $this->arrField['label'] as $strKey => $strLabel ) {	
+			
+				$strValue = $arrValues[$strKey];
+				$strDisabled = $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->vDisable ) ? 'disabled="Disabled"' : '' ;
+				$strReadOnly = $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->arrField['readonly'] ) ? 'readonly="readonly"' : '' ;
+				$strClassAttr = $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->arrField['class'], '' );
+				$intSize = $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->arrField['size'], $this->arrDefaultFieldKeys['size'] );
+				$strOutput .= $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->arrField['pre_field'] ) 
+					. "<span style='display: inline-block;'>"
+					. ( $strLabel ? "<span class='text-label'>{$strLabel}</span>&nbsp;&nbsp;&nbsp;" : "" )
+					. "<input id='{$this->strTagID}_{$strKey}' class='{$strClassAttr}' size='{$intSize}' "
+					. "type='{$this->arrField['type']}' name='{$this->strFieldName}[{$strKey}]' value='{$strValue}' {$strDisabled} {$strReadOnly}/>"
+					. "</span>"
+					. $this->oUtil->GetCorrespondingArrayValue( $strKey, $this->arrField['post_field'] );
+				$strOutput .= $this->arrField['delimiter'];
+			
+			}
+			$strOutput .= "</div>";
+			return $strOutput;
+		}		
 		
+		if ( ! $this->arrField['label'] || is_string( $this->arrField['label'] ) ) {
+			
+			$strReadOnly = isset( $this->arrField['readonly'] ) && $this->arrField['readonly'] ? 'readonly="readonly"' : '';
+			return $this->arrField['pre_field'] 
+				. $this->arrField['label'] 
+				. "<input id='{$this->strTagID}' "
+				. "class='{$this->arrField['class']}' name='{$this->strFieldName}' size='{$this->arrField['size']}' "
+				. "type='{$this->arrField['type']}' value='{$this->vValue}' {$this->vDisable} {$strReadOnly} />"
+				. $this->arrField['post_field'];	
+				
+		}
 	}	
 	protected function GetSubmitField() {	// since 1.0.3.2
 

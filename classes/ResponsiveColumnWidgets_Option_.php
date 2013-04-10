@@ -48,7 +48,7 @@ class ResponsiveColumnWidgets_Option_ {
 		// since 1.0.9
 		'autoinsert_enable'			=> 0,		// 0: off, 1: on
 		'autoinsert_enable_areas'	=> array( 
-			'the_content' => false,
+			'the_content' => true,
 			'comment_text' => false,
 			'wp_footer' => false,		
 		),
@@ -86,9 +86,19 @@ class ResponsiveColumnWidgets_Option_ {
 		'boxes' => array(),
 		'general' => array(
 			'capability' => 0,
-			'allowedhtmltags' => array(),		// e.g. array( 'noscript', 'style' )	// will be imploded when it is rendered
+			'allowedhtmltags' => array(),		// e.g. array( 'noscript', 'style' ) - will be imploded when it is rendered
 			'license' =>'',
 			'memory_allocation' => 0,	// since 1.0.7.1 - 0 means do nothing.
+			'general_css_areas_to_load' => array(	// since 1.1.0
+				'regular' => true,	
+				'login' => true,
+				'admin' => true,
+			),
+			'general_css_class_attributes' => array(	// since 1.1.0
+				'box' => 'responsive_column_widgets_box',
+				'row' => 'responsive_column_widgets_row',
+				'column' => 'responsive_column_widgets_column',
+			),
 		),
 	);
 	function __construct( $strOptionKey, $strFilePath=null ) {

@@ -30,11 +30,11 @@ class ResponsiveColumnWidgets_Core_ {
 		12 =>	'6.86%',
 	);		
 	// protected $strClassAttrBox ='responsive_column_widget_area responsive_column_widgets_box widget-area';
-	protected $strClassAttrBox1 ='responsive_column_widgets_box';
+	protected $strClassAttrBox1 ='responsive_column_widgets_box';		// overriden by the option
 	protected $strClassAttrBox2 ='widget-area';
 	protected $strClassAttrSidebarID = 'responsive_column_widgets';
-	protected $strClassAttrRow = 'responsive_column_widgets_row';
-	protected $strClassAttrColumn = 'responsive_column_widgets_column';
+	protected $strClassAttrRow = 'responsive_column_widgets_row';		// overriden by the option
+	protected $strClassAttrColumn = 'responsive_column_widgets_column';	// overriden by the option
 	protected $strClassAttrMaxColsByPixel = '';
 	
 	
@@ -57,13 +57,22 @@ class ResponsiveColumnWidgets_Core_ {
 		$this->strCSSDirURL = RESPONSIVECOLUMNWIDGETSURL . '/css/';
 		$this->strClassAttrMaxColsByPixel = get_class( $this );
 
+		$this->strClassAttrBox1 = $this->oOption->arrOptions['general']['general_css_class_attributes']['box'];
+		$this->strClassAttrRow = $this->oOption->arrOptions['general']['general_css_class_attributes']['row'];
+		$this->strClassAttrColumn = $this->oOption->arrOptions['general']['general_css_class_attributes']['column'];
+
 		// register this plugin sidebar; if already registered, it will do nothing
 		$this->RegisterSidebar();
 		
 		// add the stylesheet
-		add_action( 'wp_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );	// set the order number to 100 which is quite low to load it after others have loaded
-		add_action( 'login_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );
-		add_action( 'admin_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );
+		// add_action( 'wp_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );	// set the order number to 100 which is quite low to load it after others have loaded
+		// add_action( 'login_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );
+		// add_action( 'admin_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );
+		add_action( 'wp_head', array( $this, 'AddStyleSheet' ) );
+		if ( $this->oOption->arrOptions['general']['general_css_areas_to_load']['login'] )
+			add_action( 'login_head', array( $this, 'AddStyleSheet' ) );
+		if ( $this->oOption->arrOptions['general']['general_css_areas_to_load']['admin'] )			
+			add_action( 'admin_head', array( $this, 'AddStyleSheet' ) );
 		
 		
 		// add shortcode
@@ -81,6 +90,112 @@ class ResponsiveColumnWidgets_Core_ {
 			// add_action( 'wp_footer', array( $this->oOption, 'EchoMemoryLimit' ) );
 			// add_action( 'wp_footer', array( $this, 'EchoMemoryUsage' ) );
 			
+	}
+	/*
+	 * Style Sheet
+	 * */
+	public function AddStyleSheet() {
+	
+		$strCSS = "
+			.{$this->strClassAttrBox1} .widget {
+				padding: 4px;
+				line-height: 1.5em;
+			}
+			.{$this->strClassAttrColumn}_1 {
+				margin-left: 0px;
+				clear: left;
+			}
+
+			/*  SECTIONS  ============================================================================= */
+			.{$this->strClassAttrRow} {
+				clear: both;
+				padding: 0px;
+				margin: 0px;
+			}
+			/*  GROUPING  ============================================================================= */
+			.{$this->strClassAttrBox1}:before,
+			.{$this->strClassAttrBox1}:after {
+				content:'';
+				display:table;
+			}
+			.{$this->strClassAttrBox1}:after {
+				clear:both;
+			}
+			.{$this->strClassAttrBox1} {
+				float: none;
+				width: 100%;		
+				zoom:1; /* For IE 6/7 (trigger hasLayout) */
+			}
+			/*  GRID COLUMN SETUP   ==================================================================== */
+			.{$this->strClassAttrColumn} {
+				display: block;
+				float:left;
+				margin: 1% 0 1% 1.6%;
+			}
+			.{$this->strClassAttrColumn}:first-child { margin-left: 0; } /* all browsers except IE6 and lower */
+			/*  REMOVE MARGINS AS ALL GO FULL WIDTH AT 600 PIXELS */
+			@media only screen and (max-width: 600px) {
+				.{$this->strClassAttrColumn} { 
+					margin: 1% 0 1% 0%;
+				}
+			}
+
+			/*  GRID OF TWO   ============================================================================= */
+			.element_of_1 {
+				width: 100%;
+			}
+			.element_of_2 {
+				width: 49.2%;
+			}
+			.element_of_3 {
+				width: 32.2%; 
+			}
+			.element_of_4 {
+				width: 23.8%;
+			}
+			.element_of_5 {
+				width: 18.72%;
+			}
+			.element_of_6 {
+				width: 15.33%;
+			}
+			.element_of_7 {
+				width: 12.91%;
+			}
+			.element_of_8 {
+				width: 11.1%; 
+			}
+			.element_of_9 {
+				width: 9.68%; 
+			}
+			.element_of_10 {
+				width: 8.56%; 
+			}
+			.element_of_11 {
+				width: 7.63%; 
+			}
+			.element_of_12 {
+				width: 6.86%; 
+			}
+		";
+			/*  GO FULL WIDTH AT LESS THAN 600 PIXELS 
+			@media only screen and (max-width: 600px) {
+				.element_of_2,
+				.element_of_3,
+				.element_of_4,
+				.element_of_5,
+				.element_of_6,
+				.element_of_7,
+				.element_of_8,
+				.element_of_9,
+				.element_of_10,
+				.element_of_11,
+				.element_of_12	
+				{	width: 100%;  }
+			}
+			*/		
+		echo "<style type='text/css' name='{$this->oOption->oInfo->Name} {$this->oOption->oInfo->Version}'>" . $strCSS . "</style>";
+		
 	}
 	
 	/*

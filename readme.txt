@@ -104,6 +104,11 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= Development Version =
+* Changed: from loading the CSS file in the header but to insert the CSS rules as text to support variadic class attribute names.
+* Added: the options for specifying the class name attributes for the CSS rules.
+* Added: the options for selecting the areas to load the plguin CSS rules.
+
 = 1.0.9 - 04/07/2013 =
 * Added: the ability to load the plugin CSS rules in login pages. To display the widget box in the login page, either use the PHP code or set the custom filter in the Auto-Insert section of the plugin admin page.
 * Added: the ability to add custom filter/action hooks for the widget box auto-insertion.
