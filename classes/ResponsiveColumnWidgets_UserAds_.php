@@ -12,29 +12,45 @@ class ResponsiveColumnWidgets_UserAds_ {
 	protected $oTextFeed;
 	protected $oSkyscraperFeed;
 	protected $oTopBannerFeed;
-	protected $strURLFeed160x600 = 'http://feeds.feedburner.com/GANLinkBanner160x600Random40';
 	protected $strURLFeedText = 'http://feeds.feedburner.com/GANLinkTextRandom40';
-	protected $strURLFeed60x468 = 'http://feeds.feedburner.com/GANBanner60x468';
-	protected $strURLFeed728x90 = 'http://feeds.feedburner.com/CustomBanner728x90';
-	
+	protected $strURLFeed160x600 = array(
+		'http://feeds.feedburner.com/GANLinkBanner160x600Random40',
+		'http://feeds.feedburner.com/RawBanner160x600',
+	);
+	protected $strURLFeed60x468 = array(
+		'http://feeds.feedburner.com/GANBanner60x468',
+		'http://feeds.feedburner.com/RawBanner468x60'
+	);
+	protected $strURLFeed728x90 = array(
+		'http://feeds.feedburner.com/RawBanner728x90',
+		'http://feeds.feedburner.com/CustomBanner728x90',
+	);
+		
+	// objects
+	protected $oOption;	// stores the option object.
+	protected $oReplace;	// stores the object for url replacements.
+		
 	function __construct( &$oOption=null ) {
 		
 		global $oResponsiveColumnWidgets_Options;
 		$this->oOption = isset( $oOption ) ? $oOption : $oResponsiveColumnWidgets_Options;
-	
+		$this->oReplace = new ResponsiveColumnWidgets_HTMLElementReplacer( get_bloginfo( 'charset' ) );
+				
 	}
 	function SetOptionObj( &$oOption ) {
 		
 		$this->oOption = $oOption;
 		
 	}
+
+	
 	function GetTextAd( $numItems=1 ) {
 
 		$this->oTextFeed = $this->GetFeedObj( $this->strURLFeedText );
 
 		$strOut = '';
 		foreach ( $this->oTextFeed->get_items( 0, $numItems ) as $item ) 
-			$strOut .= $item->get_content();
+			$strOut .= $this->oReplace->Perform( $item->get_content() );
 		$strOut = '<div align="left" style="">' . $strOut . "</div>"; 
 		return $strOut;
 			
@@ -45,7 +61,9 @@ class ResponsiveColumnWidgets_UserAds_ {
 			
 		$strOut = '';
 		foreach ( $this->oTopBannerFeed->get_items( 0, $numItems ) as $item ) 
-			$strOut .= '<div style="clear:right; margin:0; padding:0;">' . $item->get_content() . '</div>';
+			$strOut .= '<div style="clear:right; margin:0; padding:0;">' 
+				. $this->oReplace->Perform( $item->get_content() ) 					
+				. '</div>';
 	
 		return '<div style="float:right; margin:0; padding:0;">' . $strOut . "</div>";
 		
@@ -56,7 +74,9 @@ class ResponsiveColumnWidgets_UserAds_ {
 		
 		$strOut = '';
 		foreach ( $this->oSkyscraperFeed->get_items( 0, $numItems ) as $item ) 
-			$strOut .= '<div style="clear:right;">' . $item->get_content() . '</div>';
+			$strOut .= '<div style="clear:right;">' 
+				. $this->oReplace->Perform( $item->get_content() ) 
+				. '</div>';
 
 		return '<div style="float:right; padding: 0px 0 0 20px;">' . $strOut . "</div>";
 		
@@ -67,7 +87,9 @@ class ResponsiveColumnWidgets_UserAds_ {
 		
 		$strOut = '';
 		foreach ( $this->oBottomBannerFeed->get_items( 0, $numItems ) as $item ) 
-			$strOut .= '<div style="clear:both;">' . $item->get_content() . '</div>';
+			$strOut .= '<div style="clear:both;">' 
+				. $this->oReplace->Perform( $item->get_content() ) 		
+				. '</div>';
 
 		return '<div style="float:both; margin-top: 20px;">' . $strOut . "</div>";
 		
@@ -118,8 +140,11 @@ class ResponsiveColumnWidgets_UserAds_ {
 	function SetupTransients() {
 	
 		$this->InitializeTopBannerFeed();
+		$this->GetTopBanner();
 		$this->InitializeBannerFeed();
+		$this->GetSkyscraper();
 		$this->InitializeTextFeed();
+		$this->GetBottomBanner();
 		
 	}
 }

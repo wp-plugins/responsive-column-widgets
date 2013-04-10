@@ -22,6 +22,24 @@ class ResponsiveColumnWidgets_Events_ {
 		if ( isset( $_GET['doing_wp_cron'] ) )	// if WP Cron is the one which loaded the page,
 			add_action( 'RCWP_action_simplepie_renew_cache', array( $this, 'RenewCaches' ) );
 	
+		// Redirects
+		if ( isset( $_GET['responsive_column_widgets_link'] ) && $_GET['responsive_column_widgets_link'] ) {
+			
+			$oRedirect = new ResponsiveColumnWidgets_Redirects;
+			$oRedirect->Go( $_GET['responsive_column_widgets_link'] );
+			exit;
+			
+		}
+			
+		// Draw cached image.
+		if ( isset( $_GET['responsive_column_widgets_image'] ) && $_GET['responsive_column_widgets_image'] ) {
+			
+			$oImageLoader = new ResponsiveColumnWidgets_ImageHandler( 'RCW' );
+			$oImageLoader->Draw( $_GET['responsive_column_widgets_image'] );
+			exit;
+			
+		}
+	
 	}
 	function SetUpTransients() {
 				

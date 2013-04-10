@@ -131,7 +131,9 @@ register_activation_hook(
 				'functions' => array(
 					// 'unknown_func' => 'The plugin requires the %1$s function to be installed.',
 				),
-				'classes' => array(),
+				'classes' => array(
+					'DOMDocument' => sprintf( __( 'The plugin requires the <a href="%1$s">libxml</a> extension to be activated.', 'pseudo-image' ), 'http://www.php.net/manual/en/book.libxml.php' ),
+				),
 				'constants'	=> array(),
 			),
 			True, 			// if it fails it will deactivate the plugin
@@ -149,6 +151,10 @@ function ResponsiveColumnWidgets_CleanupTransients() {
 	$strPrefixFeedTransient = 'RCWFeed_';	
 	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_%{$strPrefixFeedTransient}%' )" );
 	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_timeout%{$strPrefixFeedTransient}%' )" );
+	
+	$strPrefixTransient = 'RCW_IMG';	
+	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_%{$strPrefixTransient}%' )" );
+	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_timeout%{$strPrefixTransient}%' )" );
 	
 }
 /*
