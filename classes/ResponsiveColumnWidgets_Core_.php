@@ -68,11 +68,17 @@ class ResponsiveColumnWidgets_Core_ {
 		// add_action( 'wp_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );	// set the order number to 100 which is quite low to load it after others have loaded
 		// add_action( 'login_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );
 		// add_action( 'admin_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );
-		add_action( 'wp_head', array( $this, 'AddStyleSheet' ) );
-		if ( $this->oOption->arrOptions['general']['general_css_areas_to_load']['login'] )
-			add_action( 'login_head', array( $this, 'AddStyleSheet' ) );
-		if ( $this->oOption->arrOptions['general']['general_css_areas_to_load']['admin'] )			
-			add_action( 'admin_head', array( $this, 'AddStyleSheet' ) );
+		
+		if ( isset( $this->oOption->arrOptions['general']['general_css_timimng_to_load'] ) 
+			&& ! $this->oOption->arrOptions['general']['general_css_timimng_to_load'] ) {	// 0 for the header
+			
+			add_action( 'wp_head', array( $this, 'AddStyleSheet' ) );
+			if ( $this->oOption->arrOptions['general']['general_css_areas_to_load']['login'] )
+				add_action( 'login_head', array( $this, 'AddStyleSheet' ) );
+			if ( $this->oOption->arrOptions['general']['general_css_areas_to_load']['admin'] )			
+				add_action( 'admin_head', array( $this, 'AddStyleSheet' ) );
+		
+		}
 		
 		
 		// add shortcode
@@ -96,6 +102,12 @@ class ResponsiveColumnWidgets_Core_ {
 	 * */
 	public function AddStyleSheet() {
 	
+		echo $this->GetBaseStyles();
+		
+	}
+	protected function GetBaseStyles( $bIsScoped=false ) {	// since 1.1.0
+		
+		$strScoped = $bIsScoped ? "scoped" : "";
 		$strCSS = "
 			.{$this->strClassAttrBox1} .widget {
 				padding: 4px;
@@ -193,8 +205,11 @@ class ResponsiveColumnWidgets_Core_ {
 				.element_of_12	
 				{	width: 100%;  }
 			}
-			*/		
-		echo "<style type='text/css' name='{$this->oOption->oInfo->Name} {$this->oOption->oInfo->Version}'>" . $strCSS . "</style>";
+			*/			
+		
+		return "<style type='text/css' name='{$this->oOption->oInfo->Name} {$this->oOption->oInfo->Version}' {$strScoped}>" 
+			. $strCSS 
+			. "</style>";
 		
 	}
 	
@@ -450,9 +465,24 @@ class ResponsiveColumnWidgets_Core_ {
 			ob_end_clean();
 			
 		}
-						
+
 		// Now $arrWidgetBuffer contains the necessary data for output.
 		$strBuffer = '';		// stores the buffer output
+		
+		// Since 1.1.0
+		// If the timing to load the styles is set to the first box's rendering, 
+		global $arrResponsiveColumnWidgets_Flags;
+		if ( isset( $this->oOption->arrOptions['general']['general_css_timimng_to_load'] ) 
+			&& $this->oOption->arrOptions['general']['general_css_timimng_to_load'] == 1 
+			&& ! $arrResponsiveColumnWidgets_Flags['base_style']
+			) {
+			
+			$strBuffer .= $this->GetBaseStyles( true );
+			$arrResponsiveColumnWidgets_Flags['base_style'] = true;
+			
+		}
+		
+						
 		$numColPosInRow = 0;	// the number of the widgets loaded in a row, zero base.
 		$numRowPos = 0;			// stores the iterating row, zero base.
 		$bIsRowTagClosed = False;	

@@ -89,6 +89,7 @@ class ResponsiveColumnWidgets_Option_ {
 			'allowedhtmltags' => array(),		// e.g. array( 'noscript', 'style' ) - will be imploded when it is rendered
 			'license' =>'',
 			'memory_allocation' => 0,	// since 1.0.7.1 - 0 means do nothing.
+			'general_css_timimng_to_load' => 0,	// since 1.1.0 - 0: head, 1 : first box
 			'general_css_areas_to_load' => array(	// since 1.1.0
 				'regular' => true,	
 				'login' => true,

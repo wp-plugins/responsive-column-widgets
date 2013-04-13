@@ -3,7 +3,7 @@
 	Plugin Name: Responsive Column Widgets
 	Plugin URI: http://en.michaeluno.jp/responsive-column-widgets
 	Description: Creates a widget box which displays widgets in columns with a responsive design.
-	Version: 1.0.9.1
+	Version: 1.1.0
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Requirements: This plugin requires WordPress >= 3.2 and PHP >= 5.2.4
@@ -32,10 +32,10 @@ define( "RESPONSIVECOLUMNWIDGETSURL", plugins_url('', __FILE__ ) );
 // Global variables
 // - Arrays
 $arrResponsiveColumnWidgetsClasses = isset( $arrResponsiveColumnWidgetsClasses ) ? $arrResponsiveColumnWidgetsClasses : array();	// stores the class paths.
+$arrResponsiveColumnWidgets_Flags = array( 'base_style' => false );	// stores flag values that need to be global such as whether the base CSS class has been loaded or not etc.
 // - Objects
-$oResponsiveColumnWidgets_Options = null;	// the option object which stores and manipulates necessary settings.
-$oResponsiveColumnWidgets = null;			// the core object which handles rendering widgets.
-
+$oResponsiveColumnWidgets_Options = null;		// the option object which stores and manipulates necessary settings.
+$oResponsiveColumnWidgets = null;				// the core object which handles rendering widgets.
 
 // Adds class paths to the above $arrResponsiveColumnWidgetsClasses array and loads them when the plugins_loaded hook is triggered.
 add_action( 
@@ -98,7 +98,7 @@ class ResponsiveColumnWidgets_RegisterClasses {
 		if ( ! in_array( $strClassName, $this->arrClassNames ) ) return;
 		
 		global $arrResponsiveColumnWidgetsClasses;
-		include_once( $arrResponsiveColumnWidgetsClasses[$strClassName] . '.php' );
+		include_once( $arrResponsiveColumnWidgetsClasses[ $strClassName ] . '.php' );
 		
 	}
 	
@@ -131,9 +131,9 @@ register_activation_hook(
 				'functions' => array(
 					// 'unknown_func' => 'The plugin requires the %1$s function to be installed.',
 				),
-				'classes' => array(
-					'DOMDocument' => sprintf( __( 'The plugin requires the <a href="%1$s">libxml</a> extension to be activated.', 'pseudo-image' ), 'http://www.php.net/manual/en/book.libxml.php' ),
-				),
+				// 'classes' => array(
+					// 'DOMDocument' => sprintf( __( 'The plugin requires the <a href="%1$s">libxml</a> extension to be activated.', 'pseudo-image' ), 'http://www.php.net/manual/en/book.libxml.php' ),
+				// ),
 				'constants'	=> array(),
 			),
 			True, 			// if it fails it will deactivate the plugin

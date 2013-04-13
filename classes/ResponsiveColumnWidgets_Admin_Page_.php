@@ -462,8 +462,19 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					// 'description' => __( 'test', 'responsive-column-widgets' ),
 					'fields' => array( 	// Field Arrays
 						array(  
+							'id' => 'general_css_timimng_to_load',
+							'title' => __( 'Timing to Load', 'responsive-column-widgets' ),
+							'description' => __( 'Select the timing to load the plugin\'s CSS base rules.', 'responsive-column-widgets' ),
+							'type' => 'radio',
+							'label' => array( 
+								__( 'When the head tab is loaded. ( Default )', 'responsive-column-widgets' ),
+								__( 'When the first widget box is loaded.', 'responsive-column-widgets' ),
+							),
+							'value' => $this->oOption->arrOptions['general']['general_css_timimng_to_load'],
+						),					
+						array(  
 							'id' => 'general_css_areas_to_load',
-							'title' => __( 'Areas to Load CSS', 'responsive-column-widgets' ),
+							'title' => __( 'Areas to Load', 'responsive-column-widgets' ),
 							'description' => __( 'Select the areas to load the plugin CSS rules besides the front end pages.', 'responsive-column-widgets' ),
 							'type' => 'checkbox',
 							'label' => array( 
@@ -863,7 +874,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		);			
 		echo $this->GetComparisionTableTR( 
 			array( 
-				array( 'type' => 'text', 'value' => __( 'Auto-insert into Footer, Posts, and Pages', 'responsive-column-widgets' ), 'align' => 'center', 'class' => 'first-col' ),
+				array( 'type' => 'text', 'value' => __( 'Auto-insert', 'responsive-column-widgets' ), 'align' => 'center', 'class' => 'first-col' ),
 				array( 'type' => 'image', 'value' => True, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'second-col' ),
 				array( 'type' => 'image', 'value' => True, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'third-col' ),				
 			) 			
@@ -898,7 +909,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		);	
 		echo $this->GetComparisionTableTR( 
 			array( 
-				array( 'type' => 'text', 'value' => __( 'Custom Class Attribute Names', 'responsive-column-widgets' ), 'align' => 'center', 'class' => 'first-col' ),
+				array( 'type' => 'text', 'value' => __( 'CSS Custom Class Attribute Names', 'responsive-column-widgets' ), 'align' => 'center', 'class' => 'first-col' ),
 				array( 'type' => 'image', 'value' => False, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'second-col' ),
 				array( 'type' => 'image', 'value' => True, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'third-col' ),				
 			) 			
