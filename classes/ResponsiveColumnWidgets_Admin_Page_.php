@@ -464,7 +464,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(  
 							'id' => 'general_css_timimng_to_load',
 							'title' => __( 'Timing to Load', 'responsive-column-widgets' ),
-							'description' => __( 'Select the timing to load the plugin\'s CSS base rules.', 'responsive-column-widgets' ),
+							'description' => __( 'Select the timing to load the plugin\'s CSS base rules. If this is set the second item, the below Area to Load option does not take effect.', 'responsive-column-widgets' ),
 							'type' => 'radio',
 							'label' => array( 
 								__( 'When the head tab is loaded. ( Default )', 'responsive-column-widgets' ),

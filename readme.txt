@@ -104,13 +104,15 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.0.0 Development Version =
+= 1.1.0 Development Version =
+* Added: the CSS rules, *width: auto; height: auto;*, to the *responsive_column_widgets_box* class.
 * Added: the option for the timing of loading the plugins' CSS base rules.
 * Changed: from loading the CSS file in the header but to insert the CSS rules as text to support variadic class attribute names.
 * Added: the options for specifying the class name attributes for the CSS rules.
 * Added: the options for selecting the areas to load the plguin CSS rules.
 
 = 1.0.9 - 04/07/2013 =
+* Added: the *RCW_filter_base_styles* filter that enables to modify the plugin's base CSS rules.
 * Added: the ability to load the plugin CSS rules in login pages. To display the widget box in the login page, either use the PHP code or set the custom filter in the Auto-Insert section of the plugin admin page.
 * Added: the ability to add custom filter/action hooks for the widget box auto-insertion.
 * Added: the ability to restrict the widget box auto-insertion by category, post-id, post-type, and page-type.

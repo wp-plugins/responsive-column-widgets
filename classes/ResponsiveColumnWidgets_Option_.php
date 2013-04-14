@@ -3,7 +3,7 @@ class ResponsiveColumnWidgets_Option_ {
 
 	// Objects
 	public $oInfo;	// stores the plugin info object.
-
+	
 	// Default Values
 	public $arrDefaultParams = array(	// must be public; accessed in the core object.
 		'columns' => array( 3 ),		// set the default to 3 since 1.0.3; the type changed to array from string since 1.0.6.1
@@ -125,7 +125,7 @@ class ResponsiveColumnWidgets_Option_ {
 		);
 	
 		// store plugin data
-		$this->oInfo = new ResponsiveColumnWidgets_PluginInfo( $strFilePath );
+		$this->oInfo = new ResponsiveColumnWidgets_PluginInfo( $strFilePath );		
 					
 		// if the attempt to override the memory allocation option is set,
 		if ( ! empty( $this->arrOptions['general']['memory_allocation'] ) ) 		

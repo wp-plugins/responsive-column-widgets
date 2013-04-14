@@ -7,6 +7,11 @@
  * @authorurl	http://michaeluno.jp
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		1.0.0
+ * 
+
+	@filters
+	RCW_filter_base_styles: applies to the base CSS rules of the plugin.
+	
 */
 class ResponsiveColumnWidgets_Core_ {
 	
@@ -112,6 +117,8 @@ class ResponsiveColumnWidgets_Core_ {
 			.{$this->strClassAttrBox1} .widget {
 				padding: 4px;
 				line-height: 1.5em;
+				width: auto;
+				height: auto;
 			}
 			.{$this->strClassAttrColumn}_1 {
 				margin-left: 0px;
@@ -208,7 +215,7 @@ class ResponsiveColumnWidgets_Core_ {
 			*/			
 		
 		return "<style type='text/css' name='{$this->oOption->oInfo->Name} {$this->oOption->oInfo->Version}' {$strScoped}>" 
-			. $strCSS 
+			. apply_filters( 'RCW_filter_base_styles', $strCSS )
 			. "</style>";
 		
 	}

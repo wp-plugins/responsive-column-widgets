@@ -4,7 +4,7 @@
 	Plugin URI: http://wordpress.org/extend/plugins/admin-page-framework/
 	Author:  Michael Uno
 	Author URI: http://michaeluno.jp
-	Version: 1.0.4
+	Version: 1.0.4.1
 	Requirements: WordPress 3.2 or above, PHP 5.2.4 or above.
 	Description: Provides simpler means of building administration pages for plugin and theme developers. 
 	Usage: 1. Extend the class 2. Override the SetUp() method. 3. Use the hook functions.
@@ -413,7 +413,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 				'description' => null,
 				'id' => null,
 				'fields' => null,
-				'capability' => null,				
+				'capability' => null,
+				'if' => true, // since 1.0.4.1
 			);
 
 			$arrSection['pageslug'] = $this->oUtil->SanitizeSlug( $arrSection['pageslug'] );	
@@ -426,6 +427,9 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			// If the tab slug is specified, determine if the current page is the default tab or the current tab matches the given tab slug.
 			if ( !$this->IsTabSpecifiedForFormSection( $arrSection ) ) continue;		
 
+			// If the custom condition is set and it's not true, skip,
+			if ( $arrSection['if'] !== true ) continue;
+			
 			// If the access level is set and it is not sufficient, skip.
 			if ( isset( $arrSection['capability'] ) && ! current_user_can( $arrSection['capability'] ) ) continue;	// since 1.0.2.1
 			
@@ -531,6 +535,10 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 			// If the access level is not sufficient, skip.
 			if ( isset( $arrField['capability'] ) && ! current_user_can( $arrField['capability'] ) ) continue;	// since 1.0.2.1
 			
+			// If a custom condition is set and it's not true, skip - since 1.0.4.1
+			$arrField = $arrField + array( 'if' => true );	// avoid undefined index warnings.
+			if ( $arrField['if'] !== true ) continue;
+			
 			// Sanitize the id since it is used as a callback method name.
 			$arrField['id'] = $this->oUtil->SanitizeSlug( $arrField['id'] );
 			
@@ -580,7 +588,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 				'title' => '',
 				'description' => '',
 			);
-			$this->arrFields[$arrField['id']] = $arrField + array(  
+			$this->arrFields[ $arrField['id'] ] = $arrField + array(  
 				'field_title'	=> $arrField['title'], 
 				'page_slug' 	=> $strPageSlug,
 				'field_ID' 		=> $arrField['id'],
