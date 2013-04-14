@@ -104,7 +104,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.1.0 Development Version =
+= 1.1.0 - 04/14/2013 =
 * Added: the CSS rules, *width: auto; height: auto;*, to the *responsive_column_widgets_box* class.
 * Added: the option for the timing of loading the plugins' CSS base rules.
 * Changed: from loading the CSS file in the header but to insert the CSS rules as text to support variadic class attribute names.
