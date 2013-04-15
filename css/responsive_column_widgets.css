@@ -1,0 +1,98 @@
+
+.responsive_column_widgets_box .widget {
+	padding: 4px;
+	line-height: 1.5em;
+}
+.responsive_column_widgets_column_1 {
+	margin-left: 0px;
+	clear: left;
+}
+
+/*  SECTIONS  ============================================================================= */
+.responsive_column_widgets_row {
+	clear: both;
+	padding: 0px;
+	margin: 0px;
+}
+/*  GROUPING  ============================================================================= */
+.responsive_column_widgets_box:before,
+.responsive_column_widgets_box:after {
+    content:"";
+    display:table;
+}
+.responsive_column_widgets_box:after {
+    clear:both;
+}
+.responsive_column_widgets_box {
+	float: none;
+	width: 100%;		
+    zoom:1; /* For IE 6/7 (trigger hasLayout) */
+}
+/*  GRID COLUMN SETUP   ==================================================================== */
+.responsive_column_widgets_column {
+	display: block;
+	float:left;
+	margin: 1% 0 1% 1.6%;
+}
+.responsive_column_widgets_column:first-child { margin-left: 0; } /* all browsers except IE6 and lower */
+/*  REMOVE MARGINS AS ALL GO FULL WIDTH AT 600 PIXELS */
+@media only screen and (max-width: 600px) {
+	.responsive_column_widgets_column { 
+		margin: 1% 0 1% 0%;
+	}
+}
+
+/*  GRID OF TWO   ============================================================================= */
+.element_of_1 {
+	width: 100%;
+}
+.element_of_2 {
+	width: 49.2%;
+}
+.element_of_3 {
+	width: 32.2%; 
+}
+.element_of_4 {
+	width: 23.8%;
+}
+.element_of_5 {
+  	width: 18.72%;
+}
+.element_of_6 {
+  	width: 15.33%;
+}
+.element_of_7 {
+  	width: 12.91%;
+}
+.element_of_8 {
+	width: 11.1%; 
+}
+.element_of_9 {
+	width: 9.68%; 
+}
+.element_of_10 {
+	width: 8.56%; 
+}
+.element_of_11 {
+	width: 7.63%; 
+}
+.element_of_12 {
+	width: 6.86%; 
+}
+
+/*  GO FULL WIDTH AT LESS THAN 600 PIXELS 
+@media only screen and (max-width: 600px) {
+	.element_of_2,
+	.element_of_3,
+	.element_of_4,
+	.element_of_5,
+	.element_of_6,
+	.element_of_7,
+	.element_of_8,
+	.element_of_9,
+	.element_of_10,
+	.element_of_11,
+	.element_of_12	
+	{	width: 100%;  }
+}
+*/
