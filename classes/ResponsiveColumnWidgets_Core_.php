@@ -569,7 +569,7 @@ class ResponsiveColumnWidgets_Core_ {
 					$strStyleRules .= ' .' . $strSidebarID . ' .element_of_' . $i . ' { width: ' . $this->strColPercentages[1] . ' } ';
 				else  {
 					++$num;
-					$strPercent = isset( $this->strColPercentages[$num] ) ? $this->strColPercentages[$num] : '100%';
+					$strPercent = isset( $this->strColPercentages[ $num ] ) ? $this->strColPercentages[ $num ] : '100%';
 					$strStyleRules .= ' .' . $strSidebarID . ' .element_of_' . $i . ' { width: ' . $strPercent . ' } ';
 				}
 			}

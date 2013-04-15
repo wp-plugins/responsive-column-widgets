@@ -4,7 +4,7 @@ Donate link: http://en.michaeluno.jp/donate
 Tags: widget, widgets, sidebar, columns, responsive, post, posts, page, pages, plugin, miunosoft
 Requires at least: 3.2
 Tested up to: 3.5.1
-Stable tag: 1.0.9
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Creates a custom responsive column widget box.
@@ -14,7 +14,7 @@ Creates a custom responsive column widget box.
 When you want to display widgets horizontally, I know it’s such a headache to edit the theme and repeat the numerous times of trial and error. If you feel the same way, this would save the time for you.
 
 <h4>How It Works</h4>
-[youtube http://www.youtube.com/watch?v=DQuMRtqCSp0]
+[youtube http://youtu.be/vo36sW7W35Y]
 
 <h4>Features</h4>
 * **Displays widgets in clolums** - the main feature of this plugin.
@@ -105,6 +105,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 == Changelog ==
 
 = 1.1.0 - 04/14/2013 =
+* Added: the *RCW_filter_base_styles* filter that enables to modify the plugin's base CSS rules.
 * Added: the CSS rules, *width: auto; height: auto;*, to the *responsive_column_widgets_box* class.
 * Added: the option for the timing of loading the plugins' CSS base rules.
 * Changed: from loading the CSS file in the header but to insert the CSS rules as text to support variadic class attribute names.
@@ -112,7 +113,6 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 * Added: the options for selecting the areas to load the plguin CSS rules.
 
 = 1.0.9 - 04/07/2013 =
-* Added: the *RCW_filter_base_styles* filter that enables to modify the plugin's base CSS rules.
 * Added: the ability to load the plugin CSS rules in login pages. To display the widget box in the login page, either use the PHP code or set the custom filter in the Auto-Insert section of the plugin admin page.
 * Added: the ability to add custom filter/action hooks for the widget box auto-insertion.
 * Added: the ability to restrict the widget box auto-insertion by category, post-id, post-type, and page-type.
