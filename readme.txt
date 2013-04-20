@@ -73,7 +73,6 @@ There are other parameters besides *columns*.
 * **maxrows** - the allowed number of rows to display. Set 0 for no limitation. Default: 0.
 * **omit** - the numbers of the widget order of the items to omit, separated by commas. e.g. **3, 5** would skip the third and fifth registered widgtes.
 * **showonly** - the numbers of the widget order of the items to show, separated by commas. e.g. **2, 7** would only show the second and seventh registered widtges. Other items will be skipped.
-* **offsets** - the offsets of width percentage applied to each column. This is for the level of increase/decrease of the column number in the specified pixel width. The format is "*pixel*:*offset*, *pixel*:*offset*, ...". They consist of key-value pairs of pixel width and offset delimited by colon and separated by commas. For example, "600:4" will shift 4 column levels when the browser width is 600px and the higher the offset level gets, it takes less number of columns. e.g."800: 1, 600: 2, 480: 3, 320: 4, 240: 5".
 * **label** - the label name of the widget box. Default: Responsive Column Widgets.
 
 == Frequently Asked Questions ==
@@ -101,8 +100,15 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 3. ***Four Column Example***
 4. ***Responsiveness***
 
-
 == Changelog ==
+= 1.1.1 =
+* Fixed: a typo in the setting page, Min to Max.
+* Fixed: an issue that a custom number of columns with the parameter of the percentage offset for column numbers caused a row not to start from the very first column when there was a widget with longer height than the other widgets in the previous row.
+* Added: the ability to specify the number of columns by screen max width.
+* Deprecated: (**Breaking Change**) the parameter of the percentage offset for column numbers to support the ability to directly specify the number of columns by screen max width. 
+* Removed: the ID attribute from the default Widget Beginning Tag value.
+* Added: (**Breaking Change**)the ability to automatically remove ID attributes from the rendered widget HTML code.
+* Fixed: an issue that scoped style tag contained a white space in the name attribute value.
 
 = 1.1.0 - 04/14/2013 =
 * Added: the *RCW_filter_base_styles* filter that enables to modify the plugin's base CSS rules.

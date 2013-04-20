@@ -3,7 +3,7 @@
 	Plugin Name: Responsive Column Widgets
 	Plugin URI: http://en.michaeluno.jp/responsive-column-widgets
 	Description: Creates a widget box which displays widgets in columns with a responsive design.
-	Version: 1.1.0
+	Version: 1.1.1
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Requirements: This plugin requires WordPress >= 3.2 and PHP >= 5.2.4
@@ -32,9 +32,13 @@ define( "RESPONSIVECOLUMNWIDGETSURL", plugins_url('', __FILE__ ) );
 // Global variables
 // - Arrays
 $arrResponsiveColumnWidgetsClasses = isset( $arrResponsiveColumnWidgetsClasses ) ? $arrResponsiveColumnWidgetsClasses : array();	// stores the class paths.
-$arrResponsiveColumnWidgets_Flags = array( 'base_style' => false );	// stores flag values that need to be global such as whether the base CSS class has been loaded or not etc.
+$arrResponsiveColumnWidgets_Flags = array( 	// Since 1.1.0 - stores flag values that need to be global.
+	'base_style' => false,		// Indicates whether the base CSS class has been loaded or not.
+	'arrBoxIDs'	 => array(),	// Since 1.1.1 - stores how many times particular widget boxs are loaded. Used to assign an ID attribute.
+	'arrWidgetIDAttributes' => array(),	// Since 1.1.1 - stores used ID attributes for widgets to avoid validation errors.
+);	
 // - Objects
-$oResponsiveColumnWidgets_Options = null;		// the option object which stores and manipulates necessary settings.
+$oResponsiveColumnWidgets_Options = null;		// the option object which stores and manipulates necessary plugin settings.
 $oResponsiveColumnWidgets = null;				// the core object which handles rendering widgets.
 
 // Adds class paths to the above $arrResponsiveColumnWidgetsClasses array and loads them when the plugins_loaded hook is triggered.

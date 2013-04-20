@@ -24,6 +24,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		'autoinsert_disable_posttypes',
 		'autoinsert_disable_categories',
 		'autoinsert_disable_post_ids',
+		// since 1.1.1
+		'default_media_only_screen_max_width',
 	);
 	
 	// Flags
@@ -215,14 +217,23 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'fields' => array(
 						array(
 							'id' => 'columns',
+							'size' => 60,
 							'title' => __( 'Numbers of Columns', 'responsive-column-widgets' ),
-							'description' => __( 'Set the number of columns separated by commnas. Each delimited element number corresponds to the order number of the rows.', 'responsive-column-widgets' ) 
-								. __( 'Min', 'responsive-column-widgets' ) . ' 1 '
-								. __( 'Min', 'responsive-column-widgets' ) . ' 12 '
-								. __( '( for each row )', 'responsive-column-widgets' ) . ' '
-								. 'e.g. 4, 2, 3',
+							'value' => $this->GetColumnStringValueForInput( 
+								$bIsNew ? $this->oOption->GetDefaultValue( 'columns' ) : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['columns'], 
+								$bIsNew ? $this->oOption->GetDefaultValue( 'default_media_only_screen_max_width' ) : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['default_media_only_screen_max_width'] 
+							),
+							'pre_field' => $this->GetColumnValueDetails( $bIsNew ? $this->oOption->arrDefaultParams['columns'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['columns'] ),
+							'post_field' => '<p class="description">' . __( 'Set the number of columns separated by commnas. Each delimited element number corresponds to the order number of the rows.', 'responsive-column-widgets' ) . '&nbsp;'
+								. __( 'Min', 'responsive-column-widgets' ) . ' 1 ' . __( 'Max', 'responsive-column-widgets' ) . ' 12 '
+								. __( '( for each row )', 'responsive-column-widgets' ) . '</p>e.g. <code>4, 2, 3</code>'
+								. '<p class="description">' . __( 'To set the number of columns by screen max-width, use the colon(:) character after the width, and use the pipe (|) character to delimit each set of number of columns. If the pixel is omitted, it is considered no limit. If the pipe delimiter is not present, the plugin will add 600: 1 internally by default.', 'responsive-column-widgets' ) 
+								. '</p>'
+								. '<p class="description">' . __( 'Format', 'responsive-column-widgets' ) . ': <code>' . __( 'column value | pixel: column value | pixel: column value ', 'responsive-column-widgets' ) . '</code><br />'
+								. __( 'The following example displays widgets in 5 column when the browser width is greater than 800, and four when the width is 601 to 800, and three when the width is 481 to 600, and one when the width is 1 to 480.', 'responsive-column-widgets' ) . '</p>e.g. <code>5 | 800: 4 | 600: 3 |480: 1</code>',
 							'type' => 'text',	// must not be number because it's a string containing a sequence of numbers with commas.
-							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'columns' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['columns'] ),
+// for debug
+// 'post_html' => $this->DumpArray( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['columns'] ),
 						),		
 						array(
 							'id' => 'maxwidgets',
@@ -258,18 +269,17 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'type' => 'text',
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'showonly' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['showonly'] ),
 						),	
-						array(
-							'id' => 'offsets',
-							'title' => __( 'Width Percentage Offsets', 'responsive-column-widgets' ),
-							'description' => __( 'Set the offsets for width percentage. The higher the offset nubmer is, the less will the number of clummns be displayed.', 'responsive-column-widgets' ) . ' '
-								. __( 'Format', 'responsive-column-widgets' ) . ': ' . __( 'Pixel: Offset, Pixel: Offset, ....', 'responsive-column-widgets' ) . ' '
-								. 'e.g. 600:3, 480:4, 400:5<br />' 
-								. __( 'Default:', 'responsive-column-widgets' ) . '&nbsp;' . $this->oOption->GetDefaultValue( 'offsets' ),
-							'type' => 'text',
-							'size' => 100,
-							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'offsets' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['offsets'] ),
-							
-						),							
+						// array(
+							// 'id' => 'offsets',
+							// 'title' => __( 'Width Percentage Offsets', 'responsive-column-widgets' ),
+							// 'description' => __( 'Set the offsets for width percentage. The higher the offset nubmer is, the less will the number of clummns be displayed.', 'responsive-column-widgets' ) . ' '
+								// . __( 'Format', 'responsive-column-widgets' ) . ': ' . __( 'Pixel: Offset, Pixel: Offset, ....', 'responsive-column-widgets' ) . ' '
+								// . 'e.g. 600:3, 480:4, 400:5<br />' 
+								// . __( 'Default:', 'responsive-column-widgets' ) . '&nbsp;' . $this->oOption->GetDefaultValue( 'offsets' ),
+							// 'type' => 'text',
+							// 'size' => 100,
+							// 'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'offsets' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['offsets'] ),		
+						// ),							
 						array(  // single button
 							'pre_html' => '<div class="text-info">' . $this->oUserAds->GetTextAd() . '</div>',
 							'id' => 'submit_save_neworedit_middle',
@@ -675,17 +685,104 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	/*
 	 *  Custom Methods
 	 */
+	
+	protected function RemoveDefaultOmittingColumnElement( $arrColumnInput, $intDefaultScreenMaxWidth ) {	// since 1.1.1
+		
+		// This is just used for a displaying the option value purpose. So do not use it for modifyint the option values to save and update the data.
+		
+		// Find the lowest key.
+		$arrHaystack = $arrColumnInput;
+		if ( isset( $arrHaystack[0] ) ) unset( $arrHaystack[0] );
+		$intLowestKey = $this->oOption->FindLowestKey( $arrHaystack );
+		
+		if ( $intDefaultScreenMaxWidth == $intLowestKey && $this->oOption->IsOneColumm( $arrColumnInput[ $intLowestKey ] ) )
+			unset( $arrColumnInput[ $intLowestKey ] );
+		
+		return $arrColumnInput;
+		
+	}
+
+	
+	protected function GetColumnStringValueForInput( $arrColumnInput, $intDefaultScreenMaxWidth=600 ) {	// since 1.1.1
+		
+		// This is used to get a string value for the user input field.
+		// Converts 
+		// 		array( 800 => array( 4, 3, 2 ), 600 => array( 3, 2, 1 ), 480 => array( 1) )
+		// to
+		// 		800: 4, 3, 2 | 600: 3, 2, 1 | 400: 1
+
+		// The processing value must be an array.
+		$arrColumnInput = ( array ) $arrColumnInput;
+
+		/*	
+		 * Consider the following cases that $arrColumnInput is :
+		 * 1. a new type two-dimensional array which was made up with the | and : separators and the corresponsding array dimensions.
+		 * 2. an old type one-dimensional array which was made up with the commma(,) separator.
+		 */
+		
+		// Case 2
+		if ( ! $this->oOption->IsFormattedColumnArray( $arrColumnInput ) )
+			return $this->oOption->ConvertOptionArrayValueToString( $arrColumnInput );	// now $vInput becomes a string
+			
+		// Case 1 - formatted correctly. Note that it is sorted by decsending order.
+	
+		// The default omitting element array( 600 => array( 1 ) ) should be omitted if it is the least screen-max width.
+		$arrColumnInput = $this->RemoveDefaultOmittingColumnElement( $arrColumnInput, $intDefaultScreenMaxWidth );
+		
+		// We need to put the 0 key value to the beginning of the array without resorting the entire array.
+		$arrKeyZero = $arrColumnInput[0];
+		unset( $arrColumnInput[0] );
+		$arrColumnInput = $this->oOption->PrependArrayElement( $arrColumnInput, 0, $arrKeyZero );	// array_unshift will resort the array so avoid usint that.
+		
+		foreach ( $arrColumnInput as $intScreenMaxWidth => &$arrColumn ) {
+	
+			// now $arrColumn becomes a string.
+			$strWidth = $intScreenMaxWidth == 0 ? '' : $intScreenMaxWidth . ': ';
+			$arrColumn = ' ' . $strWidth . $this->oOption->ConvertOptionArrayValueToString( $arrColumn, array( ', ' ) ) . ' ';
+			
+		}
+// echo $this->DumpArray( $arrColumnInput );
+		$strReturn = $this->oOption->ConvertOptionArrayValueToString( $arrColumnInput, array( '|' ) );
+		return trim( $strReturn );	// since white spaces are added around the each string element, remove them.
+		
+	}	
+	protected function GetColumnValueDetails( $arrColumnArray ) {	// since 1.1.1
+		
+		// Displays the max-column value description text.
+		// $arrColumnArray is either one dimensinal array ( old format prior to v1.1.1 ) or two dimensional array ( new one after v1.1.1 )
+		$arrMaxColumnInfo = $this->oOption->FormatColumnArray( $arrColumnArray );
+				
+// echo $this->DumpArray( $arrMaxColumnInfo );		
+		$intLagestWidth = 0;		
+		$strTable = '<table class="responsive-column-widgets-column-details" border="0">'
+			. '<tbody>'
+			. '<tr>'
+			. '<th class="screen-max-width">' . __( 'Screen Max Width (pixel)', 'responsive-column-widgets' ) . '</th>'
+			. '<th class="number-of-columns">' . __( 'Number of Columns', 'responsive-column-widgets' ) . '</th>'
+			. '</tr>';
+		
+		$arrDetailRows = array();
+		foreach( $arrMaxColumnInfo as $intScreenMaxWidth => $arrColumns ) {
+			
+			if ( $intScreenMaxWidth == 0 ) continue;
+			
+			$intLagestWidth = $intScreenMaxWidth > $intLagestWidth ? $intScreenMaxWidth : $intLagestWidth;
+			
+			$intNextScreenMaxWidth = $this->oOption->GetNextArrayKey( $arrMaxColumnInfo, $intScreenMaxWidth );
+			
+			$arrDetailRows[] = '<tr><td>' . $intScreenMaxWidth . ' - ' . ( $intNextScreenMaxWidth + 1 ) . '</td><td>' . $this->oOption->ConvertOptionArrayValueToString( $arrColumns ) . '</td></tr>';
+			
+		}
+		array_unshift( $arrDetailRows, '<tr><td>' . '- ' . ( $intLagestWidth + 1 ) . '</td><td>' . $this->oOption->ConvertOptionArrayValueToString( $arrMaxColumnInfo[0] ) ) . '</td></tr>';
+
+		foreach( $arrDetailRows as $strRow )
+			$strTable .= $strRow;
+		
+		return  $strTable . '</tbody></table>';
+				
+	}
 	function UpdateFieldValuesToBeDisplayed( $strSidebarID ) {
 
-    // [responsive_column_widgets] => Array
-            // [section_sidebar] => Array
-                // (
-                    // [field_label] => 
-                    // [field_description] => 
-                    // [field_before_widget] => 
-                    // [field_after_widget] => 
-                    // [field_before_title] => 
-                    // [field_after_title] => 
 		if ( ! isset( $this->oOption->arrOptions['boxes'][$strSidebarID] ) ) return;
 		$arrBoxOptions = $this->oOption->arrOptions['boxes'][$strSidebarID];		
 		$arrAdminOptions = ( array ) get_option( RESPONSIVECOLUMNWIDGETSKEYADMIN );
@@ -1043,77 +1140,19 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}
 	function UpdateBoxOptions( $arrInput, $bIsNew ) {
 		
-		/*
-
-				'insert_footer_disable_front'		=> false,	// since 1.0.7
-				'insert_footer_disable_ids'			=> array(),	// since 1.0.7
-				'insert_posts'						=> array(	// since 1.0.7
-					'post' => false,
-					'page' => false,
-				),	
-				'insert_posts_positions'			=> array(	// since 1.0.7
-					'above' => false,
-					'below' => true,
-				),		
-				'insert_posts_disable_front'		=> false,	// since 1.0.7
-				'insert_posts_disable_ids'			=> array(),	// since 1.0.7
-				'insert_comment_form'				=> false,	// since 1.0.8
-				'insert_comment_form_positions'		=> array(	// since 1.0.8
-					'above' => false,
-					'below' => true,
-				),
-				'insert_comment_form_disable_front'		=> false,	// since 1.0.8
-				'insert_comment_form_disable_post_ids'	=> array(),	// since 1.0.8
-				
-				
-				// since 1.0.9
-				'autoinsert_enable'			=> 0,		// 0: off, 1: on
-				'autoinsert_enable_home'	=> True,	// true/false
-				'autoinsert_enable_areas'	=> array( 
-					'the_content' => false,
-					'comment_text' => false,
-					'wp_footer' => false,		
-				),
-				'autoinsert_position'	=> 1,	// 0: above, 1: below, 2: both
-				'autoinsert_enable_filters'	=> array(),
-				'autoinsert_enable_actions'	=> array(),
-				'autoinsert_enable_pagetypes'	=> array( 
-					'is_home' => false,
-					'is_archive' => false,
-					'is_404' => false,
-					'is_search' => false,		
-				),
-				'autoinsert_enable_posttypes'	=> array( 'post' => false, 'page' => false ),
-				'autoinsert_enable_categories'	=> array(),	// the category ID, in most cases 1 is Uncategoriezed.
-				'autoinsert_enable_post_ids'	=> array(),	
-				'autoinsert_disable_pagetypes'	=> array( 
-					'is_home' => false,
-					'is_archive' => false,
-					'is_404' => false,
-					'is_search' => false,		
-				),
-				'autoinsert_disable_posttypes'	=> array( 'post' => false, 'page' => false ),
-				'autoinsert_disable_categories'	=> array(),	
-				'autoinsert_disable_post_ids'	=> array(),	
-				
-		*/
 		// Sanitization for the first two sections.
 		$arrInput['maxwidgets'] = $this->oUtil->FixNumber( $arrInput['maxwidgets'], 0, 0 );
 		$arrInput['maxrows'] = $this->oUtil->FixNumber( $arrInput['maxrows'], 0, 0 );
 		$arrInput['sidebar'] = ! empty( $_POST['isnew'] ) ? $this->GetAvailableSidebarID() : $arrInput['sidebar'];
 		$arrInput['label'] = isset( $arrInput['label'] ) ? $arrInput['label'] : $this->oOption->arrOptions['boxes'][ $arrInput['sidebar'] ]['label'];
-		$arrInput['columns'] = $this->SanitizeNumericSequenceToArray( 
-			$arrInput['columns'], 	// subject value
-			$this->oOption->arrDefaultParams['columns'][0],		// default
-			1,	// min
-			12, 	// max
-			false	// whether to perform array_unique()
-		);
 		$arrInput['omit'] = $this->SanitizeNumericSequenceToArray( $arrInput['omit'] );
 		$arrInput['showonly'] = $this->SanitizeNumericSequenceToArray( $arrInput['showonly'] );		
 		$arrInput['offsets'] = $this->SanitizeStringToArray( $arrInput['offsets'], false, ',', ':' );
 		$arrInput['offsets'] = empty( $arrInput['offsets'] ) ? $this->oOption->arrDefaultParams['offsets'] : $arrInput['offsets'];
 
+		// Sanitize the column array.
+		$arrInput['columns'] = $this->SanitizeColumnInput( $arrInput['columns'] );
+				
 		// Sanitization for the auto-insert section.
 		$arrInput['autoinsert_enable_filters'] = $this->SanitizeStringToArray( $arrInput['autoinsert_enable_filters'] );
 		$arrInput['autoinsert_enable_actions'] = $this->SanitizeStringToArray( $arrInput['autoinsert_enable_actions'] );
@@ -1124,7 +1163,25 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$this->oOption->InsertBox( $arrInput['sidebar'], $arrInput );
 		$this->oOption->Update();		
 		
-	}		
+	}	
+	protected function SanitizeColumnInput( $strColumnInput ) {	// since 1.1.1
+	
+		// Format it no matter what. We take care of the backward compatibility when the widgets are going to be displayed.
+		// The FormatColumnArray() method includes sanitization.
+		return $this->oOption->FormatColumnArray( $strColumnInput );	
+
+		// If the pipe character is not used, use the one-dimensional old type formatting priort to 1.1.1.
+		// return $this->SanitizeNumericSequenceToArray( 
+			// $strColumnInput, 	// subject value
+			// $this->oOption->arrDefaultParams['columns'][0],		// default
+			// 1,	// min
+			// 12, 	// max
+			// false	// whether to perform array_unique()
+		// );	
+		
+		// return $arrColumnInput;
+		
+	}	
 	function SanitizeStringToArray( $str, $bValueUnique=true, $strDelim1=',', $strDelim2='' ) {		// since 1.0.9
 		
 		// Converts the given string into array and performs sanitization.
@@ -1429,6 +1486,22 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				height: 1px; 
 				background: #DDD;				
 				width: 96%;
+			}
+			table.responsive-column-widgets-column-details {
+				margin-bottom: 4px;
+				width: 100%;
+			}
+			.responsive-column-widgets-column-details th,
+			.responsive-column-widgets-column-details td {
+				vertical-align: baseline;
+				padding: 0px;
+			}
+			th.screen-max-width {
+				min-width: 32px;				
+				width: 30%;
+			}
+			th.number-of-columns {
+				width: 70%;		
 			}
 		';
 	}

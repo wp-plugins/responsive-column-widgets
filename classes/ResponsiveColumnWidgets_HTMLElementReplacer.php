@@ -10,7 +10,7 @@
 
 */
 
-class ResponsiveColumnWidgets_HTMLElementReplacer  {
+class ResponsiveColumnWidgets_HTMLElementReplacer {
 
 	public $strImageQuery = 'responsive_column_widgets_image';
 	public $strLinkQuery = 'responsive_column_widgets_link';		
@@ -41,12 +41,14 @@ class ResponsiveColumnWidgets_HTMLElementReplacer  {
 		
 	}
 	public function ReplaceIframeSRCsCallback( $strSRC ) {
-// echo $strSRC . '<br />';			
+
 		return site_url() . "?{$this->strLinkQuery}=" . base64_encode( $strSRC );
 		
 	}
 	public function ReplaceAHrefsCallback( $strHref ) {
-// echo $strHref . '<br />';			
+
+		if ( stripos( $strHref, 'shareasale.com') !== false ) return null;	// returning null will discard the replacement.
+			
 		return site_url() . "?{$this->strLinkQuery}=" . base64_encode( $strHref );
 		
 	}
@@ -68,26 +70,54 @@ class ResponsiveColumnWidgets_HTMLElementReplacer  {
 		return site_url() . "?{$this->strImageQuery}=" . base64_encode( $strSRC );
 		
 	}
-	protected function GetAttributeReplacementArrayWithRegex( $strHTML, $strAttribute, $vReplaceCallbackFunc ) {
+	
+	public function RemoveIDAttributes( $strHTML ) {	// since 1.1.1, used in the core class
+		
+		// $strPattern = '/\s\Qid\E=(["\'])(.*?)\1\s/i';	// '
+		$strPattern = '/\s\Qid\E=(["\'])(.*?)\1(\s?)/si';	// '
+		// return preg_replace( $strPattern, ' ', $strHTML );
+		return preg_replace_callback(
+            $strPattern,
+            array( $this, 'ReturnSpace' ),
+			$strHTML
+		);
+		
+	}
+	public function ReturnSpace( $arrMatches ) {	// since 1.1.1 - must be public as it is a callback method.
+		
+		// Callback for the above RemoveIDAttributes() method.
+		if ( isset( $arrMatches[3] ) && empty( $arrMatches[3] ) )
+			return '';		// if it's ending with >.
+		return ' ';	// return a white-space.
+		
+	}
+	public function GetAttributeReplacementArrayWithRegex( $strHTML, $strAttribute, $vReplaceCallbackFunc, $vParam=null ) {	// must be public as it is used by the instantiated objecct in the core class.
 
+		// Make sure the string is long enough to be replaced with str_replace(); if the replacing string is too short,
+		// it will match in other unexpected block strings.
+		// For more accurate performance, use preg_replace_callback()
+		
 		$arrReplacements = array( 
 			'search' => array(), 
 			'replace' => array(),
 		);		
 		
-		$intCount = preg_match_all( '/' . $strAttribute . '=(["\'])(.*?)\1/', $strHTML, $arrMatches );	//'
+		$intCount = preg_match_all( '/\s\Q' . $strAttribute . '\E=(["\'])(.*?)\1\s/i', $strHTML, $arrMatches );	//'
 		
 		$bIsCallable = is_callable( $vReplaceCallbackFunc );
 
-// echo '<pre>' . print_r( $arrMatches, true ) . '</pre>';		
-// echo '<pre>' . esc_html( $strHTML, true ) . '</pre>';
 		$i = 0;
 		While ( $i < $intCount ) {
 			
-			$strAttr = $arrMatches[2][ $i ];
+			$strAttr = $arrMatches[2][ $i++ ];
+			$strReplace = $bIsCallable ? call_user_func_array( $vReplaceCallbackFunc , array( &$strAttr, $vParam ) ) : $strAttr;
+
+			// if the callback function returns null explicitly, let it not add a replacement at all.
+			if ( is_null( $strReplace ) ) continue;
+			
+			// Add the elements.
+			$arrReplacements['replace'][] = $strReplace;
 			$arrReplacements['search'][] = $strAttr;
-			$arrReplacements['replace'][] = $bIsCallable ? call_user_func_array( $vReplaceCallbackFunc , array( &$strAttr ) ) : $strAttr;
-			$i++;
 			
 		}
 		

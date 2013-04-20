@@ -16,10 +16,11 @@ class ResponsiveColumnWidgets_Option_ {
 		'offsets' => array( 			// the type changed to array from string since 1.0.6.1
 			array( 600, 12 ),
 		),	//'600: 12', // e.g. '800: 1, 600: 2, 480: 3, 320: 4, 240: 5',	// added since 1.0.3
+		'default_media_only_screen_max_width' => 600,	// since 1.1.1 - it mens when the browser widths gets 600px or below, the media only rules will be applied
 	);
 	public $arrDefaultSidebarArgs = array(	// must be public; accessed in the core object for register_sidebar()
 		'description' 						=> '',
-		'before_widget'						=> '<aside id="%1$s" class="%2$s"><div class="widget">',
+		'before_widget'						=> '<aside class="%2$s"><div class="widget">',
 		'after_widget'						=> '</div></aside>',
 		'before_title'						=> '<h3 class="widget-title">',
 		'after_title'						=> '</h3>',
@@ -73,7 +74,7 @@ class ResponsiveColumnWidgets_Option_ {
 		'autoinsert_disable_posttypes'	=> array( 'post' => false, 'page' => false ),
 		'autoinsert_disable_categories'	=> array(),	
 		'autoinsert_disable_post_ids'	=> array(),	
-		
+
 	);	
 	public $arrCapabilities = array(	// used in the drop-down list of the General Options page.
 		0 => 'manage_options',
@@ -161,7 +162,7 @@ class ResponsiveColumnWidgets_Option_ {
 		return $this->ConvertOptionArrayValueToString( $vValue, $arrGlues );
 				
 	}
-	function ConvertOptionArrayValueToString( $vInput, $arrGlues=array( ', ', ': ' ) ) {
+	public function ConvertOptionArrayValueToString( $vInput, $arrGlues=array( ', ', ': ' ) ) {	// must be public as the core class uses it from instantiated objects.
 		
 		// since 1.0.6.1
 		// Converts the option value with the type of array into string.
@@ -171,10 +172,272 @@ class ResponsiveColumnWidgets_Option_ {
 		return $this->ImplodeRecursive( $vInput, $arrGlues );
 		
 	}
+
+	/*
+	 *  Methods for format & sanitize column array. Used by the core class and the admin page class.
+ 	 */
+	public function IsOneColumm( $arrColumns ) {		// since 1.1.1, used not only by this class but also by the admin page class. So it must be public.
+	
+		// Determines whether the passed column array yeilds one.
+
+		$arrResult = array_diff( array_unique( $arrColumns ), array( 1 ) );
+		return empty( $arrResult ); // if it's not empty, it means it's different. Otherwise, it's the same and therefore, it's one.
+		
+	}
+	public function SetMinimiumScreenMaxWidth( $arrSubject ) {	// since 1.1.1
+
+		// If the user does not specify the screen max-width, by default the format method will add 600px for it.
+		// However, if the user set it by themselves but do not set the column number that is to be one, it will not be a perfect responsive design;
+		// even though the browser width is diminished, the columns remain multiple.
+		// There shuold be a safe guard to force the minimum number of the columns at some point. Let's make it 240px which should be narrow enough 
+		// for most browsers to have mere single column.
+		
+		$intMinimumScreenMaxWidth = 240;
+		$arrSanitize = array();
+		$intLeastWidth = 0;
+		$bIsThereOneColumn = false;
+		
+		foreach( $arrSubject as $intScreenMaxWidth => $arrColumns ) {
+			
+			if ( $intScreenMaxWidth == 0 ) {	// no problem
+				
+				$arrSanitize[0] = $arrColumns;
+				$bIsThereOneColumn = $this->IsOneColumm( $arrColumns );
+				continue;
+				
+			}
+			
+			if ( $intScreenMaxWidth >= $intMinimumScreenMaxWidth ) {	// no problem
+				
+				$arrSanitize[ $intScreenMaxWidth ] = $arrColumns;
+				
+				// updated the set least max-width.
+				if ( $intLeastWidth >= $intScreenMaxWidth ) $intLeastWidth = $intScreenMaxWidth;
+					
+				$bIsThereOneColumn = $this->IsOneColumm( $arrColumns );
+				continue;
+				
+			}
+			
+			// Okay, now there is a problem that the set screen max-width is too small. So make it to the minimum.
+			$arrSanitize[ $intMinimumScreenMaxWidth ] = array( 1 );
+			$bIsThereOneColumn = true;
+			$intLeastWidth = $intMinimumScreenMaxWidth;
+			
+		}
+		
+		if ( ! $bIsThereOneColumn && $intLeastWidth != 0 && $intLeastWidth >= $intMinimumScreenMaxWidth )
+			$arrSanitize[ $intMinimumScreenMaxWidth ] = array( 1 );
+			
+		return $arrSanitize;
+		
+	}	
+	public function IsFormattedColumnArray( $vInput ) {	// since 1.1.1, used not only by this class itself but also by the admin page class. So must be public.
+		
+		// Determins whether the given value is formatted correctly for the plugin to output the widget buffers.
+		// Returns true if it's okay; othewise false.
+		
+		if ( is_array( $vInput ) && $this->CountArrayDimension( $vInput ) == 2 ) return true;
+			
+		return false;
+		
+	}
+	protected function SanitizeColumnArray( $arrColumnsInput ) {	// since 1.1.1
+		
+		/*
+		 * Column array sanitization
+		 * Step 1. each delimited element must not be empty
+		 * Step 2. each column number must be within 1 to 12 and empty elements are not allowed.
+
+			Array
+			(
+				[600] => Array
+					(
+						[0] => 1
+					)
+				[0] => Array
+					(
+						[0] => 3
+						[1] => 4
+						[2] => 1
+					)					
+			) 
+		*/			
+	
+		foreach( $arrColumnsInput as $intScreenMaxWidth => &$arrColumns ) 		
+			$arrColumns = $this->FixNumbers( $arrColumns, 
+				$this->arrDefaultParams['columns'][0], // should be 3
+				1, 
+				12 
+			);
+			
+		return $arrColumnsInput;
+		
+	}	
+	public function FormatColumnArray( $vInput, $intDefaultScreenMaxWidth=600 ) {	// since 1.1.1
+		
+		// The returning array.
+		$arrMaxColsByPixel = array();	
+
+		/*	
+		 * 	Format Validation
+		 * Consider the following cases that $vInput is :
+		 * 1. a new type two-dimensional array which has the | and : separators and its dimension.
+		 * 2. an old type one-dimensional array which does not have the | and : separators and its dimension.
+		 * 3. a string passed from the shortcode
+		 */
+		
+		// Case 1: return the sanitized column array.
+		if ( $this->IsFormattedColumnArray( $vInput ) ) return $this->SanitizeColumnArray( $vInput );
+		
+		// Case 2: array( 2, 5, 3 ) -> 2, 5, 3
+		if ( is_array( $vInput ) )
+			$vInput = $this->ConvertOptionArrayValueToString( $vInput );	// now $vInput becomes a string
+		
+		// Need to ensure it's a string because $vInput can be am already correctly formatted array, passed from the options.
+		//	'4, 5, 1 | 480: 3, 4, 1' -> array( 0 => array( 0 => '4, 5, 1' ), 1 => array( 0 => 480, 1 => '3, 4, 1' ) )
+		if ( is_string( $vInput ) ) 	// Case 3
+			$arrParse = $this->ConvertStringToArray( $vInput, '|', ':' );			
+	
+		// If the pixel width is not set or only one set of column numbers is set whose screen max-width is less than 600px,
+		// apply the default max width ( 600 pixels to one column by default set in the $intDefaultScreenMaxWidth variable ).
+		// Note that at this point, the array is not formatted yet but only adding necessary elements to create necessary keys in the next steps.
+		if ( count( $arrParse ) == 1 ) {	// the number of elements is one 
+						
+			$arrFirstElement = array_shift( array_values( $arrParse ) );
+			$intCount = count( $arrFirstElement );
+			
+			if ( $intCount == 1 )	// this means the width is not set.
+				$arrParse[] = array( 0 => $intDefaultScreenMaxWidth, 1 => 1 );	// means in 600 pixel width, the number of columns becomes one.
+				
+			// If only one pixel width is set, in that case, no-limit width needs to be set. Set the same column number then.
+			// This happens when the value is like 800: 3, 2 and no pipe is used.
+			if ( $intCount == 2 ) 
+				$arrParse[] = array( 0 => $arrFirstElement[1] );	// $arrFirstElement[0] is the screen max-width.
+ 			
+			// If the set screen max-width is greater than the default least max-width (600px), then as safe-guard add 600: 1. 
+			if ( $intCount == 2 && $arrFirstElement[0] > $intDefaultScreenMaxWidth )
+				$arrParse[] = array( 0 => $intDefaultScreenMaxWidth, 1 => 1 );	 // 600 : 1
+				
+		}
+		/*	
+		 * 	At this point the array structure looks like the following.
+			Array
+			(
+				[0] => Array
+					(
+						[0] => 3, 4, ,1
+					)
+
+				[1] => Array
+					(
+						[0] => 600
+						[1] => 1
+					)
+			)
+			Now we need to make it like this:
+			Array
+			(
+				[600] => Array
+					(
+						[0] => 1
+					)
+				[0] => Array
+					(
+						[0] => 3
+						[1] => 4
+						[2] => 1
+					)					
+			)
+		*/
+
+		/*
+		 * Now format the array.
+		*/
+		
+		// Add the max-width pixel size if missing
+		foreach ( $arrParse as &$arrMaxCols ) {
+			
+			if ( count( $arrMaxCols ) == 1 )	// means the width key is missing.
+				array_unshift( $arrMaxCols, 0 );	// add the zeo value to the first element.
+				
+			// *Applying trim() to the key is necessary for some inputs, which are not sanitized.
+			$arrMaxColsByPixel[ trim( $arrMaxCols[0] ) ] = $this->ConvertStringToArray( $arrMaxCols[1] );	
+			
+		}
+			
+		// Sort by descending order	
+		krsort( $arrMaxColsByPixel );		
+		
+		return $this->SanitizeColumnArray( $arrMaxColsByPixel );
+		
+	}	
 	
 	/*
-	 * Utilities - helper methods which can be used outside the plugin
+	 * Public Utilities - helper methods which can be used outside the plugin
 	 * */
+	public function FindLowestKey( $arr ) {	// since 1.1.1
+		
+		return min( array_keys( $arr ) ); 
+		
+	}	 
+	public function PrependArrayElement( &$arr, $key, $v ) { 	// since 1.1.1
+	
+		$arr = array_reverse( $arr, true ); 
+		$arr[$key] = $v; 
+		return array_reverse( $arr, true ); 
+		
+	} 	 
+	public function GetNextArrayKey( $arr, $strSubjectKey ) {	// since 1.1.1, used in the admin page class
+		
+		$bMatched = false;
+		foreach ( $arr as $strKey => $v ) {
+			
+			if ( $bMatched ) return $strKey;
+				
+			if ( $strKey == $strSubjectKey ) $bMatched = true;
+			
+		}
+		
+	}
+	public function FixNumbers( $arrNumbers, $numDefault, $numMin="", $numMax="" ) {	// since 1.1.1
+		
+		// An array version of FixNumber(). The array must be numerically indexed.
+		
+		foreach( $arrNumbers as &$intNumber )
+			$intNumber = $this->FixNumber( $intNumber, $numDefault, $numMin, $numMax );
+		
+		return $arrNumbers;
+		
+	}	
+	public function FixNumber( $numToFix, $numDefault, $numMin="", $numMax="" ) {	// since 1.1.1
+	
+		// Checks if the passed value is a number and set it to the default if not.
+		// if it is a number and exceeds the set maximum number, it sets it to the max value.
+		// if it is a number and is below the minimum number, it sets to the minimium value.
+		// set a blank value for no limit.
+		// This is useful for form data validation.
+		
+		if ( !is_numeric( trim( $numToFix ) ) ) return $numDefault;
+			
+		if ( $numMin != "" && $numToFix < $numMin) return $numMin;
+			
+		if ( $numMax != "" && $numToFix > $numMax ) return $numMax;
+
+		return $numToFix;
+		
+	}	 
+	public function CountArrayDimension( $arr ) {	// since 1.1.1
+		
+		// by m227(a)poczta.onet.pl at http://pt.php.net/manual/en/ref.array.php#49219
+		if ( is_array( reset( $arr ) ) )
+			$intCount = $this->CountArrayDimension( reset( $arr ) ) + 1;
+		else 
+			$intCount = 1;
+
+		return $intCount;
+				
+	}
 	function EchoMemoryLimit() {
 		
 		// since 1.0.7.1
@@ -243,7 +506,7 @@ class ResponsiveColumnWidgets_Option_ {
 		return $arrInput;
 		
 	}		
-	function UniteArraysRecursive( $arrPrecedence, $arrDefault ) {
+	public function UniteArraysRecursive( $arrPrecedence, $arrDefault ) {
 		
 		if ( is_null( $arrPrecedence ) )
 			$arrPrecedence = array();
