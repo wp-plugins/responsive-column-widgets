@@ -1147,12 +1147,12 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$arrInput['label'] = isset( $arrInput['label'] ) ? $arrInput['label'] : $this->oOption->arrOptions['boxes'][ $arrInput['sidebar'] ]['label'];
 		$arrInput['omit'] = $this->SanitizeNumericSequenceToArray( $arrInput['omit'] );
 		$arrInput['showonly'] = $this->SanitizeNumericSequenceToArray( $arrInput['showonly'] );		
-		$arrInput['offsets'] = $this->SanitizeStringToArray( $arrInput['offsets'], false, ',', ':' );
-		$arrInput['offsets'] = empty( $arrInput['offsets'] ) ? $this->oOption->arrDefaultParams['offsets'] : $arrInput['offsets'];
+		// $arrInput['offsets'] = $this->SanitizeStringToArray( $arrInput['offsets'], false, ',', ':' );
+		// $arrInput['offsets'] = empty( $arrInput['offsets'] ) ? $this->oOption->arrDefaultParams['offsets'] : $arrInput['offsets'];
 
 		// Sanitize the column array.
 		$arrInput['columns'] = $this->SanitizeColumnInput( $arrInput['columns'] );
-				
+// $this->SetSettingsNotice( $this->DumpArray( $arrInput['columns'] ) );
 		// Sanitization for the auto-insert section.
 		$arrInput['autoinsert_enable_filters'] = $this->SanitizeStringToArray( $arrInput['autoinsert_enable_filters'] );
 		$arrInput['autoinsert_enable_actions'] = $this->SanitizeStringToArray( $arrInput['autoinsert_enable_actions'] );
@@ -1319,6 +1319,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		}	
 		
 		// Format and sanitize values
+		foreach ( $arrValidate['general_css_class_attributes'] as &$arrElem ) 
+			$arrElem = $this->oOption->SanitizeAttribute( trim( $arrElem ) );
+			
 		$arrValidate['allowedhtmltags'] = $this->oOption->ConvertStringToArray( $arrValidate['allowedhtmltags'] ); 		
 		
 		// Memory Allocation since 1.0.7.1

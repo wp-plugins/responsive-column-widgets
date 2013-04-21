@@ -42,9 +42,12 @@ Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-wi
 = Basic Three Steps =
 1. Go to Appearance > Widgets. You'll see a new custom sidebar box named **Responsive Custom Widgets**.,
 2. Add widgtes to it.,
-3. Add the shortcode in a post.
-
+3. To display the added widgets in a post, there are mainly two different means.
+ * **Option A**: add the shortcode in a post.
+ 
 `[responsive_column_widgets]`
+
+ * **Option B**: use the auto-insert feature by enabling the **Enable Auto-insert** option in the plugin setting page, **New / Edit**.
 
 = Specify Different Number of Columns in Each Row = 
 By default, the widgets are displayed in 3 columns. It can be changed by setting the columns parameter. 
@@ -57,6 +60,10 @@ For instance,
 
 `[responsive_column_widgets columns="3,2,5"]` will show the widgets in 3 columns in the first row, 2 columns in the second, and 5 to the third. Change the numbers accordingly for your needs.
 
+To set the number of columns for each screen max-width, use the pipe (|) character as the delimiter and place the width in pixel followed by a colon (:). Omit the width for no limitation. For instance,
+
+`[responsive_column_widgets columns="5 | 800: 4 | 600 : 2 | 480: 1"]` will show the widgets in 5 columns when the browser widths is greater than 800, and 4 when the browser width is 800 to 601, and 2 when the browser width is 600 to 481, and 1 when the browser width is less than or equal to 480.
+
 = Use PHP code for Themes = 
 The widget box can be dispayed outside post/pages. Putting a PHP code into the theme is one way of doing it. Use the `ResponsiveColumnWidgets()` function. 
 
@@ -67,7 +74,14 @@ For instance,
 = Parameters =  
 There are other parameters besides *columns*.
 
-* **columns** - the number of columns to show. Default: 3. If you want to specify the number of columns in each row, put the numbers separated by commas. e.g. 3, 2, 4. would display 3 columns in first row and 2 columns in the second row and four columns in the third row and so on. The rest rows fill follow the last set number.
+* **columns** - the number of columns to show. Default: 3. If you want to specify the number of columns in each row, put the numbers separated by commas. For instance, 3, 2, 4 would display 3 columns in the first row and 2 columns in the second row and four columns in the third row and so on. The rest rows follow the last set number. To set the number of columns by screen max-width, use the colon(:) character after the width, and use the pipe (|) character to delimit each set of number of columns. If the pixel is omitted, it is considered no limit. If the pipe delimiter is not present, the plugin will add 600: 1 internally by default.
+
+`Format: column value | pixel: column value | pixel: column value` 
+
+The following example displays widgets in 5 column when the browser width is greater than 800, and four when the width is 601 to 800, and three when the width is 481 to 600, and one when the width is 1 to 480.
+
+`5 | 800: 4 | 600: 3 |480: 1`
+
 * **sidebar** - the ID of the sidebar to show. Default: responsive_column_widgets. For the twenty-twelve theme, sidebar-1, would show the default first sidebar contents. 
 * **maxwidgets** - the allowed number of widgets to display. Set 0 for no limitation. Default: 0.
 * **maxrows** - the allowed number of rows to display. Set 0 for no limitation. Default: 0.
@@ -101,7 +115,11 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 4. ***Responsiveness***
 
 == Changelog ==
-= 1.1.1 =
+= 1.1.1.1 - 04/22/2013 =
+* Tweaked: user input sanitization for string option values including *Number of Columns* and *Class Names*.
+* Tweaked: the CSS rules for column rows.
+
+= 1.1.1 - 04/21/2013 =
 * Fixed: a typo in the setting page, Min to Max.
 * Fixed: an issue that a custom number of columns with the parameter of the percentage offset for column numbers caused a row not to start from the very first column when there was a widget with longer height than the other widgets in the previous row.
 * Added: the ability to specify the number of columns by screen max width.

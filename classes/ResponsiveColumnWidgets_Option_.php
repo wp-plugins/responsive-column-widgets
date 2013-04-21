@@ -264,12 +264,18 @@ class ResponsiveColumnWidgets_Option_ {
 			) 
 		*/			
 	
-		foreach( $arrColumnsInput as $intScreenMaxWidth => &$arrColumns ) 		
+		foreach( $arrColumnsInput as $intScreenMaxWidth => &$arrColumns ) {
+			
+			if ( is_string( $arrColumns ) )
+				$arrColumns = $this->ConvertStringToArray( $arrColumns );
+							
 			$arrColumns = $this->FixNumbers( $arrColumns, 
 				$this->arrDefaultParams['columns'][0], // should be 3
 				1, 
 				12 
 			);
+			
+		}	
 			
 		return $arrColumnsInput;
 		
@@ -296,8 +302,13 @@ class ResponsiveColumnWidgets_Option_ {
 		
 		// Need to ensure it's a string because $vInput can be am already correctly formatted array, passed from the options.
 		//	'4, 5, 1 | 480: 3, 4, 1' -> array( 0 => array( 0 => '4, 5, 1' ), 1 => array( 0 => 480, 1 => '3, 4, 1' ) )
-		if ( is_string( $vInput ) ) 	// Case 3
+		if ( is_string( $vInput ) ) { 	// Case 3
+		
 			$arrParse = $this->ConvertStringToArray( $vInput, '|', ':' );			
+			
+		}
+		else 
+			return array( 0 => array( 3 ), 600 => array( 1 ) );	// returns the default value.
 	
 		// If the pixel width is not set or only one set of column numbers is set whose screen max-width is less than 600px,
 		// apply the default max width ( 600 pixels to one column by default set in the $intDefaultScreenMaxWidth variable ).
@@ -362,8 +373,18 @@ class ResponsiveColumnWidgets_Option_ {
 				array_unshift( $arrMaxCols, 0 );	// add the zeo value to the first element.
 				
 			// *Applying trim() to the key is necessary for some inputs, which are not sanitized.
-			$arrMaxColsByPixel[ trim( $arrMaxCols[0] ) ] = $this->ConvertStringToArray( $arrMaxCols[1] );	
+			$intMaxScreenWidth = trim( $arrMaxCols[0] ); 
 			
+			if ( ! is_numeric( $intMaxScreenWidth ) ) {	// broken input
+				
+				$arrMaxColsByPixel[ 0 ] = $this->ConvertStringToArray( $arrMaxCols[1] );
+				$arrMaxColsByPixel[ $intDefaultScreenMaxWidth ] = array( 1 );
+				continue;
+				
+			}
+			
+			$arrMaxColsByPixel[ $intMaxScreenWidth ] = $this->ConvertStringToArray( $arrMaxCols[1] );	
+		
 		}
 			
 		// Sort by descending order	
@@ -376,7 +397,14 @@ class ResponsiveColumnWidgets_Option_ {
 	/*
 	 * Public Utilities - helper methods which can be used outside the plugin
 	 * */
+	public function SanitizeAttribute( $strAttr ) {	// since 1.1.1.1, moved from the core class
+		
+		return preg_replace( '/[^a-zA-Z0-9_\x7f-\xff\-\.]/', '_', $strAttr );
+		
+	}	 
 	public function FindLowestKey( $arr ) {	// since 1.1.1
+		
+		if ( empty( $arr ) ) return 0;
 		
 		return min( array_keys( $arr ) ); 
 		

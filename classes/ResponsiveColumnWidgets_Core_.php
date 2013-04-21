@@ -118,11 +118,7 @@ class ResponsiveColumnWidgets_Core_ {
 		echo $this->GetBaseStyles();
 		
 	}
-	protected function SanitizeIDAttribute( $strIDAttr ) {	// since 1.1.1
-		
-		return preg_replace( '/[^a-zA-Z0-9_\x7f-\xff\-\.]/', '_', $strIDAttr );
-		
-	}
+
 	protected function GetBaseStyles( $bIsScoped=false ) {	// since 1.1.0
 		
 		$strScoped = $bIsScoped ? "scoped" : "";
@@ -210,7 +206,7 @@ class ResponsiveColumnWidgets_Core_ {
 				{	width: 100%;  }
 			}
 			*/			
-		$strIDAttr = $this->SanitizeIDAttribute( "{$this->oOption->oInfo->Name} {$this->oOption->oInfo->Version}" );
+		$strIDAttr = $this->oOption->SanitizeAttribute( "{$this->oOption->oInfo->Name} {$this->oOption->oInfo->Version}" );
 		return "<style type='text/css' name='{$strIDAttr}' {$strScoped}>" 
 			. apply_filters( 'RCW_filter_base_styles', $strCSS )
 			. "</style>" . PHP_EOL;
@@ -586,8 +582,6 @@ class ResponsiveColumnWidgets_Core_ {
 		
 	}
 	
-
-		
 	/*
 	 * Buffer formatting methods
 	 * */
@@ -820,7 +814,7 @@ class ResponsiveColumnWidgets_Core_ {
 		$arrScreenMaxWidths = array_keys( $arrPositions );
 		$strStyleRules .= $this->GetVisibilityRules( $strSidebarID, $arrScreenMaxWidths, 0 );
 			
-		krsort( $arrPositions );	// needs to be sorted by decsending order. The smaller width rules will be overriden.
+		krsort( $arrPositions );	// needs to be sorted by decsending order. The larger width rules will be overriden.
 		
 		foreach ( $arrPositions as $intScreenMaxWidth => $arrPosition ) {
 									
@@ -844,7 +838,8 @@ class ResponsiveColumnWidgets_Core_ {
 			
 			}
 			
-			$strStyleRules .= " #{$strIDAttribute}.{$strSidebarID} .{$strPrefixColumn}1 { clear: left; } " . PHP_EOL;
+			$strStyleRules .= " #{$strIDAttribute}.{$strSidebarID} .{$strPrefixColumn}1 { clear: left; } " . PHP_EOL;	// the first column element
+			$strStyleRules .= " #{$strIDAttribute}.{$strSidebarID} .{$strPrefixRow} { clear: both; padding: 0px; margin: 0px; } " . PHP_EOL;		// rows
 			
 			// Disable the visibility of the widget box elements for the other screen widths.
 			$strStyleRules .= $this->GetVisibilityRules( $strSidebarID, $arrScreenMaxWidths, $intScreenMaxWidth );
@@ -890,38 +885,6 @@ class ResponsiveColumnWidgets_Core_ {
 
 		$this->arrFlagsCustomStyleAdded[ $strSidebarID ] = true;
 		return $strStyleRules;	
-		
-	}
-	function AddStyleForMaxColsByPixel( $strSidebarID, $arrOffsetsByPixel ) {	// added since 1.0.3, depreciated as of 1.1.1
-		
-		$strStyleRules = '<style type="text/css" scoped>';
-		
-		if ( count( $arrOffsetsByPixel ) == 0 ) { $arrOffsetsByPixel = array( array( 480, 12 ) ); }
-		foreach( $arrOffsetsByPixel as $arrOffsetByPixel ) {
-			// e.g. array( 740, 3)  
-			$numPixel = $arrOffsetByPixel[0];
-			$numOffset = $arrOffsetByPixel[1];
-			if ( $numPixel == 0 ) continue;
-			
-			$strStyleRules .= '@media only screen and (max-width: ' . $numPixel . 'px) { ';
-			$num=1; 
-			// the class attribute has to be .{the sidebar ID} + .element_of_
-			for ( $i = 2; $i <= 12; $i++ ) {
-				if ( $i <= $numOffset )
-					$strStyleRules .= ' .' . $strSidebarID . ' .element_of_' . $i . ' { width: ' . $this->strColPercentages[1] . ' } ';
-				else  {
-					++$num;
-					$strPercent = isset( $this->strColPercentages[ $num ] ) ? $this->strColPercentages[ $num ] : '100%';
-					$strStyleRules .= ' .' . $strSidebarID . ' .element_of_' . $i . ' { width: ' . $strPercent . ' } ';
-				}
-			}
-			$strStyleRules .= ' }' . PHP_EOL;
-	
-		}
-
-		$strStyleRules .= '</style>';
-		$this->arrFlagsStyleMaxColsByPixel[ $strSidebarID ] = true;
-		return $strStyleRules;
 		
 	}
 	
