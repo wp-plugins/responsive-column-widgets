@@ -26,26 +26,6 @@ class ResponsiveColumnWidgets_Option_ {
 		'after_title'						=> '</h3>',
 		'message_no_widget'					=> 'No widget added yet.',
 		'custom_style'						=> '',		// since 1.0.6
-		// 'insert_footer'						=> false,	// since 1.0.5
-		// 'insert_footer_disable_front'		=> false,	// since 1.0.7
-		// 'insert_footer_disable_ids'			=> array(),	// since 1.0.7
-		// 'insert_posts'						=> array(	// since 1.0.7
-			// 'post' => false,
-			// 'page' => false,
-		// ),	
-		// 'insert_posts_positions'			=> array(	// since 1.0.7
-			// 'above' => false,
-			// 'below' => true,
-		// ),		
-		// 'insert_posts_disable_front'		=> false,	// since 1.0.7
-		// 'insert_posts_disable_ids'			=> array(),	// since 1.0.7
-		// 'insert_comment_form'				=> false,	// since 1.0.8
-		// 'insert_comment_form_positions'		=> array(	// since 1.0.8
-			// 'above' => false,
-			// 'below' => true,
-		// ),
-		// 'insert_comment_form_disable_front'		=> false,	// since 1.0.8
-		// 'insert_comment_form_disable_post_ids'	=> array(),	// since 1.0.8
 		// since 1.0.9
 		'autoinsert_enable'			=> 0,		// 0: off, 1: on
 		'autoinsert_enable_areas'	=> array( 
@@ -74,7 +54,8 @@ class ResponsiveColumnWidgets_Option_ {
 		'autoinsert_disable_posttypes'	=> array( 'post' => false, 'page' => false ),
 		'autoinsert_disable_categories'	=> array(),	
 		'autoinsert_disable_post_ids'	=> array(),	
-
+		// since 1.1.1.2
+		'remove_id_attributes' => true,	
 	);	
 	public $arrCapabilities = array(	// used in the drop-down list of the General Options page.
 		0 => 'manage_options',
@@ -101,6 +82,8 @@ class ResponsiveColumnWidgets_Option_ {
 				'row' => 'responsive_column_widgets_row',
 				'column' => 'responsive_column_widgets_column',
 			),
+			'has_reviewed' => false,	 // since 1.1.1.2
+			'time_first_option_update' => null,	// since 1.1.1.2 - set it null so that isset() can be used.
 		),
 	);
 	function __construct( $strOptionKey, $strFilePath=null ) {

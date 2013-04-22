@@ -268,9 +268,7 @@ class ResponsiveColumnWidgets_Core_ {
 		return $arrSidebarParams;
 		
 	}
-	function AddFormInDynamicSidebar( $arrSidebarArgs ) {
-		
-		// since 1.0.4 - currently not used
+	function AddFormInDynamicSidebar( $arrSidebarArgs ) {	// since 1.0.4 - currently not used	
 		
 		if ( !isset( $arrSidebarArgs['callback'] ) || !is_string( $arrSidebarArgs['callback'] ) ) return;
 		
@@ -453,7 +451,7 @@ class ResponsiveColumnWidgets_Core_ {
 		
 	}
 	
-	protected function GetWidgetsBufferAsArray( $strSidebarID, $arrSidebarsWidgets, $arrShowOnlys, $arrOmits ) {	// since 1.1.1
+	protected function GetWidgetsBufferAsArray( $strSidebarID, $arrSidebarsWidgets, $arrShowOnlys, $arrOmits, $bRemoveIDAttributes ) {	// since 1.1.1
 		
 		global $wp_registered_sidebars, $wp_registered_widgets;
 		$arrWidgetBuffer = array();	// stores the returning widget buffer outputs, one key for one widget.
@@ -525,7 +523,7 @@ class ResponsiveColumnWidgets_Core_ {
 			if ( is_callable( $callback ) ) {		
 			
 				call_user_func_array( $callback, $arrParams );		// will echo widgets	
-				$arrWidgetBuffer[] = $this->oReplace->RemoveIDAttributes( ob_get_contents() );	// deletes the ID tags here.
+				$arrWidgetBuffer[] = $bRemoveIDAttributes ? $this->oReplace->RemoveIDAttributes( ob_get_contents() ) : ob_get_contents();	// deletes the ID tags here.
 				
 			}
 			ob_end_clean();
@@ -688,8 +686,8 @@ class ResponsiveColumnWidgets_Core_ {
 		
 			$bIsRowTagClosed = $this->UpdateBuffer_CloseRowTag_IfLastColumn( $strBuffer, $arrPosition );
 			
-			// Check 
-			// 1. if the number of rendered widgtes reached the limit.
+			// Check: 
+			// 1. if the number of rendered widgets reached the limit.
 			// 2. if the number of allowed rows reached the limit
 			if ( (  $arrParams['maxwidgets'] != 0 &&  ( $nIndex + 1 ) >= $arrParams['maxwidgets'] ) 	// $nIndex is zero-base.
 				|| ( $arrParams['maxrows'] != 0 && $arrPosition['intRowPos'] >= $arrParams['maxrows'] )	// $arrPosition['intRowPos'] is also zero base but it's incremented by the method in this iteration.
@@ -703,17 +701,15 @@ class ResponsiveColumnWidgets_Core_ {
 		// Close the section(row) div tag in case it is ended prior to closing it.
 		if ( ! $bIsRowTagClosed )
 			$this->UpdateBuffer_CloseTag( $strBuffer, $strTag );
-			
-		$strBuffer = force_balance_tags( $strBuffer );
-			
+						
 		// Okay, done.
-		return $strBuffer;
+		return force_balance_tags( $strBuffer );
 		
 	}	
 	
 	protected function GetOutputWidgetBuffer( $vIndex=1, &$arrParams ) {
 
-		// First, check if the sidebar is rendeable.
+		// First, check if the sidebar is renderable.
 		$strSidebarID = $this->GetCorrectSidebarID( $vIndex );
 		$arrSidebarsWidgets = wp_get_sidebars_widgets();
 		if ( ! $this->IsRenderable( $strSidebarID, $arrSidebarsWidgets ) ) return false;
@@ -723,7 +719,8 @@ class ResponsiveColumnWidgets_Core_ {
 			$strSidebarID, 
 			$arrSidebarsWidgets,
 			$this->oOption->ConvertStringToArray( $arrParams['showonly'] ),
-			$this->oOption->ConvertStringToArray( $arrParams['omit'] )
+			$this->oOption->ConvertStringToArray( $arrParams['omit'] ),
+			$arrParams['remove_id_attributes']
 		);
 
 		// Now, $arrWidgetBuffers contains the necessary data for the output. Then we are going to store the output buffer
@@ -791,7 +788,7 @@ class ResponsiveColumnWidgets_Core_ {
 	}	
 	protected function SetWidgetBoxStyle( &$strSidebarID, &$arrParams, &$arrPositions ) {	// since 1.1.1
 		
-		// There might be a previous value. This is important since the scoped style tags will be embedded in the footer at once with other widget boxes.
+		// There might be a previous value. 
 		$strStyle = isset( $this->arrScopedStyles[ $strSidebarID ] ) ? $this->arrScopedStyles[ $strSidebarID ] : '';
 			
 		// Add the base CSS rules if not loaded yet. 

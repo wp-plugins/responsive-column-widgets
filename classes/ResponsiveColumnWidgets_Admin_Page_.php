@@ -26,7 +26,11 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		'autoinsert_disable_post_ids',
 		// since 1.1.1
 		'default_media_only_screen_max_width',
+		// since 1.1.1.2
+		'remove_id_attributes',
 	);
+	// since 1.1.1.2
+	protected $intIntervalToShowPleaseRate = 1209600;	// seconds * minutes * hours * days; 1209600 is 2 weeks.
 	
 	// Flags
 	protected $bIsNew;
@@ -89,7 +93,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			$this->strPluginSlug 	// page slug
 		);	 
 		
-		// Add in-page tabs in the third page.			
+		// Add in-page tabs.		
 		$this->AddInPageTabs( $this->strPluginSlug,	
 			array(	// slug => title
 				// 'widgets'		=> __( 'Widgets', 'responsive-column-widgets' ),
@@ -432,7 +436,27 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'autoinsert_disable_post_ids' ) : $this->oOption->ConvertOptionArrayValueToString( $arrWidgetBoxOptions['autoinsert_disable_post_ids'] ),	
 						),							
 					),
-				),			
+				),
+				// HTML 
+				array(
+					'pageslug' => $this->strPluginSlug,
+					'tabslug' => 'neworedit',
+					'id' => 'section_html',
+					'title' => __( 'HTML', 'responsive-column-widgets' ), 
+					'fields' => array(	// since 1.1.1.2
+						array(
+							'id' => 'remove_id_attributes',
+							'title' => __( 'Remove ID Attributes', 'responsive-column-widgets' ),
+							'type' => 'radio',
+							'label' => array(
+								1 => __( 'Yes', 'responsive-column-widgets' ),
+								0 => __( 'No', 'responsive-column-widgets' ),
+							),
+							'delimiter' => '&nbsp;&nbsp;&nbsp;',
+							'value' => $arrWidgetBoxOptions['remove_id_attributes'],
+						),
+					),
+				),
 				// Custom Style
 				array(
 					'pageslug' => $this->strPluginSlug,
@@ -555,6 +579,24 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'size' => 100,
 							'value' => $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['general']['allowedhtmltags'] ), 
 						),	
+						array(
+							'if' => isset( $this->oOption->arrOptions['general']['time_first_option_update'] ) && ( time() > $this->oOption->arrOptions['general']['time_first_option_update'] + $this->intIntervalToShowPleaseRate ),
+							'id' => 'has_reviewed',
+							'title' => __( 'Have You Rated the Plugin?', 'responsive-column-widgets' ),
+							'description' => sprintf( __( 'If you have <a href="%1$s">rated</a> the plugin, set it Yes.', 'responsive-column-widgets' ), 'http://wordpress.org/support/view/plugin-reviews/responsive-column-widgets' ),
+							'type' => 'radio',
+							'label' => array(
+								1 => __( 'Yes', 'responsive-column-widgets' ),
+								0 => __( 'No', 'responsive-column-widgets' ),
+							),
+							'delimiter' => '&nbsp;&nbsp;&nbsp;',
+							'value' => $this->oOption->arrOptions['general']['has_reviewed'],
+						),	
+						// array(
+							// 'id' => 'time_first_option_update',
+							// 'type' => 'hidden',
+							// 'value' => $this->oOption->arrOptions['general']['time_first_option_update'],
+						// ),
 						array(  // single button
 							'id' => 'submit_save_2',
 							'type' => 'submit',		// the submit type creates a button
@@ -820,8 +862,30 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	/*
 	 * Modify the head and the foot parts
 	 * */
-	function head_ResponsiveColumnWidgets_Admin_Page( $strHead ) {
+	function do_before_ResponsiveColumnWidgets_Admin_Page() {
 		
+		if ( isset( $this->oOption->arrOptions['general']['time_first_option_update'] ) 
+			&& time() > $this->oOption->arrOptions['general']['time_first_option_update'] + $this->intIntervalToShowPleaseRate	// 60 seconds * 60 minutes * 24 hours * 10 days.
+			&& ! $this->oOption->arrOptions['general']['has_reviewed']
+		) {
+			
+			$this->SetSettingsNotice( 
+				sprintf( 
+					__( 'Thanks for using Responsive Column Widgets. Your feedback is very important to us. Please <a href="%1$s">rate</a> the plugin so that it can be improved further. Thank you!', 'responsive-column-widgets' ),
+					'http://wordpress.org/support/view/plugin-reviews/responsive-column-widgets'
+				)  
+				. '&nbsp;<span class="nostrong">' . sprintf(
+					__( 'This message can be disabled in the <a href="%1$s">Geneneral Options</a> page.', 'responsive-column-widgets' ),
+					admin_url( 'admin.php?' . build_query( array( 'tab' => 'general' ) + $_GET ) ) . '#has_reviewed'
+				) . '</span>',
+				'error',
+				'please-rate'	// ID attribute 
+			);
+		}
+		
+	}
+	function head_ResponsiveColumnWidgets_Admin_Page( $strHead ) {
+
 		// $strButton = isset( $_GET['tab'] ) && $_GET['tab'] == 'manage' ? $this->GetAddNewBoxButton() : '';
 		return $this->oUserAds->GetTopBanner()
 			. $strHead 
@@ -836,8 +900,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}
 	function foot_ResponsiveColumnWidgets_Admin_Page( $strFoot ) {
 		
-		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'neworedit' ? 4 : 2;
+		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'neworedit' ? 6 : 2;
 		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'manage' ? 1 : $numItems;
+		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'information' ? 1 : $numItems;
 		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'getpro' ? 2 : $numItems;
 		return $strFoot 
 			. '<div style="float:left; margin-top: 10px" >' 
@@ -1040,7 +1105,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			// means it's an image
 			$strOut .= "<td align='{$arrInfo['align']}' class='{$arrInfo['class']}'>"
 				. '<img src="' . RESPONSIVECOLUMNWIDGETSURL . '/img/' . ( $arrInfo['value'] ? 'available.gif' : 'unavailable.gif' ) . '" '
-				. 'title="' . ( $arrInfo['value'] ? __( 'Available', 'responsive-column-widgets' ) : __( 'Unavailable', 'responsive-column-widgets' ) ) . '"'
+				. 'title="' . ( $arrInfo['value'] ? __( 'Available', 'responsive-column-widgets' ) : __( 'Unavailable', 'responsive-column-widgets' ) ) . '" />'
 				. '</td>';
 				
 		}
@@ -1112,7 +1177,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			$this->SetFieldErrors( $arrErrors );
 			
 			// This displays the error message
-			$this->SetSettingsNotice( $strErrors  );	
+			$this->SetSettingsNotice( $strErrors );	
 			
 			// Returning an empty array will not change options.
 			return array();				
@@ -1123,7 +1188,10 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$arrBoxOptions = array();
 		foreach ( $arrInput[ $this->strPluginSlug ] as $arrFields ) 
 			$arrBoxOptions = $arrBoxOptions + $arrFields;		 
-				
+		
+		// Please review.
+		$this->PleaseReview();
+		
 		// The data are valid. Update the box options.
 		$this->UpdateBoxOptions( $arrBoxOptions, $_POST['isnew'] );
 		$this->SetSettingsNotice( __( 'The widget box options have been saved.', 'responsive-column-widgets' ), 'updated' );
@@ -1131,6 +1199,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		return $arrInput;
 			
 	} 
+	protected function PleaseReview() {	// since 1.1.1.2
+		
+		// Stores the current time. The option array will be updated by the following UpdateBoxOptions() method.
+		if ( ! isset( $this->oOption->arrOptions['general']['time_first_option_update'] ) )
+			$this->oOption->arrOptions['general']['time_first_option_update'] = time();
+		
+	}
 	protected function CleanOldVersionBoxOptions( $arrBoxOptions ) {	// since 1.0.9
 		
 		// for 1.0.5
@@ -1331,7 +1406,11 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				32 	// minimum
 			);
 
-		$this->oOption->arrOptions['general'] = $arrValidate;
+		// Please review.
+		$this->PleaseReview();	// do it before assigning the new value.			
+			
+		// There are hidden option valuses that are not sent from the admin page ( the data sent as $arrInput ), the input data need to be merged with the previous option values.
+		$this->oOption->arrOptions['general'] = $arrValidate + $this->oOption->arrOptions['general'];
 		
 		// Update the value to the separate main option.
 		$this->oOption->Update();
@@ -1419,7 +1498,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			. '</ul>'
 			. '</td>'
 			. '<td class="operation">'
-			. "<a href='{$strURL}'>" . __( 'Edit', 'responsive-column-widgets' ) . "</a>"
+			. "<a href='{$strURL}' title='" . __( 'Edit', 'responsive-column-widgets' ) . "'><img src='" . RESPONSIVECOLUMNWIDGETSURL . "/img/edit16x16.gif' /></a>" 
 			. '</td>'
 			. '</tr>';
 	}
@@ -1474,7 +1553,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			}
 			.text-input-field input {
 				margin-bottom: 8px;
-				
+			}
+			.nostrong {
+				font-weight: normal;
+			}
+			div#setting-error-please-rate.error {
+				background-color: rgb(232, 255, 245);
+				border-color: rgb(0, 204, 122);	
 			}
 		"; 
 	}

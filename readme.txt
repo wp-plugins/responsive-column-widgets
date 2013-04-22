@@ -45,8 +45,8 @@ Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-wi
 3. To display the added widgets in a post, there are mainly two different means.
  * **Option A**: add the shortcode in a post.
  
-`[responsive_column_widgets]`
-
+ `[responsive_column_widgets]`
+ 
  * **Option B**: use the auto-insert feature by enabling the **Enable Auto-insert** option in the plugin setting page, **New / Edit**.
 
 = Specify Different Number of Columns in Each Row = 
@@ -65,7 +65,7 @@ To set the number of columns for each screen max-width, use the pipe (|) charact
 `[responsive_column_widgets columns="5 | 800: 4 | 600 : 2 | 480: 1"]` will show the widgets in 5 columns when the browser widths is greater than 800, and 4 when the browser width is 800 to 601, and 2 when the browser width is 600 to 481, and 1 when the browser width is less than or equal to 480.
 
 = Use PHP code for Themes = 
-The widget box can be dispayed outside post/pages. Putting a PHP code into the theme is one way of doing it. Use the `ResponsiveColumnWidgets()` function. 
+The widget box can be displayed outside post/pages. Putting a PHP code into the theme is one way of doing it. Use the `ResponsiveColumnWidgets()` function. 
 
 For instance, 
 
@@ -89,13 +89,16 @@ The following example displays widgets in 5 column when the browser width is gre
 * **showonly** - the numbers of the widget order of the items to show, separated by commas. e.g. **2, 7** would only show the second and seventh registered widtges. Other items will be skipped.
 * **label** - the label name of the widget box. Default: Responsive Column Widgets.
 
+= Video Tutorials =
+http://en.michaeluno.jp/responsive-column-widgets/tutorials/
+
 == Frequently Asked Questions ==
 
 = Can't figure out how to show widgets in columns! ARGH! Are you there? =
 Take a deep breath. Believe me, it's really simple. Most likely, you have not added any widget yet. Go to *Appearance > Widgets* and add widgets to the plugin's custom sidebar box. Then use the shortcode in a post. That's it. If you still cannot figure it out, take the screenshots of the *wp-admin/widgets.php* page and the page of the post you added the shortcode. And request a [support](http://wordpress.org/support/plugin/responsive-column-widgets) with the screenshots.
 
 = How do I customize the style? =
-You can add your rules to the classes named **.responsive_column_widget_box .widget**. It's defined in *responsive-column-widgets/css/responsive_column_widgets.css* but simply you can define it in your theme's *style.css* as well.
+You can add your rules to the classes named **.responsive_column_widget_box .widget**. Go to the widget box's edit page and enter your custom rules in the Custom CSS section or define it in your theme's *style.css*.
 
 e.g. 
 `.responsive_column_widget_box .widget {
@@ -103,6 +106,9 @@ e.g.
     line-height: 1.5em;
     background-color: #EEE;
 }`
+
+= I have trouble reading things. Are there video instructions? = 
+Yes. Hope this helps. http://en.michaeluno.jp/responsive-column-widgets/tutorials/
 
 = Is it possible to create multiple widget boxes? =
 Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-column-widgets-pro/).
@@ -115,9 +121,15 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 4. ***Responsiveness***
 
 == Changelog ==
+
+= 1.1.1.2 - 04/23/2013 =
+* Added: the option to decide whether ID attributes should be removed or not.
+* Fixed: an issue that updating option items of the General Options removed the some of the internal settings.
+* Added: the edit icon in the Manage page.
+
 = 1.1.1.1 - 04/22/2013 =
 * Tweaked: user input sanitization for string option values including *Number of Columns* and *Class Names*.
-* Tweaked: the CSS rules for column rows.
+* Tweaked: the CSS rules for widget box rows.
 
 = 1.1.1 - 04/21/2013 =
 * Fixed: a typo in the setting page, Min to Max.
@@ -125,7 +137,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 * Added: the ability to specify the number of columns by screen max width.
 * Deprecated: (**Breaking Change**) the parameter of the percentage offset for column numbers to support the ability to directly specify the number of columns by screen max width. 
 * Removed: the ID attribute from the default Widget Beginning Tag value.
-* Added: (**Breaking Change**)the ability to automatically remove ID attributes from the rendered widget HTML code.
+* Added: (**Breaking Change**) the ability to automatically remove ID attributes from the rendered widget HTML code.
 * Fixed: an issue that scoped style tag contained a white space in the name attribute value.
 
 = 1.1.0 - 04/14/2013 =
