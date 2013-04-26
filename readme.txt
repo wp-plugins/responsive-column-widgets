@@ -125,6 +125,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 == Changelog ==
 
 = 1.1.2 =
+* Added: the ability to load CSS rules without the scoped attribute for the ones with the Auto-Insert option.
 * Changed: the method of rendering widget boxes not to use *display:none* for different screen max-widths.
 
 = 1.1.1.2 - 04/23/2013 =

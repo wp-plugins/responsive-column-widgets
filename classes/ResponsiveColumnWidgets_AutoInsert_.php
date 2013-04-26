@@ -36,11 +36,11 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		'is_search' => false,
 	);
 	
-	function __construct( &$oOption, &$oCore ) {
+	function __construct( &$oCore ) {
 		
 		// Objects
-		$this->oOption = $oOption;
 		$this->oCore = $oCore;
+		$this->oOption = $oCore->oOption;
 		
 		// Set up hooks - add hooks regardless whether the widget box is not for the displaying page or not
 		// in order to let custom hooks being added which are loaded earlier than the $wp_query object is established.
@@ -49,6 +49,57 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		// Set up the properties for currently displaying page - The init hook is too early to perform the functions including is_single(), is_page() etc. as $wp_query is not established yet.
 		add_action( 'wp', array( $this, 'SetupPageTypeProperties' ) );
 
+		// If the option allows to insert the style in the head tag, schedule it to do so.
+		if ( isset( $this->oOption->arrOptions['general']['general_css_timimng_to_load'] ) 
+			&& ! $this->oOption->arrOptions['general']['general_css_timimng_to_load'] ) {	// 0 for the header
+			
+			add_action( 'wp_head', array( $this, 'AddStyleSheetForAutoInsert' ) );
+			if ( $this->oOption->arrOptions['general']['general_css_areas_to_load']['login'] )
+				add_action( 'login_head', array( $this, 'AddStyleSheetForAutoInsert' ) );
+			if ( $this->oOption->arrOptions['general']['general_css_areas_to_load']['admin'] )			
+				add_action( 'admin_head', array( $this, 'AddStyleSheetForAutoInsert' ) );
+		
+		}
+		
+	}
+	
+	/*
+	 * Styles
+	*/
+	public function AddStyleSheetForAutoInsert() {		// since 1.1.2
+		
+		$oStyle = $this->oCore->oStyle;
+		$strStyles = '';
+		
+		foreach ( $this->arrEnabledBoxIDs as $strSidebarID ) {
+
+			$arrParams = $this->oCore->FormatParameterArray( array( 'sidebar' => $strSidebarID ) );
+		
+			$oWidgetBox = new ResponsiveColumnWidgets_WidgetBox( 
+				$arrParams, 
+				$this->oOption->SetMinimiumScreenMaxWidth(	// the max-columns array
+					$this->oOption->FormatColumnArray( 
+						$arrParams['columns'], 	
+						$arrParams['default_media_only_screen_max_width'] 
+					)		
+				),
+				$this->arrClassSelectors
+			);	
+			
+			$oID = new ResponsiveColumnWidgets_IDHandler;
+
+			$strStyles .= $oStyle->GetStyles( 
+				$strSidebarID, 
+				$oID->GetCallID( $strSidebarID, $arrParams ), 
+				$arrParams['custom_style'], 
+				$oWidgetBox->GetScreenMaxWidths(), 
+				false	// no scoped 
+			);
+			
+		}
+		
+		echo $strStyles;
+		
 	}
 	
 	/*
@@ -85,9 +136,9 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 			// 'autoinsert_position'  0: above, 1: below, 2: both			
 			$intPositionType = $this->oOption->arrOptions['boxes'][ $strSidebarID ]['autoinsert_position'];
 			if ( $intPositionType == 0 || $intPositionType == 2 )
-				$strPre .= $this->oCore->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ) );
+				$strPre .= $this->oCore->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ), false );
 			if ( $intPositionType == 1 || $intPositionType == 2 )
-				$strPost .= $this->oCore->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ) );
+				$strPost .= $this->oCore->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ), false );
 			
 		}
 		
@@ -103,7 +154,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 			if ( ! $this->IsAutoInsertEnabledPage( $this->oOption->arrOptions['boxes'][ $strSidebarID ] ) )
 				continue;	
 		
-			$this->oCore->RenderWidgetBox( array( 'sidebar' => $strSidebarID ) );	
+			$this->oCore->RenderWidgetBox( array( 'sidebar' => $strSidebarID ), false );	// the second parameter indicates to use the scoped attribute for additional style tags.
 			
 		}
 		

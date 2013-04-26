@@ -16,8 +16,8 @@
 class ResponsiveColumnWidgets_Core_ {
 	
 	// Objects
-	protected $oOption;		// deals with the plugin options
-	protected $oStyle;		// since 1.1.2 - manipulates CSS rules.
+	public $oOption;		// deals with the plugin options. Made it public in 1.1.2 to allow the AutoInsert class access this object.
+	public $oStyle;		// since 1.1.2 - manipulates CSS rules. It is public because the Auto-Insert class uses it.
 		
 	// Default properties
 	protected $strShortCode;
@@ -198,58 +198,55 @@ class ResponsiveColumnWidgets_Core_ {
 	}
 	
 	/*
-	 * The core method to render widget boxes.
+	 * The core methods to render widget boxes. RenderWidgetBox() and GetWidgetBoxOutput().
 	*/
-	public function GetWidgetBoxOutput( $arrParams, $bIsStyleScoped=true ) {	// since 1.0.4
+	public function RenderWidgetBox( $arrParams, $bIsStyleNotScoped=false ) {	// must be public as this is called from instantiated objects.
+		
+		echo $this->GetWidgetBoxOutput( $arrParams, $bIsStyleNotScoped );	// do echo, not return.
+		
+	}	
+	public function GetWidgetBoxOutput( $arrParams, $bIsStyleNotScoped=false ) {	// since 1.0.4
 		
 		// The function callback for shortcode. Notice that the last part is returning the output.
+		$arrParams = $this->FormatParameterArray( $arrParams );
 
-		$arrParams['sidebar'] = ! empty( $arrParams['sidebar'] ) ? $arrParams['sidebar'] : $this->FindWidgetBoxSidebarIDFromParams( $arrParams );	// $arrParams['sidebar'] = ! empty( $arrParams['sidebar'] ) ? $arrParams['sidebar'] : $this->arrDefaultParams['sidebar'];		
-		$arrDefaultParams = isset( $this->oOption->arrOptions['boxes'][ $arrParams['sidebar'] ] ) ? $this->oOption->arrOptions['boxes'][ $arrParams['sidebar'] ] + $this->arrDefaultParams : $this->arrDefaultParams;
-		$arrParams = shortcode_atts( $arrDefaultParams, $arrParams );		
+		// If this is a callback for the shortcode, the second parameter will be false. Reverse the value.
+		$bIsStyleScoped = $bIsStyleNotScoped ? false : true;
 
+		// If nothing is registered in the given name of sidebar, return
 		if ( ! is_active_sidebar( $arrParams['sidebar'] ) ) 
-			return '<p>' . $arrParams['message_no_widget'] . '</p>';	// if nothing is registered in the given name of sidebar, return
+			return '<p>' . $arrParams['message_no_widget'] . '</p>';	
 				
-		// The direct parameters take precedence
-		if ( isset( $this->oOption->arrOptions['boxes'][ $arrParams['sidebar'] ] ) )
-			$arrParams = $arrParams + $this->oOption->arrOptions['boxes'][ $arrParams['sidebar'] ];	
-		
-		/*
-		 * Generate the ID - Get a unique ID selector based on the sidebar ID and the parameters.
-		*/
+		// Generate the ID - Get a unique ID selector based on the sidebar ID and the parameters.
 		$oID = new ResponsiveColumnWidgets_IDHandler;
 		$strCallID = $oID->GetCallID( $arrParams['sidebar'], $arrParams );	// an ID based on the sidebar ID + parameters; there could be the same ID if the passed values are the same.
 		$strIDSelector = $oID->GenerateIDSelector( $strCallID );	// a unique ID throughout the script load 
-		// $oID->SetUsedID( $strIDAttribute, 'arrBoxIDs' );
 		
-		// $strIDAttribute = $this->oStyle->GetIDSelectorBySidebarID( 
-			// $this->oStyle->GenerateIDHash( $arrParams['sidebar'], $arrParams ),
-			// true 	// passing true will increment the count of the loaded times.
-		// );	
-		
-		/*
-		 * Retrieve the widget output buffer.
-		*/
+		// Retrieve the widget output buffer.
 		$strOut = '<div id="' . $strIDSelector . '" class="' . $this->arrClassSelectors['box'] . ' ' . $this->strClassSelectorBox2 . ' ' . $arrParams['sidebar'] . '">' 
 			. $this->GetOutputWidgetBuffer( $arrParams['sidebar'], $arrParams, $strCallID, $bIsStyleScoped ) 
 			. '</div>';
-
-		// This method will update the $arrScopedStyles property in the oStyle object so that GetScopedStyles() can return the stored value.
-		// $this->oStyle->SetWidgetBoxStyle( 
-			// $arrParams['sidebar'], 
-			// $arrParams['custom_style'], 
-			// $oWidgetBox->GetScreenMaxWidths(), 	// this method returns an array that contains the used screen max-widths
-			// $strIDAttribute
-		// );
-		
-		// This must be called after GetOutputWidgetBuffer() which internally uses SetWidgetBoxStyle();  SetWidgetBoxStyle() updates the property to return for this method.
-		// $strScopedStyles = $this->oStyle->GetScopedStyles( $strIDAttribute );	
-		
-		// $strOut .= $strScopedStyles . $this->GetCredit();
 			
 		// Done!
 		return $strOut . $this->GetCredit();
+		
+	}
+	public function FormatParameterArray( $arrParams ) {	// since 1.1.2 - It's public because the Auto-Insert class also uses it.
+		
+		// Determine the sidebar ID.
+		$arrParams['sidebar'] = ! empty( $arrParams['sidebar'] ) 
+			? $arrParams['sidebar'] 
+			: $this->FindWidgetBoxSidebarIDFromParams( $arrParams );
+		
+		// If the option array holds the default parameter values for this widget box ( the custom sidebar ), get them.
+		$arrDefaultParams = isset( $this->oOption->arrOptions['boxes'][ $arrParams['sidebar'] ] ) 
+			? $this->oOption->arrOptions['boxes'][ $arrParams['sidebar'] ] + $this->arrDefaultParams 
+			: $this->arrDefaultParams;
+		
+		// In case it's a call from the shortcode
+		$arrParams = shortcode_atts( $arrDefaultParams, $arrParams );		
+		
+		return $arrParams;
 		
 	}
 	protected function FindWidgetBoxSidebarIDFromParams( $arrParams ) {	// since 1.0.4
@@ -261,12 +258,7 @@ class ResponsiveColumnWidgets_Core_ {
 		// if nothing could be found, returns the default box ID
 		return $this->arrDefaultParams['sidebar'];
 			
-	}	
-	public function RenderWidgetBox( $arrParams ) {	// must be public as this is called from instantiated objects.
-		
-		echo $this->GetWidgetBoxOutput( $arrParams );	// do echo, not return.
-		
-	}
+	}		
 	protected function GetCredit() {
 		
 		$strCredit = defined( 'RESPONSIVECOLUMNWIDGETSPROFILE' ) ? 'Responsive Column Widgets Pro' : 'Responsive Column Widgets';
@@ -274,9 +266,10 @@ class ResponsiveColumnWidgets_Core_ {
 		return "<!-- Rendered with {$strCredit} by {$strVendor} -->";
 		
 	}
-	
+		
 	/*
-	 * Retrieve widget output buffers.
+	 * Retrieve widget output buffers. 
+	 * The followings are buffer formatting methods.
 	 * */
 	protected function GetCorrectSidebarID( $vIndex ) {
 		
@@ -301,11 +294,7 @@ class ResponsiveColumnWidgets_Core_ {
 		if ( empty( $arrSidebarsWidgets[ $strSidebarID ] ) ) return false;
 		return true;
 		
-	}
-	
-	/*
-	 * Buffer formatting methods
-	 * */
+	}	
 	protected function GetOutputWidgetBuffer( $vIndex=1, &$arrParams, $strCallID, $bIsStyleScoped ) {
 
 		// First, check if the sidebar is renderable.
@@ -352,32 +341,19 @@ class ResponsiveColumnWidgets_Core_ {
 			$oWidgetBox->AdvancePositions();	// increments the position values stored in the object properties.
 				
 		}	
-				
+		
 		// the CSS rules
-		$strBuffer .= $this->GetStyles( $arrParams['sidebar'], $strCallID, $arrParams['custom_style'], $oWidgetBox->GetScreenMaxWidths(), $bIsStyleScoped );
+		$strBuffer .= $this->oStyle->GetStyles( 
+			$arrParams['sidebar'], 
+			$strCallID, 
+			$arrParams['custom_style'], 
+			$oWidgetBox->GetScreenMaxWidths(), 
+			$bIsStyleScoped 
+		);
 			
 		// Done!
 		unset( $oWidgetBox );	// make sure it's released for PHP below 5.3.
 		return $strBuffer;
-		
-	}
-	protected function GetStyles( $strSidebarID, $strCallID, $strCSSRules, $arrScreenMaxWidths, $bIsStyleScoped ) {	// since 1.1.2
-		
-		/*
-		 * Retrieve the CSS rules.
-		 * Todo: there is a claim that the scoped attribute is invalid in HTML5. 
-		*/
-		$strStyles = '';
-		
-		// Add the base CSS rules if not loaded yet. 
-		$strStyles .= $this->oStyle->GetBaseStylesIfNotAddedYet( $bIsStyleScoped );	// the scoped attribute will be embedded if true is passed.
-		
-		// Add the user's custom CSS rules. This is common by the sidebar ID.
-		$strStyles .= $this->oStyle->GetCustomStyleIfNotAddedYet( $strSidebarID, $strCSSRules, $strCallID, $bIsStyleScoped );
-
-		$strStyles .= $this->oStyle->GetWidgetBoxStyleIfNotAddedYet( $strCallID, $arrScreenMaxWidths, $bIsStyleScoped );
-		
-		return $strStyles;
 		
 	}
 	

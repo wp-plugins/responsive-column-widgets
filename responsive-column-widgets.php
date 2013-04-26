@@ -185,7 +185,7 @@ function ResponsiveColumnWidgets_Startup() {
 	new ResponsiveColumnWidgets_Events( $oResponsiveColumnWidgets_Options );
 		
 	// Auto-insert - since 1.0.8, some parts of code have been separated from the core class.
-	new ResponsiveColumnWidgets_AutoInsert( $oResponsiveColumnWidgets_Options, $oResponsiveColumnWidgets );
+	new ResponsiveColumnWidgets_AutoInsert( $oResponsiveColumnWidgets );
 
 }
 
@@ -201,7 +201,7 @@ function ResponsiveColumnWidgets( $arrParams ) {
 		return;
 	}
 	
-	// render the widget box
-	$oResponsiveColumnWidgets->RenderWidgetBox( $arrParams );
+	// Render the widget box.
+	$oResponsiveColumnWidgets->RenderWidgetBox( $arrParams, false );	// the second paremeter indicates that additional styles will use the scoped attribute.
 	
 }

@@ -48,14 +48,36 @@ class ResponsiveColumnWidgets_Styles_ {
 	*/
 	public function AddStyleSheet() {	// used by hooks
 	
+		global $arrResponsiveColumnWidgets_Flags;
+		$arrResponsiveColumnWidgets_Flags['base_style'] = true;
+		
 		echo $this->GetBaseStyles();
 		
 	}
 
+
 	/*
 	 * Used by the methods for output widget buffers
 	*/
+	public function GetStyles( $strSidebarID, $strCallID, $strCSSRules, $arrScreenMaxWidths, $bIsStyleScoped ) {	// since 1.1.2, must be public as used from an instantiated object.
+		
+		/*
+		 * Retrieve the CSS rules.
+		 * Todo: there is a claim that the scoped attribute is invalid in HTML5. 
+		*/
+		$strStyles = '';
+		
+		// Add the base CSS rules if not loaded yet. 
+		$strStyles .= $this->GetBaseStylesIfNotAddedYet( $bIsStyleScoped );	// the scoped attribute will be embedded if true is passed.
+		
+		// Add the user's custom CSS rules. This is common by the sidebar ID.
+		$strStyles .= $this->GetCustomStyleIfNotAddedYet( $strSidebarID, $strCSSRules, $strCallID, $bIsStyleScoped );
 
+		$strStyles .= $this->GetWidgetBoxStyleIfNotAddedYet( $strCallID, $arrScreenMaxWidths, $bIsStyleScoped );
+		
+		return $strStyles;
+		
+	}
 	public function GetBaseStylesIfNotAddedYet( $bScoped=true ) {	// Since 1.1.0, moved from the core method in 1.1.1, moved from the core class in 1.1.2
 		
 		// If the timing to load the styles is set to the first box's rendering, 
@@ -79,7 +101,7 @@ class ResponsiveColumnWidgets_Styles_ {
 				
 		$strIDAttribute = $strCallID;	// $this->GetIDSelectorBySidebarID( $strSidebarIDHash, false );	// the second parameter needs to be false not to increment the count.	
 		$strScoped = $bIsScoped ? ' scoped' : '';
-		$strStyleRules = "<style type='text/css' class='style_{$strIDAttribute}'{$strScoped}>";	// The name attribute is invalid in a scoped tag. use the class attribute to identify this call.
+		$strStyleRules = "<style type='text/css' title='test' class='style_{$strIDAttribute}'{$strScoped}>";	// The name attribute is invalid in a scoped tag. use the class attribute to identify this call.
 		
 		// $strStyleRules .= $this->GetVisibilityRules( $strSidebarID, $arrScreenMaxWidths, 0 );
 			
