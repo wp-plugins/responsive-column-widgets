@@ -528,7 +528,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'title' => __( 'Class Selector Names', 'responsive-column-widgets' ),
 							'pre_html' => '<span title="' . $this->strGetPro . '">',
 							'post_html' => '</span>',
-							'description' => __( 'Set the custom class selector names for the class attributes which is applied to the widget boxes.', 'responsive-column-widgets' ),
+							'description' => __( 'Set the custom class selector names for the class attributes which is applied to the widget boxes. This cannot be empty.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'pre_field' => '<span class="text-input-field">',
 							'post_field' => '</span>',
@@ -1393,9 +1393,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			
 		}	
 		
-		// Format and sanitize values
-		foreach ( $arrValidate['general_css_class_attributes'] as &$arrElem ) 
-			$arrElem = $this->oOption->SanitizeAttribute( trim( $arrElem ) );
+		// Format and sanitize the values
+		foreach ( $arrValidate['general_css_class_attributes'] as $strKey => &$strElem ) {
+			
+			$strElem = $this->oOption->SanitizeAttribute( trim( $strElem ) );
+			$strElem = ! empty( $strElem ) ? $strElem : $this->oOption->arrOptions['general']['general_css_class_attributes'][ $strKey ];	// 'general_css_class_attributes' cannot be empty.
+			
+		}
 			
 		$arrValidate['allowedhtmltags'] = $this->oOption->ConvertStringToArray( $arrValidate['allowedhtmltags'] ); 		
 		
