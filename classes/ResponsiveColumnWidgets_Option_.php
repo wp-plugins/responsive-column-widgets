@@ -55,7 +55,7 @@ class ResponsiveColumnWidgets_Option_ {
 		'autoinsert_disable_categories'	=> array(),	
 		'autoinsert_disable_post_ids'	=> array(),	
 		// since 1.1.1.2
-		'remove_id_attributes' => true,	
+		'remove_id_attributes' => false,	
 	);	
 	public $arrCapabilities = array(	// used in the drop-down list of the General Options page.
 		0 => 'manage_options',
@@ -173,7 +173,7 @@ class ResponsiveColumnWidgets_Option_ {
 		// However, if the user set it by themselves but do not set the column number that is to be one, it will not be a perfect responsive design;
 		// even though the browser width is diminished, the columns remain multiple.
 		// There shuold be a safe guard to force the minimum number of the columns at some point. Let's make it 240px which should be narrow enough 
-		// for most browsers to have mere single column.
+		// for most browsers to have mere a single column.
 		
 		$intMinimumScreenMaxWidth = 240;
 		$arrSanitize = array();
@@ -185,7 +185,7 @@ class ResponsiveColumnWidgets_Option_ {
 			if ( $intScreenMaxWidth == 0 ) {	// no problem
 				
 				$arrSanitize[0] = $arrColumns;
-				$bIsThereOneColumn = $this->IsOneColumm( $arrColumns );
+				$bIsThereOneColumn = $this->IsOneColumm( $arrColumns );	
 				continue;
 				
 			}

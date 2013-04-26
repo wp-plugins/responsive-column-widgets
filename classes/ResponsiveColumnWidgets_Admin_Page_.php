@@ -525,10 +525,10 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						),	
 						array(  
 							'id' => 'general_css_class_attributes',
-							'title' => __( 'Class Names', 'responsive-column-widgets' ),
+							'title' => __( 'Class Selector Names', 'responsive-column-widgets' ),
 							'pre_html' => '<span title="' . $this->strGetPro . '">',
 							'post_html' => '</span>',
-							'description' => __( 'Set the custom names for the class attributes.', 'responsive-column-widgets' ),
+							'description' => __( 'Set the custom class selector names for the class attributes which is applied to the widget boxes.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'pre_field' => '<span class="text-input-field">',
 							'post_field' => '</span>',

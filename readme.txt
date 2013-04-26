@@ -18,13 +18,14 @@ When you want to display widgets horizontally, I know it’s such a headache to 
 
 <h4>Features</h4>
 * **Displays widgets in clolums** - the main feature of this plugin.
-* **Set Number of Columns per Row** - flexibily set numbers of columns in each row.
-* **Responsive Design** - when the browser width is less than 600 px, it automatically adjusts the layout. This is for tablet and mobile visitors.
+* **Responsive Design** - when the browser width changes, it automatically adjusts the layout. This is for tablet and mobile visitors.
+* **Set Number of Columns per Row** - flexibily set the number of columns in each row.
+* **Set Number of Columns per Browser Width** - flexibily set the numberb of columns by browser width.
 * **Up to 12 columns** - for example, if you have 24 registered widgets, you can displays 12 items in two rows.
 * **Works in Posts/Pages** - with the shortcode, you can embed the responsive widgets in post and pages.
 * **PHP code and Shortcode** - use them to display the widgtes in theme template or in posts/pages.
 * **Default Sidebars Integration** - The sidebars defined by your theme also can be displayed in columns.
-* **Auto Insert Widget Box** - The widget box can be embedded automatically without the shortcode.
+* **Auto Insert** - The widget box can be embedded automatically without the shortcode.
 * and [more](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/).
   
 == Installation ==
@@ -40,13 +41,14 @@ Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-wi
 == Other Notes ==
 
 = Basic Three Steps =
-1. Go to Appearance > Widgets. You'll see a new custom sidebar box named **Responsive Custom Widgets**.,
-2. Add widgtes to it.,
+1. Go to Appearance > Widgets. You'll see a new custom sidebar box named **Responsive Custom Widgets**.
+2. Add widgtes to it.
 3. To display the added widgets in a post, there are mainly two different means.
  * **Option A**: add the shortcode in a post.
  
  `[responsive_column_widgets]`
- 
+
+* 
  * **Option B**: use the auto-insert feature by enabling the **Enable Auto-insert** option in the plugin setting page, **New / Edit**.
 
 = Specify Different Number of Columns in Each Row = 
@@ -122,9 +124,12 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.1.2 =
+* Changed: the method of rendering widget boxes not to use *display:none* for different screen max-widths.
+
 = 1.1.1.2 - 04/23/2013 =
 * Added: the option to decide whether ID attributes should be removed or not.
-* Fixed: an issue that updating option items of the General Options removed the some of the internal settings.
+* Fixed: an issue that updating option items of the General Options removed some of the internal settings.
 * Added: the edit icon in the Manage page.
 
 = 1.1.1.1 - 04/22/2013 =
