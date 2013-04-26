@@ -101,7 +101,7 @@ class ResponsiveColumnWidgets_Styles_ {
 				
 		$strIDAttribute = $strCallID;	// $this->GetIDSelectorBySidebarID( $strSidebarIDHash, false );	// the second parameter needs to be false not to increment the count.	
 		$strScoped = $bIsScoped ? ' scoped' : '';
-		$strStyleRules = "<style type='text/css' title='test' class='style_{$strIDAttribute}'{$strScoped}>";	// The name attribute is invalid in a scoped tag. use the class attribute to identify this call.
+		$strStyleRules = "<style type='text/css' class='style_{$strIDAttribute}'{$strScoped}>";	// The name attribute is invalid in a scoped tag. use the class attribute to identify this call.
 		
 		// $strStyleRules .= $this->GetVisibilityRules( $strSidebarID, $arrScreenMaxWidths, 0 );
 			
