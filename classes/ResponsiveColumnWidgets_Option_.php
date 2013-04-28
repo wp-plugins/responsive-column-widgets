@@ -84,6 +84,7 @@ class ResponsiveColumnWidgets_Option_ {
 			),
 			'has_reviewed' => false,	 // since 1.1.1.2
 			'time_first_option_update' => null,	// since 1.1.1.2 - set it null so that isset() can be used.
+			'general_css_load_in_head' => array(),	// since 1.1.2.1
 		),
 	);
 	function __construct( $strOptionKey, $strFilePath=null ) {
@@ -97,15 +98,11 @@ class ResponsiveColumnWidgets_Option_ {
 		// wp_parse_args(), array() + array(), array_merge() - do not work with multi-dimensional arrays
 		// array_replace_recursive() - does not support PHP below 5.3.0
 		$this->arrOptions = $this->UniteArraysRecursive( $this->arrOptions, $this->arrDefaultOptionStructure );	// $this->arrOptions = $this->array_replace_recursive( $this->arrDefaultOptionStructure, $this->arrOptions );
-		
-		// $this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] = isset( $this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] ) ? $this->arrOptions['boxes'][$this->arrDefaultParams['sidebar']] + $arrDefaultBoxParams : $arrDefaultBoxParams;
-		// $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] = wp_parse_args( $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ], $arrDefaultBoxParams );
-		
-		$arrDefaultBoxParams = $this->arrDefaultSidebarArgs + $this->arrDefaultParams;
-		$arrCurrentDefaultBoxParams = isset( $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] ) ? $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] : array();
+			
+		$this->arrDefaultParams = $this->arrDefaultSidebarArgs + $this->arrDefaultParams;
 		$this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] = $this->UniteArraysRecursive( 
-			$arrCurrentDefaultBoxParams, 
-			$arrDefaultBoxParams 
+			isset( $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] ) ? $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] : array(), 
+			$this->arrDefaultParams 
 		);
 	
 		// store plugin data
@@ -136,9 +133,8 @@ class ResponsiveColumnWidgets_Option_ {
 		// If the value is an array it will convert it to string. ( this is useful to display in a form field )
 		// If the array to string convertsion is on, it uses $strDelim1 and $strDelim2 to implode() the array.
 		// Up to the second dimension is supported for multi-dimensional arrays.
-		$arrDefaultBoxParams = $this->arrDefaultSidebarArgs + $this->arrDefaultParams;
-		
-		$vValue = isset( $arrDefaultBoxParams[ $strKey ] ) ? $arrDefaultBoxParams[ $strKey ] : null;
+				
+		$vValue = isset( $this->arrDefaultParams[ $strKey ] ) ? $this->arrDefaultParams[ $strKey ] : null;
 		
 		if ( ! $bConvertToString ) return $vValue;
 		
@@ -156,6 +152,38 @@ class ResponsiveColumnWidgets_Option_ {
 		
 	}
 
+	/*
+	 * Methods for format & sanitize a parameter array.
+	*/
+	public function FormatParameterArray( $arrParams ) {	// since 1.1.2 - It's public because the Auto-Insert class also uses it. Moved from the core class in 1.1.2.1
+		
+		// Determine the sidebar ID ( widget box's ID ).
+		$arrParams['sidebar'] = ! empty( $arrParams['sidebar'] ) 
+			? $arrParams['sidebar'] 
+			: $this->FindWidgetBoxSidebarIDFromParams( $arrParams );
+		
+		// If the option array holds the default parameter values for this widget box ( the custom sidebar ), get them.
+		$arrDefaultParams = isset( $this->arrOptions['boxes'][ $arrParams['sidebar'] ] ) 
+			? $this->arrOptions['boxes'][ $arrParams['sidebar'] ] + $this->arrDefaultParams 
+			: $this->arrDefaultParams;
+		
+		// In case it's a call from the shortcode
+		$arrParams = shortcode_atts( $arrDefaultParams, $arrParams );		
+		
+		return $arrParams;
+		
+	}
+	protected function FindWidgetBoxSidebarIDFromParams( $arrParams ) {	// since 1.0.4, moved from the core class in 1.1.2.1
+		
+		if ( isset( $arrParams['label'] ) && ! empty( $arrParams['label'] ) ) 
+			foreach ( $this->arrOptions['boxes'] as $strSidebarID => &$arrBoxOptions ) 
+				if ( $arrBoxOptions['label'] == $arrParams['label'] ) return $strSidebarID;
+			
+		// if nothing could be found, returns the default box ID
+		return $this->arrDefaultParams['sidebar'];
+			
+	}
+	
 	/*
 	 *  Methods for format & sanitize column array. Used by the core class and the admin page class.
  	 */
@@ -283,14 +311,14 @@ class ResponsiveColumnWidgets_Option_ {
 		if ( is_array( $vInput ) )
 			$vInput = $this->ConvertOptionArrayValueToString( $vInput );	// now $vInput becomes a string
 		
-		// Need to ensure it's a string because $vInput can be am already correctly formatted array, passed from the options.
+		// Need to ensure it's a string because $vInput can be an already correctly formatted array, passed from the options.
 		//	'4, 5, 1 | 480: 3, 4, 1' -> array( 0 => array( 0 => '4, 5, 1' ), 1 => array( 0 => 480, 1 => '3, 4, 1' ) )
 		if ( is_string( $vInput ) ) { 	// Case 3
 		
 			$arrParse = $this->ConvertStringToArray( $vInput, '|', ':' );			
 			
 		}
-		else 
+		else 	// Case unknown: set the default value.
 			return array( 0 => array( 3 ), 600 => array( 1 ) );	// returns the default value.
 	
 		// If the pixel width is not set or only one set of column numbers is set whose screen max-width is less than 600px,

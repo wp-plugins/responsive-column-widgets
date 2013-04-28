@@ -20,7 +20,7 @@ When you want to display widgets horizontally, I know it’s such a headache to 
 * **Displays widgets in clolums** - the main feature of this plugin.
 * **Responsive Design** - when the browser width changes, it automatically adjusts the layout. This is for tablet and mobile visitors.
 * **Set Number of Columns per Row** - flexibily set the number of columns in each row.
-* **Set Number of Columns per Browser Width** - flexibily set the numberb of columns by browser width.
+* **Set Number of Columns per Browser Width** - flexibily set the number of columns by browser width.
 * **Up to 12 columns** - for example, if you have 24 registered widgets, you can displays 12 items in two rows.
 * **Works in Posts/Pages** - with the shortcode, you can embed the responsive widgets in post and pages.
 * **PHP code and Shortcode** - use them to display the widgtes in theme template or in posts/pages.
@@ -44,12 +44,11 @@ Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-wi
 1. Go to Appearance > Widgets. You'll see a new custom sidebar box named **Responsive Custom Widgets**.
 2. Add widgtes to it.
 3. To display the added widgets in a post, there are mainly two different means.
- * **Option A**: add the shortcode in a post.
- 
+* **Option A**: add the shortcode in a post.
+
  `[responsive_column_widgets]`
 
-* 
- * **Option B**: use the auto-insert feature by enabling the **Enable Auto-insert** option in the plugin setting page, **New / Edit**.
+* **Option B**: use the auto-insert feature by enabling the **Enable Auto-insert** option in the plugin setting page, **New / Edit**.
 
 = Specify Different Number of Columns in Each Row = 
 By default, the widgets are displayed in 3 columns. It can be changed by setting the columns parameter. 
@@ -124,7 +123,11 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.1.2 =
+= 1.1.2.1 - 04/29/2013 =
+* Changed: the base style to use the parent class selector of the sidebar ID, which was removed in 1.1.2.
+* Added: the option to enqueue styles to avoid style tags to be embedded in the body tag.
+
+= 1.1.2 - 04/27/2013 =
 * Added: the ability to load CSS rules without the scoped attribute for the ones with the Auto-Insert option.
 * Changed: the method of rendering widget boxes not to use *display:none* for different screen max-widths.
 

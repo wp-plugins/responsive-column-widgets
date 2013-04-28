@@ -122,10 +122,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$arrWidgetBoxDefaultOptions = $this->oOption->arrDefaultSidebarArgs + $this->oOption->arrDefaultParams;
 		$arrWidgetBoxDefaultOptions['message_no_widget'] = __( 'No widgetd is added yet.', 'responsive-column-widgets' ); 
 		$arrWidgetBoxOptions = $bIsNew ? $arrWidgetBoxDefaultOptions : $this->oUtil->UniteArraysRecursive( $this->oOption->arrOptions['boxes'][ $strSidebarID ], $arrWidgetBoxDefaultOptions );
-			
-		// Clean up old versions option values and replace them if necessary
-		// $arrWidgetBoxOptions = $this->CleanOldVersionBoxOptions( $arrWidgetBoxOptions );
-		
+					
 		// Add the form elements.
 		$this->AddFormSections(
 			// Section Arrays
@@ -236,8 +233,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 								. '<p class="description">' . __( 'Format', 'responsive-column-widgets' ) . ': <code>' . __( 'column value | pixel: column value | pixel: column value ', 'responsive-column-widgets' ) . '</code><br />'
 								. __( 'The following example displays widgets in 5 column when the browser width is greater than 800, and four when the width is 601 to 800, and three when the width is 481 to 600, and one when the width is 1 to 480.', 'responsive-column-widgets' ) . '</p>e.g. <code>5 | 800: 4 | 600: 3 |480: 1</code>',
 							'type' => 'text',	// must not be number because it's a string containing a sequence of numbers with commas.
-// for debug
-// 'post_html' => $this->DumpArray( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['columns'] ),
 						),		
 						array(
 							'id' => 'maxwidgets',
@@ -272,18 +267,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 								. ' e.g. "1, 3" ' . __( 'where only the first and the third ones will be shown.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'showonly' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['showonly'] ),
-						),	
-						// array(
-							// 'id' => 'offsets',
-							// 'title' => __( 'Width Percentage Offsets', 'responsive-column-widgets' ),
-							// 'description' => __( 'Set the offsets for width percentage. The higher the offset nubmer is, the less will the number of clummns be displayed.', 'responsive-column-widgets' ) . ' '
-								// . __( 'Format', 'responsive-column-widgets' ) . ': ' . __( 'Pixel: Offset, Pixel: Offset, ....', 'responsive-column-widgets' ) . ' '
-								// . 'e.g. 600:3, 480:4, 400:5<br />' 
-								// . __( 'Default:', 'responsive-column-widgets' ) . '&nbsp;' . $this->oOption->GetDefaultValue( 'offsets' ),
-							// 'type' => 'text',
-							// 'size' => 100,
-							// 'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'offsets' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['offsets'] ),		
-						// ),							
+						),							
 						array(  // single button
 							'pre_html' => '<div class="text-info">' . $this->oUserAds->GetTextAd() . '</div>',
 							'id' => 'submit_save_neworedit_middle',
@@ -493,7 +477,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'id' => 'section_css_general', 
 					'capability' => 'manage_options',
 					'title' => __( 'CSS', 'responsive-column-widgets' ), 
-					// 'description' => __( 'test', 'responsive-column-widgets' ),
 					'fields' => array( 	// Field Arrays
 						array(  
 							'id' => 'general_css_timimng_to_load',
@@ -542,7 +525,29 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'size' => 60,
 							'value' => $this->oOption->arrOptions['general']['general_css_class_attributes'],
 							'delimiter' => '<br />',
-						),						
+						),	
+						array(  // since 1.1.2.1
+							'id' => 'general_css_load_in_head',
+							'title' => __( 'Enqueue Styles in Head Tag', 'responsive-column-widgets' ),
+							'tip' => __( "This is for those who use the shortcode or the PHP function, <code>ResponsiveColumnWidgets()</code>, directly into posts or the theme but do not want the style tag to be embedded in the body tag.", 'responsive-column-widgets' ) . ' '
+								. __( "The plugin creates CSS rules based on the passed parameters. So you need to tell the plugin which parameters you used.", 'responsive-column-widgets' ),
+							'pre_field' => $this->GetRegisteredStyles( $this->oOption->arrOptions['general']['general_css_load_in_head'] ),
+							'post_html' => '<p class="description">' . __( "This is for those who use the shortcode or the PHP function, <code>ResponsiveColumnWidgets()</code>, directly into posts or the theme but do not want the style tag to be embedded in the body tag.", 'responsive-column-widgets' ) . ' '
+								. __( "The plugin creates CSS rules based on the passed parameters. So you need to tell the plugin which parameters you used.", 'responsive-column-widgets' ) . ' '
+								. '</p>'
+								. '<p class="description">' . __( "Specify the parameters used in the shorcode or the PHP function per line.", 'responsive-column-widgets' ) . ' '
+								. __( 'They need to be entered in the format of shortcode. If you use <code>array( \'label\' => \'my_widget_box\', \'columns\' => \'3, 4, 1\' )</code> in the PHP function, change it to, <code>label="my_widget_box" columns="3, 4, 1"</code>.', 'responsive-column-widgets' ) . ' '
+								. __( "The one with a blank parameter is already registered by default.", 'responsive-column-widgets' )
+								. '</p>'
+								. '<p class="description">e.g.<br />'
+								. 'label="my_widget_box" columns="3, 4, 1"<br/>'
+								. 'columns="5 | 800: 4 | 600: 1"'
+								. '</p>',
+							'type' => 'textarea',
+							'cols' => 100,
+							'rows' => 8,							
+							'value' => $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['general']['general_css_load_in_head'], array( PHP_EOL ) ),
+						),							
 					),
 				),				
 				// General Options
@@ -592,11 +597,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'delimiter' => '&nbsp;&nbsp;&nbsp;',
 							'value' => $this->oOption->arrOptions['general']['has_reviewed'],
 						),	
-						// array(
-							// 'id' => 'time_first_option_update',
-							// 'type' => 'hidden',
-							// 'value' => $this->oOption->arrOptions['general']['time_first_option_update'],
-						// ),
 						array(  // single button
 							'id' => 'submit_save_2',
 							'type' => 'submit',		// the submit type creates a button
@@ -744,7 +744,31 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 	}
 
+	protected function GetRegisteredStyles( $arrParamLines ) {	// since 1.1.2.1
+
+		$strTable = '<table class="responsive-column-widgets-column-registered-styles" border="0">'
+			. '<tbody>'
+			. '<tr>'
+			. '<td>' . __( 'Registered Codes', 'responsive-column-widgets' ) . '</td>'
+			. '<td>' . $this->GetListFromArray( $arrParamLines ) . '</td>'
+			. '</tr>'
+			. '</tbody>'
+			. '</table>';
+		return $strTable;
+
+	}
+	protected function GetListFromArray( $arr, $strParentTag='ul' ) {	// since 1.1.2.1
 	
+		$strList = "<li>[" . RESPONSIVECOLUMNWIDGETSKEY . "]</li>";	// the default empty parameter.
+		foreach( $arr as $strElem ) 
+			$strList .= "<li>[" 
+				. RESPONSIVECOLUMNWIDGETSKEY 
+				. ( empty( $strElem ) ? $strElem : ' ' . $strElem )
+				. "]</li>";
+		
+		return "<{$strParentTag}>" . $strList . "</{$strParentTag}>";
+		
+	}
 	protected function GetColumnStringValueForInput( $arrColumnInput, $intDefaultScreenMaxWidth=600 ) {	// since 1.1.1
 		
 		// This is used to get a string value for the user input field.
@@ -937,7 +961,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	
 		// if ( WP_DEBUG )
 			// echo $this->DumpArray( $this->oOption->arrOptions );
-
 	
 	}
 	
@@ -1403,6 +1426,17 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			
 		$arrValidate['allowedhtmltags'] = $this->oOption->ConvertStringToArray( $arrValidate['allowedhtmltags'] ); 		
 		
+		$arrValidate['general_css_load_in_head'] = preg_split( "/[\r]\s*/", $arrValidate['general_css_load_in_head'] ); 	// since 1.1.2.1
+		foreach( $arrValidate['general_css_load_in_head'] as $intIndex => $strParams ) {
+			
+			if ( trim( $strParams ) == '' ) continue;	// allows an empty line, which yeilds no parameters.
+			
+			if ( strpos( $strParams, '=' ) === false ) 	// if an equal sign is missing, do not process it.
+				unset( $arrValidate['general_css_load_in_head'][ $intIndex ] );
+				
+		}
+		$arrValidate['general_css_load_in_head'] = array_unique( $arrValidate['general_css_load_in_head'] );
+		
 		// Memory Allocation since 1.0.7.1
 		$this->oOption->arrOptions['general']['memory_allocation'] = empty( $arrValidate['memory_allocation'] ) ? 0 
 			: $this->oUtil->FixNumber( $arrValidate['memory_allocation'], 
@@ -1631,6 +1665,22 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				background-color: inherit;
 			}
 		";
+	}
+	function style_responsive_column_widgets_general( $strStyle ) {
+		return $strStyle . '
+			table.responsive-column-widgets-column-registered-styles {
+
+			}
+			.responsive-column-widgets-column-registered-styles th,
+			.responsive-column-widgets-column-registered-styles td {
+				vertical-align: top;
+				padding: 0px 10px 0px 0px;
+			}	
+			.responsive-column-widgets-column-registered-styles ul {
+				padding: 0px 10px 0px 20px;
+				margin-top: 0px;
+			}				
+		';
 	}
 	function style_responsive_column_widgets_information( $strStyle ) {
 		return $strStyle . '

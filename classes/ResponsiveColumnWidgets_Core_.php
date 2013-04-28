@@ -16,8 +16,8 @@
 class ResponsiveColumnWidgets_Core_ {
 	
 	// Objects
-	public $oOption;		// deals with the plugin options. Made it public in 1.1.2 to allow the AutoInsert class access this object.
-	public $oStyle;		// since 1.1.2 - manipulates CSS rules. It is public because the Auto-Insert class uses it.
+	public $oOption;		// deals with the plugin options. Made it public in 1.1.2 to allow the AutoInsert class access this object. In 1.1.2.1 the StyleLoader class also uses it.
+	public $oStyle;		// since 1.1.2 - manipulates CSS rules. It is public because the Auto-Insert class uses it. In 1.1.2.1 the StyleLoader class also uses it.
 		
 	// Default properties
 	protected $strShortCode;
@@ -26,7 +26,7 @@ class ResponsiveColumnWidgets_Core_ {
 	protected $arrDefaultParams = array();	// will be overriden by the option object's array in the constructor.
 			
 	protected $strClassSelectorBox2 ='widget-area';
-	protected $arrClassSelectors = array(	// overriden by the option in the constructor
+	public $arrClassSelectors = array(	// overriden by the option in the constructor, made it public in 1.1.2.1 to allow the StyleLoader class to access it.
 		'box' => 'responsive_column_widgets_box',
 		'column' => 'responsive_column_widgets_column',
 		'row' => 'responsive_column_widgets_row',
@@ -208,7 +208,7 @@ class ResponsiveColumnWidgets_Core_ {
 	public function GetWidgetBoxOutput( $arrParams, $bIsStyleNotScoped=false ) {	// since 1.0.4
 		
 		// The function callback for shortcode. Notice that the last part is returning the output.
-		$arrParams = $this->FormatParameterArray( $arrParams );
+		$arrParams = $this->oOption->FormatParameterArray( $arrParams );
 
 		// If this is a callback for the shortcode, the second parameter will be false. Reverse the value.
 		$bIsStyleScoped = $bIsStyleNotScoped ? false : true;
@@ -231,34 +231,7 @@ class ResponsiveColumnWidgets_Core_ {
 		return $strOut . $this->GetCredit();
 		
 	}
-	public function FormatParameterArray( $arrParams ) {	// since 1.1.2 - It's public because the Auto-Insert class also uses it.
 		
-		// Determine the sidebar ID.
-		$arrParams['sidebar'] = ! empty( $arrParams['sidebar'] ) 
-			? $arrParams['sidebar'] 
-			: $this->FindWidgetBoxSidebarIDFromParams( $arrParams );
-		
-		// If the option array holds the default parameter values for this widget box ( the custom sidebar ), get them.
-		$arrDefaultParams = isset( $this->oOption->arrOptions['boxes'][ $arrParams['sidebar'] ] ) 
-			? $this->oOption->arrOptions['boxes'][ $arrParams['sidebar'] ] + $this->arrDefaultParams 
-			: $this->arrDefaultParams;
-		
-		// In case it's a call from the shortcode
-		$arrParams = shortcode_atts( $arrDefaultParams, $arrParams );		
-		
-		return $arrParams;
-		
-	}
-	protected function FindWidgetBoxSidebarIDFromParams( $arrParams ) {	// since 1.0.4
-		
-		if ( isset( $arrParams['label'] ) && ! empty( $arrParams['label'] ) ) 
-			foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => &$arrBoxOptions ) 
-				if ( $arrBoxOptions['label'] == $arrParams['label'] ) return $strSidebarID;
-			
-		// if nothing could be found, returns the default box ID
-		return $this->arrDefaultParams['sidebar'];
-			
-	}		
 	protected function GetCredit() {
 		
 		$strCredit = defined( 'RESPONSIVECOLUMNWIDGETSPROFILE' ) ? 'Responsive Column Widgets Pro' : 'Responsive Column Widgets';

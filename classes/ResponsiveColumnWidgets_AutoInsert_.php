@@ -73,7 +73,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		
 		foreach ( $this->arrEnabledBoxIDs as $strSidebarID ) {
 
-			$arrParams = $this->oCore->FormatParameterArray( array( 'sidebar' => $strSidebarID ) );
+			$arrParams = $this->oOption->FormatParameterArray( array( 'sidebar' => $strSidebarID ) );
 		
 			$oWidgetBox = new ResponsiveColumnWidgets_WidgetBox( 
 				$arrParams, 

@@ -3,7 +3,7 @@
 	Plugin Name: Responsive Column Widgets
 	Plugin URI: http://en.michaeluno.jp/responsive-column-widgets
 	Description: Creates a widget box which displays widgets in columns with a responsive design.
-	Version: 1.1.2
+	Version: 1.1.2.1
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Requirements: This plugin requires WordPress >= 3.2 and PHP >= 5.2.4
@@ -33,17 +33,20 @@ define( "RESPONSIVECOLUMNWIDGETSURL", plugins_url( '', __FILE__ ) );
 // - Arrays
 $arrResponsiveColumnWidgetsClasses = isset( $arrResponsiveColumnWidgetsClasses ) ? $arrResponsiveColumnWidgetsClasses : array();	// stores the class paths.
 $arrResponsiveColumnWidgets_Flags = array( 	// Since 1.1.0 - stores flag values that need to be global.
-	'base_style' => false,		// Indicates whether the base CSS class has been loaded or not.
+	'base_style' => false,		// Indicates whether the base CSS rules have been loaded or not.
 	'arrIDCounters'	 => array(),	// Since 1.1.1 - stores how many times particular widget box's rendering requests are made. Used to assign an ID selector to an ID attribute.
 	'arrWidgetIDAttributes' => array(),	// Since 1.1.1 - stores used ID attributes for widgets to avoid validation errors.
 	'arrUserCustomStyles' => array(), 				// since 1.1.2 - stores box IDs whose user custom CSS rules are loaded.
-	'arrWidgetBoxRenderingCallerIDs' => array(), 	// since 1.1.2 - stores the caller IDs of widget box rendering request based on the widgetb boxes sidebar ID and the used parameter values.
+	'arrWidgetBoxRenderingCallerIDs' => array(), 	// since 1.1.2 - stores the caller IDs of widget box rendering request based on the widget box's sidebar ID and the used parameter values.
+	'arrEnqueueStyleParams' => array(),	// since 1.1.2.1 - stores parameter arrays passed by the ResponsiveColumnWidgets_EnqueueStyle() function.
 );
 // - Objects
 $oResponsiveColumnWidgets_Options = null;		// the option object which stores and manipulates necessary plugin settings.
 $oResponsiveColumnWidgets = null;				// the core object which handles rendering widgets.
 
 // Adds class paths to the above $arrResponsiveColumnWidgetsClasses array and loads them when the plugins_loaded hook is triggered.
+if ( ! class_exists( 'ResponsiveColumnWidgets_RegisterClasses' ) )
+	include_once( dirname( RESPONSIVECOLUMNWIDGETSFILE ) . '/classes/ResponsiveColumnWidgets_RegisterClasses.php' );
 add_action( 
 	'plugins_loaded',
 	// The necessary classes are loaded with the plugins_loaded hook to allow other plugins to modify the 
@@ -56,59 +59,6 @@ add_action(
 	'ResponsiveColumnWidgets_Startup'
 );
 
-class ResponsiveColumnWidgets_RegisterClasses {
-	
-	function __construct( $strClassDirPath ) {
-		
-		// Prepare properties.
-		$this->arrClassPaths =  glob( $strClassDirPath . '*.php' );
-		$this->strClassDirPath = $strClassDirPath;
-		$this->arrClassNames = array_map( array( $this, 'GetNameWOExtFromPath' ), $this->arrClassPaths );
-		$this->SetupClassArray();
-				
-	}
-	function SetupClassArray() {
-		
-		global $arrResponsiveColumnWidgetsClasses;			
-		foreach( $this->arrClassNames as $strClassName ) {
-			
-			// if it's set, do not register ( add it to the array ).
-			if ( isset( $arrResponsiveColumnWidgetsClasses[$strClassName] ) ) continue;
-			
-			$arrResponsiveColumnWidgetsClasses[$strClassName] = $this->strClassDirPath . $strClassName;	
-		}
-
-	}
-	function RegisterClasses() {
-		
-		spl_autoload_register( array( $this, 'CallbackFromAutoLoader' ) );
-
-		// Prepare the option object	
-		global $oResponsiveColumnWidgets_Options;
-		$oResponsiveColumnWidgets_Options = new ResponsiveColumnWidgets_Option( 
-			RESPONSIVECOLUMNWIDGETSKEY, 
-			defined( 'RESPONSIVECOLUMNWIDGETSPROFILE' ) ? RESPONSIVECOLUMNWIDGETSPROFILE : RESPONSIVECOLUMNWIDGETSFILE
-		);	
-		
-		// For plugin extensions
-		do_action( 'RCW_action_started', $oResponsiveColumnWidgets_Options );
-
-	}
-	function GetNameWOExtFromPath( $str ) {
-		
-		return basename( $str, '.php' );	// returns the file name without the extension
-		
-	}
-	function CallbackFromAutoLoader( $strClassName ) {
-		
-		if ( ! in_array( $strClassName, $this->arrClassNames ) ) return;
-		
-		global $arrResponsiveColumnWidgetsClasses;
-		include_once( $arrResponsiveColumnWidgetsClasses[ $strClassName ] . '.php' );
-		
-	}
-	
-}
 /*
  *  Activation / Deactivation Hook
  * */
@@ -149,20 +99,10 @@ register_activation_hook(
 	)
 );
 
-register_deactivation_hook( RESPONSIVECOLUMNWIDGETSFILE, 'ResponsiveColumnWidgets_CleanupTransients' );
-function ResponsiveColumnWidgets_CleanupTransients() {
-	
-	// Delete transients
-	global $wpdb, $table_prefix;
-	$strPrefixFeedTransient = 'RCWFeed_';	
-	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_%{$strPrefixFeedTransient}%' )" );
-	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_timeout%{$strPrefixFeedTransient}%' )" );
-	
-	$strPrefixTransient = 'RCW_IMG';	
-	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_%{$strPrefixTransient}%' )" );
-	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_timeout%{$strPrefixTransient}%' )" );
-	
-}
+if ( ! class_exists( 'ResponsiveColumnWidgets_Cleaner' ) )
+	include_once( dirname( RESPONSIVECOLUMNWIDGETSFILE ) . '/classes/ResponsiveColumnWidgets_Cleaner.php' );
+register_deactivation_hook( RESPONSIVECOLUMNWIDGETSFILE, 'ResponsiveColumnWidgets_Cleaner::CleanTransients' );
+
 /*
  *  To start up
  */
@@ -172,7 +112,7 @@ function ResponsiveColumnWidgets_Startup() {
 	
 	// Must be done after registering the classes.
 	global $oResponsiveColumnWidgets;
-	$oResponsiveColumnWidgets = new ResponsiveColumnWidgets_Core( 'responsive_column_widgets', $oResponsiveColumnWidgets_Options );
+	$oResponsiveColumnWidgets = new ResponsiveColumnWidgets_Core( RESPONSIVECOLUMNWIDGETSKEY, $oResponsiveColumnWidgets_Options );
 
 	// Admin Page - $oAdmin is local 
 	$oAdmin = new ResponsiveColumnWidgets_Admin_Page( 
@@ -190,7 +130,7 @@ function ResponsiveColumnWidgets_Startup() {
 }
 
 /*
- * For general plugin users.
+ * Front-end functions for general plugin users.
  * */
 function ResponsiveColumnWidgets( $arrParams ) {
 	
@@ -203,5 +143,18 @@ function ResponsiveColumnWidgets( $arrParams ) {
 	
 	// Render the widget box.
 	$oResponsiveColumnWidgets->RenderWidgetBox( $arrParams, false );	// the second paremeter indicates that additional styles will use the scoped attribute.
+	
+}
+function ResponsiveColumnWidgets_EnqueueStyle( $arrParams ) {	// since 1.1.2.1
+	
+	global $arrResponsiveColumnWidgets_Flags;
+	
+	// Shcedules to load the given widget box's ( sidebar ID ) style in the head tag.
+	// This is used to avoid the style tag to be embedded inside the body tag with the scoped attribute
+	// for the use of shortcode, the PHP code ( the above ResponsiveColumnWidgets() function ), and user-defined custom hooks.
+	// This must be done prior to the head tag.
+	
+	if ( is_array( $arrParams ) )
+		$arrResponsiveColumnWidgets_Flags['arrEnqueueStyleParams'][] = $arrParams;
 	
 }
