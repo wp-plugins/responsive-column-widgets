@@ -43,10 +43,37 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 			$this->strWidgetName, 
 			array( 'description' => __( 'A widget that encapsulates a sidebar.', 'responsive-column-widgets' ), ) 
 		);
-	
+		
+		// Enqueue styles - since 1.1.3
+		add_action( 'wp_loaded', array( $this, 'EnqueueStyles' ) );
+		
 	}
 	
+	public function EnqueueStyles() {	// since 1.1.3, public as called from hooks.
 		
+		// This method must be loaded after the $wp_registered_widgets varibale is set
+		// ,after these hooks: widgets_init, register_sidebar, wp_register_sidebar_widget.
+		
+		// Retrieve the active registered plugin widgets.
+		$oWO = new ResponsiveColumnWidgets_WidgetOptions;
+		$arrWidgetOptions = $oWO->GetRegisteredWidgetOptionsByBaseID();
+
+		// Add the parameters into the flag array so that the core object will read them and add the style in the header if the 
+		// option allows it.
+		global $arrResponsiveColumnWidgets_Flags;		
+		foreach ( $arrWidgetOptions as $arrWidgetOption ) {
+			
+			// Set up the parameter array.
+			$arrParams = array( 'sidebar' => $arrWidgetOption['sidebarid_selected'] );
+	
+			// Set it in the global flag array.
+			// if ( ! in_array( $arrParams, $arrResponsiveColumnWidgets_Flags['arrEnqueueStyleParams'] ) )
+				$arrResponsiveColumnWidgets_Flags['arrEnqueueStyleParams'][] = $arrParams;
+			
+		}
+		
+	}
+	
 	protected function GetContainerSidebarID() {	// since 1.1.3
 					
 		foreach( get_option('sidebars_widgets') as $strSidebarID => $oRegisteredWidgets ) 
