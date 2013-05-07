@@ -86,6 +86,10 @@ class ResponsiveColumnWidgets_Option_ {
 			'time_first_option_update' => null,	// since 1.1.1.2 - set it null so that isset() can be used.
 			'general_css_load_in_head' => array(),	// since 1.1.2.1
 		),
+		// since 1.1.3
+		'hierarchy' => array( 	// stores registered sidebar IDs and their relationshipts with plugin's widget boxes.
+			'responsive_column_widgets' => array(),
+		),
 	);
 	function __construct( $strOptionKey, $strFilePath=null ) {
 	
@@ -114,7 +118,7 @@ class ResponsiveColumnWidgets_Option_ {
 			
 	}
 	
-	function Update() {
+	public function Update() {
 		
 		update_option( $this->strOptionKey, $this->arrOptions );
 		

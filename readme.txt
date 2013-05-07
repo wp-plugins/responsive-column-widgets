@@ -44,6 +44,7 @@ Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-wi
 1. Go to Appearance > Widgets. You'll see a new custom sidebar box named **Responsive Custom Widgets**.
 2. Add widgtes to it.
 3. To display the added widgets in a post, there are mainly two different means.
+
 * **Option A**: add the shortcode in a post.
 
  `[responsive_column_widgets]`
@@ -122,6 +123,9 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 4. ***Responsiveness***
 
 == Changelog ==
+
+= 1.1.3 =
+* Added: the widget that encapsulates a sidebar (still experimental).
 
 = 1.1.2.1 - 04/29/2013 =
 * Changed: the base style to use the parent class selector of the sidebar ID, which was removed in 1.1.2.

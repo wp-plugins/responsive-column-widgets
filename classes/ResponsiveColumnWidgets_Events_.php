@@ -15,10 +15,18 @@ class ResponsiveColumnWidgets_Events_ {
 		
 		$this->oOption = $oOption;
 		
-		// for activation hook
+		// For activation hook
 		add_action( 'RCWP_action_setup_transients', array( $this, 'SetUpTransients' ) );
 		
-		// for SimplePie cache renewal events - since 1.0.7
+		// Since 1.1.3 - for widget registration Ajax callback
+		if ( isset( $_GET['rcw_ajax_request'] ) ) {
+			
+			add_action( 'wp_ajax_nopriv_get_sidebar_hierarchy', array( $this, 'WidgetRegistrationAjaxCallback' ) );
+			add_action( 'wp_ajax_get_sidebar_hierarchy', array( $this, 'WidgetRegistrationAjaxCallback' ) );
+		
+		}
+		
+		// For SimplePie cache renewal events - since 1.0.7
 		if ( isset( $_GET['doing_wp_cron'] ) )	// if WP Cron is the one which loaded the page,
 			add_action( 'RCWP_action_simplepie_renew_cache', array( $this, 'RenewCaches' ) );
 	
@@ -40,7 +48,23 @@ class ResponsiveColumnWidgets_Events_ {
 			
 		}
 	
+		// Debug API that dumps requested option values
+		if ( isset( $_GET['responsive_column_widgets_debug'] ) ) {
+			
+			ResponsiveColumnWidgets_Debug::DumpOption( $_GET['responsive_column_widgets_debug'] );
+			exit;
+			
+		}
+	
 	}
+	
+	public function WidgetRegistrationAjaxCallback() {	 // since 1.1.3 
+		
+		$oSH = new ResponsiveColumnWidgets_SidebarHierarchy( $this->oOption );
+		$oSH->DumpSidebarHierarchyAsJSON();
+		
+	}
+	
 	function SetUpTransients() {
 				
 		// Setup Transients

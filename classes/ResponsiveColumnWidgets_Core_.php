@@ -57,14 +57,10 @@ class ResponsiveColumnWidgets_Core_ {
 			$this->arrClassSelectors
 		);
 				
-		// register this plugin sidebar; if already registered, it will do nothing
+		// Register this plugin sidebar; if already registered, it will do nothing
 		$this->RegisterSidebar();	// must be called after $this->oOption is set.
 		
-		// add the stylesheet - set the order number to 100 which is quite low to load it after others have loaded.
-		// add_action( 'wp_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );	
-		// add_action( 'login_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );
-		// add_action( 'admin_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );
-		
+		// Add the stylesheet	
 		if ( isset( $this->oOption->arrOptions['general']['general_css_timimng_to_load'] ) 
 			&& ! $this->oOption->arrOptions['general']['general_css_timimng_to_load'] ) {	// 0 for the header
 			

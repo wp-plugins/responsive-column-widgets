@@ -1,7 +1,7 @@
 <?php
 /**
 	Loads a widget box style in the head tag. 
-	This class is not designed to be extensible as it is also used earlier than the auto-lader, which requres direct inclusion.
+	This class is not designed to be extensible as it is also used earlier than the auto-loader, which requres direct inclusion.
 	
  * @package     Responsive Column Widgets
  * @copyright   Copyright (c) 2013, Michael Uno
@@ -65,8 +65,6 @@ class ResponsiveColumnWidgets_StyleLoader {
 			$oWidgetBox->GetScreenMaxWidths(), 
 			false	// no scoped 
 		);
-					
-		
+						
 	}	
-		
 }
