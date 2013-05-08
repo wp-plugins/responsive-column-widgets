@@ -18,6 +18,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 	protected $strWidgetName = 'Responsive Column Widget Box';
 	protected $strClassSelectorFormSelect = 'responsive_column_widget_box_form_select';	// refered by the plugin JavaScript script to find out the container sidebar ID.
 	protected $strClassSelectorFormOption = 'responsive_column_widget_box_form_option';	// refered by the plugin JavaScript script to disable cetain option tag elements.
+	protected $strClassSelector_ContainerSidebarID = 'responsive_column_widget_box_form_container_sidebar_id';
 	
 	public static function RegisterWidget() {
 	
@@ -63,6 +64,9 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 		global $arrResponsiveColumnWidgets_Flags;		
 		foreach ( $arrWidgetOptions as $arrWidgetOption ) {
 			
+			// The sidebarid_selected key must be set. If not it must have something went wrong when updating the widget options in widgets.php.
+			if ( ! isset( $arrWidgetOption['sidebarid_selected'] ) ) continue;
+			
 			// Set up the parameter array.
 			$arrParams = array( 'sidebar' => $arrWidgetOption['sidebarid_selected'] );
 	
@@ -95,7 +99,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				// Defined the static variable
 				if ( typeof ResponsiveColumnWidgets_Timer == 'undefined' ) {
 					
-					ResponsiveColumnWidgets_Timer = new Date().getTime();	// will be static
+					ResponsiveColumnWidgets_Timer = new Date().getTime();	// the variable will be static
 					
 				} else  {	// the else clause helps to execute the first call.
 					
@@ -133,36 +137,57 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				// Remove all disable attributes assigned to the plugin's widget's form option tags.
 				jQuery( "select option.<?php echo $this->strClassSelectorFormOption;?>" )
 					.removeAttr( 'disabled' );
-				
-				// Iterate the plugin's select tags.
-				jQuery( "select.<?php echo $this->strClassSelectorFormSelect; ?>" ).each( function() {
 					
-					var select = jQuery( this );
-					var container_sidebar_id = select.closest( ".widgets-sortables" ).attr( "id" );
+				// Select the sidebar box container div and iterate through the container div elements.
+				jQuery( 'div.widgets-sortables' ).each( function() {
 					
-					// Skip the undefined id element because it means either it belongs to the inactive sidebar box / the default factory box or removed.
-					if ( typeof container_sidebar_id == 'undefined' ) return true;	// to be equevalent to the continue command in loop, return true.
-					
-					// Iterate the option tags which belongs to the select tag.
-					var option = select.find( "option.<?php echo $this->strClassSelectorFormOption; ?>" );
-					option.each( function() {
-					
-						// this.text : the label displayed in the option item.
-						// this.value : the value set in the option tag.
-						// alert( this.text + ' ' + this.value );
-						
-						// If the iterating sidebar ID is present in the dependencies, disable it.
-						if ( jQuery.inArray( this.value, data[ container_sidebar_id ] ) != -1 )
-							jQuery( this ).attr( 'disabled', 'disabled' );	
-						
-						// Remove the disabled attribute for the selected item if it's not the container sidebar ID.
-						if ( container_sidebar_id !=  this.value ) 
-							jQuery( this ).filter( ":selected" ).removeAttr( "disabled" );
-						
-					});
-					
-				});								
+					var container_div = jQuery( this );	// var container_div = select.closest( ".widgets-sortables" );
+					var container_sidebar_id = container_div.attr( "id" );
 
+					// Prepare an array for selected IDs.
+					var selectedIDs = new Array();
+					
+					// Iterate the plugin's select tags.
+					container_div.find( "select.<?php echo $this->strClassSelectorFormSelect; ?>" ).each( function() {
+						
+						var select = jQuery( this );
+								
+						// Skip the undefined id element because it means either it belongs to the inactive sidebar box / the default factory box or removed.
+						if ( typeof container_sidebar_id == 'undefined' ) return true;	// to be equevalent to the continue command in loop, return true.
+						
+						// Iterate the option tags which belongs to the select tag.
+						var option = select.find( "option.<?php echo $this->strClassSelectorFormOption; ?>" );
+						option.each( function() {
+						
+							// this.text : the label displayed in the option item.
+							// this.value : the value set in the option tag.
+							// alert( this.text + ' ' + this.value );
+							
+							// If the iterating option has the selected attribute, store it in the array.
+							if ( jQuery( this ).is( ':selected' ) )
+								selectedIDs.push( jQuery( this ).val() );
+							
+							// If the iterating sidebar ID is present in the dependencies, disable it.
+							if ( jQuery.inArray( this.value, data[ container_sidebar_id ] ) != -1 )
+								jQuery( this ).attr( 'disabled', 'disabled' );	
+
+							// If the container sidebar ID is present in the dependencies of the iterating sidebar, disable it.
+							if ( jQuery.inArray( container_sidebar_id, data[ this.value ] ) != -1 )
+								jQuery( this ).attr( 'disabled', 'disabled' );	
+			
+							// Remove the disabled attribute for the selected item if it's not the container sidebar ID.
+							if ( container_sidebar_id !=  this.value ) 
+								jQuery( this ).filter( ":selected" ).removeAttr( "disabled" );
+														
+						});
+						
+						
+					});	// end of each sidebar box that contains a plugin widget.
+
+					ResponsiveColumnWidgets_EsableSelectedSidebarOptionTag( container_div, selectedIDs );
+						
+				}); // end of each sidebar box iteration.
+													
 				console.log( data );
 				
 			}
@@ -175,24 +200,75 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 					if ( widget_type == 'responsive_column_widget_box' ) {	// alert( 'dropped: sortstop' );					
 						ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration();
 						ResponsiveColumnWidgets_DisableParentSidebarOptionTag( ui.item, id_selector, class_selector );
+						ResponsiveColumnWidgets_SetContainerSidebarID( ui.item );
 					}
 				}		
-			}		
+			}
+			function ResponsiveColumnWidgets_SetContainerSidebarID( item ) {
+				
+				var container_div = jQuery( item ).closest( ".widgets-sortables" );
+				var container_sidebar_id = container_div.attr( "id" );
+				
+				// Set the container sidebar ID to the hidden input field. This is important for the update() method to update the form options.
+				if ( typeof container_sidebar_id !== 'undefined' ) 
+					container_div.find( "input.<?php echo $this->strClassSelector_ContainerSidebarID; ?>" ).val( container_sidebar_id );
+				
+			}
+			function ResponsiveColumnWidgets_EsableSelectedSidebarOptionTag( container_div, selectedIDs ) {
+				
+				// When the multiple same plugin widgets are dropped in one sidebar box, the plugin consider other widget's selected items
+				// as one of the dependencies and disable the option tag containing the sidebar ID as its value.
+				// So we need to enable them.
+				
+				var container_sidebar_id = container_div.attr( "id" );
+				
+				// If multiple plugin widgets are not in the dropped sidebar box, return.
+				if ( container_div.find( "select.<?php echo $this->strClassSelectorFormSelect ;?>" ).length <= 1 ) return;
+				
+				// Create a filter
+				var str_filter_selected_ids = "";
+				jQuery.each( selectedIDs, function( index, sidebar_id ) {
+					if ( sidebar_id == container_sidebar_id ) return true;	// equivalent to the continue command in PHP.
+					var comma = ( index != 0  ? ', ' : '' );
+					str_filter_selected_ids += comma + "[value='" + sidebar_id + "']";
+				});
+				if ( str_filter_selected_ids != '') {					
+					// str_filter_selected_ids += ", " + "[value!='" + container_sidebar_id + "']";
+					console.log( 'filter: ' + str_filter_selected_ids );
+					var selected = container_div.find( "select option.<?php echo $this->strClassSelectorFormOption; ?>" )
+						.filter( str_filter_selected_ids )
+						.each( function(){
+							this.disabled = false;
+						});
+					console.log( "selected items : " + selected.length );
+				}				
+				
+			}
 			function ResponsiveColumnWidgets_DisableParentSidebarOptionTag( item, id_selector, class_selector ) {
 
-				// if ( typeof id_selector === 'undefined' ) 	
-					var container_div = jQuery( item ).closest( ".widgets-sortables" );
-					var container_sidebar_id = container_div.attr( "id" );
-// console.log( container_sidebar_id + ': ' + id_selector );
-
-				// else 
-					// var container_sidebar_id = jQuery( "select#" + id_selector ).closest( ".widgets-sortables" ).attr( "id" );
-				
-				if ( typeof container_sidebar_id === 'undefined' ) return;	
-				container_div.find( 'option' ).filter( "[value='" + container_sidebar_id + "']" ).attr( 'disabled', 'disabled' );
-				
-				// jQuery( "select#" + id_selector + " option." + class_selector ).filter( "[value='" + container_sidebar_id + "']" ).attr( 'disabled', 'disabled' );
+				var container_div = jQuery( item ).closest( ".widgets-sortables" );
+				var container_sidebar_id = container_div.attr( "id" );
 			
+				if ( typeof container_sidebar_id === 'undefined' ) return;		
+				
+				// container_div.find( "option.<?php echo $this->strClassSelectorFormOption; ?>" ).filter( "[value='" + container_sidebar_id + "']" ).attr( 'disabled', 'disabled' );
+
+				// Iterate the option tags which belongs to the select tag.
+				var selectedIDs = new Array();	// Prepare an array for selected IDs.
+				var option = container_div.find( "option.<?php echo $this->strClassSelectorFormOption; ?>" );
+				option.each( function() {
+					
+					// If the iterating sidebar ID is the conteiner sidebar ID, disable it.
+					if ( this.value == container_sidebar_id )
+						jQuery( this ).attr( 'disabled', 'disabled' );	
+
+					// If the iterating option has the selected attribute, store it in the array.
+					if ( jQuery( this ).is( ':selected' ) )
+						selectedIDs.push( jQuery( this ).val() );
+						
+				});
+				ResponsiveColumnWidgets_EsableSelectedSidebarOptionTag( container_div, selectedIDs );
+				
 			}			
 		</script>
 		<?php
@@ -241,7 +317,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 		$strClass_Option = $strID_Selector;
 		
 		// For the hidden input tag that indicates the sidebar ID of the one to which the selected sidebar belongs.
-		$strID_SidebarBelong = $this->get_field_id( 'sidebarid_parent' ) . '_' . uniqid();	// the string "sidebarid" will be the key for the field and passed as the input array key to the update() method.
+		$strID_SidebarParent = $this->get_field_id( 'sidebarid_parent' ) . '_' . uniqid();	// the string "sidebarid" will be the key for the field and passed as the input array key to the update() method.
 		$strName_SidebarBelong = $this->get_field_name( 'sidebarid_parent' );	// the string "sidebarid" will be the key for the field and passed as the input array key to the update() method.
 		
 		// The registered sidebar arrays.
@@ -250,12 +326,14 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 		// Create the array for the hierarchy reference.
 		$oSH = new ResponsiveColumnWidgets_SidebarHierarchy;
 		$arrDependencies = $oSH->GetDependencies();
-
+		unset( $oSH ); // make sure the object is released.
+		
 // echo 'Sidebar Hierarchy: <br />'
 	// . $this->DumpArray( $arrDependencies );			
 
 		$oWO = new ResponsiveColumnWidgets_WidgetOptions;
 		$arrWidgetOptions = $oWO->GetRegisteredWidgetOptionsByBaseID();
+		unset( $oWO ); // make sure the object is released.
 		
 // echo 'Widget Options: <br />'
 	// . '<div style="font-size: 80%; margin-left: 0px; padding-left: 0px">'
@@ -271,7 +349,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 		?>
 		<p>	
 	
-			<input type="hidden" name="<?php echo $strName_SidebarBelong; ?>" id="<?php echo $strID_SidebarBelong; ?>" value="<?php echo $this->strContainerSidebarID; ?>" />
+			<input type="hidden" name="<?php echo $strName_SidebarBelong; ?>" id="<?php echo $strID_SidebarParent; ?>" class="<?php echo $this->strClassSelector_ContainerSidebarID; ?>" value="<?php echo $this->strContainerSidebarID; ?>" />
 			<label for="<?php echo $strID_SidebarIDSelected; ?>">
 				<?php _e( 'Select Sidebar', 'responsive-column-widgets' ); ?>:
 			</label>
@@ -323,7 +401,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 			
 			// Set the container sidebar ID to the hidden input field. This is important for the update() method to update the form options.
 			if ( typeof container_sidebar_id !== 'undefined' ) 
-				jQuery( "input#<?php echo $strID_SidebarBelong;?>" ).val( container_sidebar_id );	
+				jQuery( "input#<?php echo $strID_SidebarParent;?>" ).val( container_sidebar_id );	
 				
 			// if ( container_sidebar_id != 'available-widgets' ) {
 				jQuery( document ).ready( function(){	// prevent multiple calls
@@ -339,21 +417,6 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 	protected function AddJavaScript_Events( $strIDSelector, $strClassSelector ) {	// since 1.1.3
 		?>
 		<script type="text/javascript" class="responsive-column-widgets-widget-registration-script" >
-		
-			// When the plugin widget's Save button is pressed				
-			// jQuery( "select#<?php echo $strIDSelector; ?>" ).closest( "form" ).find( 'input[type=submit]' ).click( function( event ) {			
-				// ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration( function( data ) {
-
-					// jQuery( "p.warning" ).css( "color", "green" );	
-					
-					// for( var key in data ) {
-						// if( ! data[ key ] || data[ key ] == '' ) continue; 	// if the value is empty, skip.		
-						// alert( data[ key ] );
-						// console.log( data[ key ] );
-					// }
-					
-				// });
-			// });
 		
 			// When the widget is drag'n-dropped,
 			jQuery( function() {
@@ -371,24 +434,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 	}
 	
 	public function update( $arrNewInstance, $arrOldInstance ) {
-
-// ResponsiveColumnWidgets_Debug::DumpArray( $_POST, dirname( __FILE__ ) . '/info.txt' );		
-// ResponsiveColumnWidgets_Debug::DumpArray( $arrNewInstance, dirname( __FILE__ ) . '/info.txt' );		
-
-
-		// If the 'sidebarid_parent' element is blank, that means the client's browser disables JavaScript.
-		// If so, do not update the passed value because it could contain the parent sidebar ID as the selected one which would cause infinite recursive includsion.
-		// if ( empty( $arrNewInstance['sidebarid_parent'] ) ) return $arrOldInstance;
-			
-		// Save the hierarchial relationship into the option array. Each key has the name of sidebar ID and the element holds the values of the sidebar IDs that is embedded in.
-		// $oOption = & $GLOBALS['oResponsiveColumnWidgets_Options'];
-		// $strSidebarID_Parent = $arrNewInstance['sidebarid_parent'];
-		// if ( ! in_array( $arrNewInstance['sidebarid_selected'], $oOption->arrOptions['hierarchy'][ $strSidebarID_Parent ] ) )
-			// $oOption->arrOptions['hierarchy'][ $strSidebarID_Parent ][] = $arrNewInstance['sidebarid_selected'];
-		// $oOption->Update();
 		
-		// $arrNewInstance = $arrNewInstance + $arrOldInstance;
-				
         return $arrNewInstance;
 	
     }
