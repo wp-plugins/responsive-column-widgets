@@ -89,7 +89,6 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 		// The plugin returns the information of the saved sidebar's relationships between the added plugin widgets.
 		?>
 		<script type="text/javascript" class="responsive-column-widgets-widget-registration-script">
-			var global_responsive_column_widgets_dependencies = new Array();
 
 			function ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration(){
 				
@@ -150,21 +149,51 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 					
 						// this.text : the label displayed in the option item.
 						// this.value : the value set in the option tag.
-						// alert( this.text + ' ' + this.value );	
+						// alert( this.text + ' ' + this.value );
+						
 						// If the iterating sidebar ID is present in the dependencies, disable it.
 						if ( jQuery.inArray( this.value, data[ container_sidebar_id ] ) != -1 )
 							jQuery( this ).attr( 'disabled', 'disabled' );	
 						
+						// Remove the disabled attribute for the selected item if it's not the container sidebar ID.
+						if ( container_sidebar_id !=  this.value ) 
+							jQuery( this ).filter( ":selected" ).removeAttr( "disabled" );
+						
 					});
-					option.filter( ":selected" ).removeAttr( 'disabled' );	// remove the disabled attribute for the selected item.
-					// alert( container_sidebar_id + ': ' + this.value );	
 					
 				});								
 
 				console.log( data );
 				
-			}	
-					
+			}
+			function ResponsiveColumnWidgets_WidgetDropEvent( event, ui, id_selector, class_selector ) {
+				var id = jQuery( ui.item ).attr( 'id' );
+				if ( id ) {
+					var regex_match = id.match( /widget-[0-9]+_(.+)-(__i__|\d+)/i );
+					if ( regex_match !== null && regex_match.hasOwnProperty( 1 ) ) 
+						var widget_type = regex_match[1];
+					if ( widget_type == 'responsive_column_widget_box' ) {	// alert( 'dropped: sortstop' );					
+						ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration();
+						ResponsiveColumnWidgets_DisableParentSidebarOptionTag( ui.item, id_selector, class_selector );
+					}
+				}		
+			}		
+			function ResponsiveColumnWidgets_DisableParentSidebarOptionTag( item, id_selector, class_selector ) {
+
+				// if ( typeof id_selector === 'undefined' ) 	
+					var container_div = jQuery( item ).closest( ".widgets-sortables" );
+					var container_sidebar_id = container_div.attr( "id" );
+// console.log( container_sidebar_id + ': ' + id_selector );
+
+				// else 
+					// var container_sidebar_id = jQuery( "select#" + id_selector ).closest( ".widgets-sortables" ).attr( "id" );
+				
+				if ( typeof container_sidebar_id === 'undefined' ) return;	
+				container_div.find( 'option' ).filter( "[value='" + container_sidebar_id + "']" ).attr( 'disabled', 'disabled' );
+				
+				// jQuery( "select#" + id_selector + " option." + class_selector ).filter( "[value='" + container_sidebar_id + "']" ).attr( 'disabled', 'disabled' );
+			
+			}			
 		</script>
 		<?php
 	}
@@ -239,11 +268,10 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 		$this->strContainerSidebarID = $this->GetContainerSidebarID();
 // echo 'Parent Sidebar ID: ' . $this->strContainerSidebarID . '<br />';
 
-
 		?>
 		<p>	
 	
-			<input type="hidden" name="<?php echo $strName_SidebarBelong; ?>" id="<?php echo $strID_SidebarBelong; ?>" value="" />
+			<input type="hidden" name="<?php echo $strName_SidebarBelong; ?>" id="<?php echo $strID_SidebarBelong; ?>" value="<?php echo $this->strContainerSidebarID; ?>" />
 			<label for="<?php echo $strID_SidebarIDSelected; ?>">
 				<?php _e( 'Select Sidebar', 'responsive-column-widgets' ); ?>:
 			</label>
@@ -252,25 +280,29 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				<?php 
 				foreach( $arrRegisteredSidebars as $arrSidebar ) {
 					
+					$bDisalbed = false;
+					
 					// wp_inactive_widgets is for the Inactive Widgets section box in the admin widget page. So do nothing.
 					if ( $arrSidebar['id'] == 'wp_inactive_widgets' ) continue;	
 					
-					// If the parsing sidebar ID is the same as the container sidebar ID, skip.
-					if ( $arrSidebar['id'] == $this->strContainerSidebarID ) continue;
+					// If the parsing sidebar ID is the same as the container sidebar ID, disable it.
+					if ( $arrSidebar['id'] == $this->strContainerSidebarID ) 
+						$bDisabled = true;
 					
-					// If the parsing sidebar ID matches this widget's parent (container) sidebar ID, skip.
+					// If the parsing sidebar ID matches this widget's parent (container) sidebar ID, disable it.
 					// The $this->id property is defined in the WP_Widget class ( the parent class of this class ) and the id properties is the widget id of this widget instance.
 					if ( isset( $arrWidgetOptions[ $this->id ]['sidebarid_parent'] ) && $arrWidgetOptions[ $this->id ]['sidebarid_parent'] == $arrSidebar['id'] ) 
-						continue;
+						$bDisabled = true;
 					
-					// If the parsing sidbar ID ( the candidate to be a child sidebar ) already has this container sidebar as its child, then skip.
+					// If the parsing sidbar ID ( the candidate to be a child sidebar ) already has this container sidebar as its child, then disable it.
 					if ( isset( $arrDependencies[ $arrSidebar['id'] ] ) && in_array( $this->strContainerSidebarID, $arrDependencies[ $arrSidebar['id'] ] ) )
-						continue;
+						$bDisabled = true;
 											
 					echo '<option class="' . $strClass_Option . ' ' . $this->strClassSelectorFormOption . '" value="' 
 						. esc_attr( $arrSidebar['id'] )
 						. '" '
 						. ( $arrSidebar['id'] == $arrInstance['sidebarid_selected'] ? 'selected="Selected"' : '' )
+						. ( $bDisabled ? ' disabled=Disabled' : '' ) 
 						. '>'
 						. ucwords( $arrSidebar['name'] )
 						. '</option>';
@@ -283,17 +315,22 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 <?php // echo '<p id="test" class="warning">Sidebar ID: </p>'; ?>
 		<script type="text/javascript" class="responsive-column-widgets-widget-registration-script" >
 // jQuery( "p.warning" ).css( "color", "red" );	// debug
+			var select = jQuery( "select#<?php echo $strID_Selector; ?>" );
+			var container_div = jQuery( "select#<?php echo $strID_Selector; ?>" ).closest( ".widgets-sortables" );
 			var container_sidebar_id = jQuery( "select#<?php echo $strID_Selector; ?>" ).closest( ".widgets-sortables" ).attr( "id" );
 // jQuery( 'p#test' ).append( sidebar_id + '<br />' );		// debug
-			// jQuery( "select#<?php echo $strID_Selector; ?> option.<?php echo $strClass_Option;?>").filter( "[value='" + sidebar_id + "']" ).attr( 'disabled', 'disabled' ).siblings().removeAttr( 'disabled' );
+			// jQuery( "select#<?php echo $strID_Selector; ?> option.<?php echo $strClass_Option;?>").filter( "[value='" + container_sidebar_id + "']" ).attr( 'disabled', 'disabled' ).siblings().removeAttr( 'disabled' );
 			
-			jQuery( "input#<?php echo $strID_SidebarBelong;?>" ).val( container_sidebar_id );	// set the container sidebar ID to the hidden input field.
-			// if ( typeof container_sidebar_id != 'undefined' ) {
+			// Set the container sidebar ID to the hidden input field. This is important for the update() method to update the form options.
+			if ( typeof container_sidebar_id !== 'undefined' ) 
+				jQuery( "input#<?php echo $strID_SidebarBelong;?>" ).val( container_sidebar_id );	
+				
 			// if ( container_sidebar_id != 'available-widgets' ) {
 				jQuery( document ).ready( function(){	// prevent multiple calls
 					ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration();
 				});			
 			// }
+			ResponsiveColumnWidgets_DisableParentSidebarOptionTag( select, "<?php echo $strID_Selector; ?>", "<?php echo $strClass_Option; ?>" );
 		</script>
 		<?php 
 			$this->AddJavaScript_Events( $strID_Selector, $strClass_Option ); 
@@ -322,23 +359,11 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 			jQuery( function() {
 				var $widget = jQuery( "select#<?php echo $strIDSelector; ?>" ).closest( "div.widgets-sortables" );
 				$widget.bind( 'sortstop', function( event, ui ){
-					var id = jQuery( ui.item ).attr( 'id' );
-					if ( id ) {
-						var widget_type = id.match(/widget-[0-9]+_(.+)-[0-9]+/i)[1];
-console.log( 'called: sortstop' );						
-						if ( widget_type == 'responsive_column_widget_box' ) {	// alert( 'dropped: sortstop' );							
-							ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration();
-						}
-					}
-				})
+					ResponsiveColumnWidgets_WidgetDropEvent( event, ui, "<?php echo $strIDSelector; ?>", "<?php echo $strClassSelector; ?>" );
+				});
 				$widget.bind( 'sortreceive', function( event, ui ){
-					var id = jQuery( ui.item ).attr( 'id' );
-					var widget_type = id.match(/widget-[0-9]+_(.+)-__i__/i)[1];
-console.log( 'called: sortreceive' );											
-					if ( widget_type == 'responsive_column_widget_box' ) {					
-						ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration();
-					}
-				})
+					ResponsiveColumnWidgets_WidgetDropEvent( event, ui, "<?php echo $strIDSelector; ?>", "<?php echo $strClassSelector; ?>" );
+				});
 			});	
 		
 		</script>
