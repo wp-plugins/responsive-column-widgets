@@ -191,7 +191,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				console.log( data );
 				
 			}
-			function ResponsiveColumnWidgets_WidgetDropEvent( event, ui, id_selector, class_selector ) {
+			function ResponsiveColumnWidgets_WidgetDropEvent( event, ui ) {
 				
 				var id = jQuery( ui.item ).attr( 'id' );
 				if ( ! id ) return;
@@ -200,17 +200,19 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				if ( regex_match !== null && regex_match.hasOwnProperty( 1 ) ) 
 					var widget_type = regex_match[1];
 				if ( widget_type != "<?php echo $this->strBaseID; ?>" ) return;
-				
-				ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration();
-				ResponsiveColumnWidgets_DisableParentSidebarOptionTag( ui.item, id_selector, class_selector );
-				ResponsiveColumnWidgets_SetContainerSidebarID( ui.item );
+
+				console.log( '(RCW Log) The widget drop event occurred.' );				
 				
 				// If the second match element consists of all digits, that means the widget is dropped
-				// from another sidebar to the other; the widget is not newly created. In that casem
-				// renew the widget form options by pressing the Save button.
+				// from another sidebar to the other; the widget is not newly created. In that case,
+				// renew(update) the widget form options by pressing the Save button.
 				if ( /^\d+$/.test( regex_match[2] ) )
 					ResponsiveColumnWidgets_PressSaveButton( ui.item );
-										
+
+				ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration();
+				ResponsiveColumnWidgets_DisableParentSidebarOptionTag( ui.item );
+				ResponsiveColumnWidgets_SetContainerSidebarID( ui.item );
+					
 			}
 			function ResponsiveColumnWidgets_PressSaveButton( widget ) {
 				
@@ -218,7 +220,6 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				var save = jQuery( widget ).find( 'input[type=submit]' );
 				if ( save.length != 1 ) return;		// the save button must be only one per widget. Othewise, somethinge went wrong. So do nothing.
 					
-				// alert( 'read' );
 				save.trigger( 'click' );
 				console.log( '(RCW Log) The Responsive Column Widget Box widget has been updated.' );
 				
@@ -279,7 +280,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				}				
 				
 			}
-			function ResponsiveColumnWidgets_DisableParentSidebarOptionTag( item, id_selector, class_selector ) {
+			function ResponsiveColumnWidgets_DisableParentSidebarOptionTag( item ) {
 
 				var container_div = jQuery( item ).closest( ".widgets-sortables" );
 				var container_sidebar_id = container_div.attr( "id" );
@@ -304,7 +305,14 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				});
 				ResponsiveColumnWidgets_EnableSelectedSidebarOptionTag( container_div, selectedIDs );
 				ResponsiveColumnWidgets_SelectAvailable( item.find( "select.<?php echo $this->strClassSelectorFormSelect ;?> option:selected.<?php echo $this->strClassSelectorFormOption; ?>" ) );
-			}			
+			}	
+
+			// do at least once per page load.
+			jQuery( document ).ready( function(){	// prevent multiple calls
+				ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration();
+			});					
+			
+		
 		</script>
 		<?php
 	}
@@ -438,33 +446,22 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 			if ( typeof container_sidebar_id !== 'undefined' ) 
 				jQuery( "input#<?php echo $strID_SidebarParent;?>" ).val( container_sidebar_id );	
 				
-			// if ( container_sidebar_id != 'available-widgets' ) {
-				jQuery( document ).ready( function(){	// prevent multiple calls
-					ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration();
-				});			
-			// }
-			ResponsiveColumnWidgets_DisableParentSidebarOptionTag( select, "<?php echo $strID_Selector; ?>", "<?php echo $strClass_Option; ?>" );
-
-		</script>
-		<?php 
-			$this->AddJavaScript_Events( $strID_Selector, $strClass_Option ); 
-		
-    }
-	protected function AddJavaScript_Events( $strIDSelector, $strClassSelector ) {	// since 1.1.3
-		?>
-		<script type="text/javascript" class="responsive-column-widgets-widget-registration-script" >
-		
-			// When the widget is drag'n-dropped,
-			jQuery( function() {
-				var $widget = jQuery( "select#<?php echo $strIDSelector; ?>" ).closest( "div.widgets-sortables" );
-				$widget.bind( 'sortstop sortreceive', function( event, ui ){
-					ResponsiveColumnWidgets_WidgetDropEvent( event, ui, "<?php echo $strIDSelector; ?>", "<?php echo $strClassSelector; ?>" );
+			// Hook the widget drop event.
+			jQuery( document ).ready( function(){	// prevent multiple calls
+								
+				// When the widget is drag'n-dropped,
+				var container_div = jQuery( "select.<?php echo $this->strClassSelectorFormSelect; ?>" )
+					.closest( "div.widgets-sortables" );
+				container_div.unbind( 'sortstop sortreceive' );	// unbind previous event hooks.
+				container_div.bind( 'sortstop sortreceive', function( event, ui ){
+					ResponsiveColumnWidgets_WidgetDropEvent( event, ui );
 				});
-			});	
-		
+				
+			});				
+			
 		</script>
-		<?php
-	}
+		<?php 	
+    }
 	
 	public function update( $arrNewInstance, $arrOldInstance ) {
 		
