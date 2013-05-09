@@ -184,7 +184,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 						
 					});	// end of each sidebar box that contains a plugin widget.
 
-					ResponsiveColumnWidgets_EsableSelectedSidebarOptionTag( container_div, selectedIDs );
+					ResponsiveColumnWidgets_EnableSelectedSidebarOptionTag( container_div, selectedIDs );
 						
 				}); // end of each sidebar box iteration.
 													
@@ -205,7 +205,10 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				}		
 			}
 			function ResponsiveColumnWidgets_SelectAvailable( selected ) {
-				// var selected = jQuery( "select#test option:selected" );
+				
+				// The number of elements must be single. If it's not, something went wrong. So do nothing.
+				if ( selected.length != 1 ) return;
+
 				if ( selected.is( ':disabled' ) ) {
 					jQuery( selected ).removeAttr( "selected" );	// deselct all items.
 					jQuery( selected ).siblings( ":not( :disabled )" ).each( function(){	
@@ -224,7 +227,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 					container_div.find( "input.<?php echo $this->strClassSelector_ContainerSidebarID; ?>" ).val( container_sidebar_id );
 				
 			}
-			function ResponsiveColumnWidgets_EsableSelectedSidebarOptionTag( container_div, selectedIDs ) {
+			function ResponsiveColumnWidgets_EnableSelectedSidebarOptionTag( container_div, selectedIDs ) {
 				
 				// When the multiple same plugin widgets are dropped in one sidebar box, the plugin consider other widget's selected items
 				// as one of the dependencies and disable the option tag containing the sidebar ID as its value.
@@ -277,8 +280,8 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 						selectedIDs.push( jQuery( this ).val() );
 						
 				});
-				ResponsiveColumnWidgets_EsableSelectedSidebarOptionTag( container_div, selectedIDs );
-				ResponsiveColumnWidgets_SelectAvailable( item.find( "option:selected.<?php echo $this->strClassSelectorFormOption; ?>" ) );
+				ResponsiveColumnWidgets_EnableSelectedSidebarOptionTag( container_div, selectedIDs );
+				ResponsiveColumnWidgets_SelectAvailable( item.find( "select.<?php echo $this->strClassSelectorFormSelect ;?> option:selected.<?php echo $this->strClassSelectorFormOption; ?>" ) );
 			}			
 		</script>
 		<?php
