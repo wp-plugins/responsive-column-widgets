@@ -135,7 +135,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 			function ResponsiveColumnWidgets_DisableDependencyOptionTags( data ) {
 
 				// Remove all disable attributes assigned to the plugin's widget's form option tags.
-				jQuery( "select option.<?php echo $this->strClassSelectorFormOption;?>" )
+				jQuery( "select.<?php echo $this->strClassSelectorFormSelect; ?> option.<?php echo $this->strClassSelectorFormOption;?>" )
 					.removeAttr( 'disabled' );
 					
 				// Select the sidebar box container div and iterate through the container div elements.
@@ -192,17 +192,36 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				
 			}
 			function ResponsiveColumnWidgets_WidgetDropEvent( event, ui, id_selector, class_selector ) {
+				
 				var id = jQuery( ui.item ).attr( 'id' );
-				if ( id ) {
-					var regex_match = id.match( /widget-[0-9]+_(.+)-(__i__|\d+)/i );
-					if ( regex_match !== null && regex_match.hasOwnProperty( 1 ) ) 
-						var widget_type = regex_match[1];
-					if ( widget_type == 'responsive_column_widget_box' ) {	// alert( 'dropped: sortstop' );					
-						ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration();
-						ResponsiveColumnWidgets_DisableParentSidebarOptionTag( ui.item, id_selector, class_selector );
-						ResponsiveColumnWidgets_SetContainerSidebarID( ui.item );
-					}
-				}		
+				if ( ! id ) return;
+				
+				var regex_match = id.match( /widget-[0-9]+_(.+)-(__i__|\d+)/i );
+				if ( regex_match !== null && regex_match.hasOwnProperty( 1 ) ) 
+					var widget_type = regex_match[1];
+				if ( widget_type != "<?php echo $this->strBaseID; ?>" ) return;
+				
+				ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration();
+				ResponsiveColumnWidgets_DisableParentSidebarOptionTag( ui.item, id_selector, class_selector );
+				ResponsiveColumnWidgets_SetContainerSidebarID( ui.item );
+				
+				// If the second match element consists of all digits, that means the widget is dropped
+				// from another sidebar to the other; the widget is not newly created. In that casem
+				// renew the widget form options by pressing the Save button.
+				if ( /^\d+$/.test( regex_match[2] ) )
+					ResponsiveColumnWidgets_PressSaveButton( ui.item );
+										
+			}
+			function ResponsiveColumnWidgets_PressSaveButton( widget ) {
+				
+				// Select the save button element.
+				var save = jQuery( widget ).find( 'input[type=submit]' );
+				if ( save.length != 1 ) return;		// the save button must be only one per widget. Othewise, somethinge went wrong. So do nothing.
+					
+				// alert( 'read' );
+				save.trigger( 'click' );
+				console.log( '(RCW Log) The Responsive Column Widget Box widget has been updated.' );
+				
 			}
 			function ResponsiveColumnWidgets_SelectAvailable( selected ) {
 				
@@ -219,18 +238,20 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 			}	
 			function ResponsiveColumnWidgets_SetContainerSidebarID( item ) {
 				
+				// Sets the container sidebar ID to the hidden input field. 
+				// This is important for the update() method to update the form options.
+				
 				var container_div = jQuery( item ).closest( ".widgets-sortables" );
 				var container_sidebar_id = container_div.attr( "id" );
 				
-				// Set the container sidebar ID to the hidden input field. This is important for the update() method to update the form options.
 				if ( typeof container_sidebar_id !== 'undefined' ) 
 					container_div.find( "input.<?php echo $this->strClassSelector_ContainerSidebarID; ?>" ).val( container_sidebar_id );
 				
 			}
 			function ResponsiveColumnWidgets_EnableSelectedSidebarOptionTag( container_div, selectedIDs ) {
 				
-				// When the multiple same plugin widgets are dropped in one sidebar box, the plugin consider other widget's selected items
-				// as one of the dependencies and disable the option tag containing the sidebar ID as its value.
+				// When multiple plugin widgets are dropped in one sidebar box, the plugin considers the other plugin widget's selected items
+				// as one of the dependencies and disables the option tag containing the sidebar ID as its value.
 				// So we need to enable them.
 				
 				var container_sidebar_id = container_div.attr( "id" );
@@ -240,20 +261,21 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				
 				// Create a filter
 				var str_filter_selected_ids = "";
+				var count = 0;	// somehow the variable, index, below does not start from 0 sometimes. So create a clean one here.
 				jQuery.each( selectedIDs, function( index, sidebar_id ) {
 					if ( sidebar_id == container_sidebar_id ) return true;	// equivalent to the continue command in PHP.
-					var comma = ( index != 0  ? ', ' : '' );
+					var comma = ( count != 0  ? ', ' : '' );
 					str_filter_selected_ids += comma + "[value='" + sidebar_id + "']";
+					count++;
 				});
-				if ( str_filter_selected_ids != '') {					
-					// str_filter_selected_ids += ", " + "[value!='" + container_sidebar_id + "']";
-					console.log( 'filter: ' + str_filter_selected_ids );
-					var selected = container_div.find( "select option.<?php echo $this->strClassSelectorFormOption; ?>" )
+				if ( str_filter_selected_ids != '' ) {					
+					console.log( '(RCW Log) filter: ' + str_filter_selected_ids );
+					var selected = container_div.find( "select.<?php echo $this->strClassSelectorFormSelect ;?> option.<?php echo $this->strClassSelectorFormOption; ?>" )
 						.filter( str_filter_selected_ids )
 						.each( function(){
 							this.disabled = false;
 						});
-					console.log( "selected items : " + selected.length );
+					console.log( "(RCW Log) The number of selected items: " + selected.length );
 				}				
 				
 			}
@@ -435,10 +457,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 			// When the widget is drag'n-dropped,
 			jQuery( function() {
 				var $widget = jQuery( "select#<?php echo $strIDSelector; ?>" ).closest( "div.widgets-sortables" );
-				$widget.bind( 'sortstop', function( event, ui ){
-					ResponsiveColumnWidgets_WidgetDropEvent( event, ui, "<?php echo $strIDSelector; ?>", "<?php echo $strClassSelector; ?>" );
-				});
-				$widget.bind( 'sortreceive', function( event, ui ){
+				$widget.bind( 'sortstop sortreceive', function( event, ui ){
 					ResponsiveColumnWidgets_WidgetDropEvent( event, ui, "<?php echo $strIDSelector; ?>", "<?php echo $strClassSelector; ?>" );
 				});
 			});	
