@@ -179,7 +179,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 							if ( container_sidebar_id !=  this.value ) 
 								jQuery( this ).filter( ":selected" ).removeAttr( "disabled" );
 														
-						});
+						});	// end of each option tag iteration.
 						
 						
 					});	// end of each sidebar box that contains a plugin widget.
@@ -204,6 +204,16 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 					}
 				}		
 			}
+			function ResponsiveColumnWidgets_SelectAvailable( selected ) {
+				// var selected = jQuery( "select#test option:selected" );
+				if ( selected.is( ':disabled' ) ) {
+					jQuery( selected ).removeAttr( "selected" );	// deselct all items.
+					jQuery( selected ).siblings( ":not( :disabled )" ).each( function(){	
+						jQuery( this ).attr( "selected", "Selected" );
+						return false;	// break	
+					});
+				}
+			}	
 			function ResponsiveColumnWidgets_SetContainerSidebarID( item ) {
 				
 				var container_div = jQuery( item ).closest( ".widgets-sortables" );
@@ -268,7 +278,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 						
 				});
 				ResponsiveColumnWidgets_EsableSelectedSidebarOptionTag( container_div, selectedIDs );
-				
+				ResponsiveColumnWidgets_SelectAvailable( item.find( "option:selected.<?php echo $this->strClassSelectorFormOption; ?>" ) );
 			}			
 		</script>
 		<?php
@@ -409,6 +419,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				});			
 			// }
 			ResponsiveColumnWidgets_DisableParentSidebarOptionTag( select, "<?php echo $strID_Selector; ?>", "<?php echo $strClass_Option; ?>" );
+
 		</script>
 		<?php 
 			$this->AddJavaScript_Events( $strID_Selector, $strClass_Option ); 
@@ -434,6 +445,9 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 	}
 	
 	public function update( $arrNewInstance, $arrOldInstance ) {
+		
+		if ( empty( $arrNewInstance['sidebarid_selected'] ) )
+			return $arrOldInstance;
 		
         return $arrNewInstance;
 	
