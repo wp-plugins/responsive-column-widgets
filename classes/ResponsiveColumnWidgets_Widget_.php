@@ -123,7 +123,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 					dataType: 'JSON',
 					success: function( data ){
 					
-						// Disable the dependencies.
+						// Disable the dependencies listed in the plugin's widget drop-down lists.
 						ResponsiveColumnWidgets_DisableDependencyOptionTags( data );
 						
 					},
@@ -440,10 +440,16 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 					if ( isset( $arrWidgetOptions[ $this->id ]['sidebarid_parent'] ) && $arrWidgetOptions[ $this->id ]['sidebarid_parent'] == $arrSidebar['id'] ) 
 						$bDisabled = true;
 					
-					// If the parsing sidbar ID ( the candidate to be a child sidebar ) already has this container sidebar as its child, then disable it.
+					// If the parsing sidebar ID ( the candidate to be a child sidebar ) has this container sidebar as its child, then disable it.
 					if ( isset( $arrDependencies[ $arrSidebar['id'] ] ) && in_array( $this->strContainerSidebarID, $arrDependencies[ $arrSidebar['id'] ] ) )
 						$bDisabled = true;
-
+						
+					// If the container sidebar	ID has the parsing sidebar ID as its dependency, disable it.
+					// This should not be commented out but currently the JavaScript scripts of this plugin are not able to enable this item
+					// when the position of widget is changed. Until the script to fix it is added, leat it being commented out.
+					// if ( isset( $arrDependencies[ $this->strContainerSidebarID ] ) && in_array( $arrSidebar['id'], $arrDependencies[ $this->strContainerSidebarID ] ) )
+						// $bDisabled = true;
+					
 					echo '<option class="' . $strClass_Option . ' ' . $this->strClassSelectorFormOption . '" value="' 
 						. esc_attr( $arrSidebar['id'] )
 						. '" '
@@ -467,9 +473,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 			var selects = jQuery( "select.<?php echo $this->strClassSelectorFormSelect; ?>" );
 // jQuery( 'p#test' ).append( sidebar_id + '<br />' );		// debug
 			// jQuery( "select#<?php echo $strID_Selector; ?> option.<?php echo $strClass_Option;?>").filter( "[value='" + container_sidebar_id + "']" ).attr( 'disabled', 'disabled' ).siblings().removeAttr( 'disabled' );
-			
-
-			
+				
 			if ( typeof container_sidebar_id !== 'undefined' && container_sidebar_id != 'wp_inactive_widgets' ) {
 				
 				console.log( 

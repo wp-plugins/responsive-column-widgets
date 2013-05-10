@@ -25,7 +25,7 @@ class ResponsiveColumnWidgets_Events_ {
 			add_action( 'wp_ajax_get_sidebar_hierarchy', array( $this, 'WidgetRegistrationAjaxCallback' ) );
 			
 			// This is for manual checks.
-			if ( $_GET['rcw_ajax_request'] == 2 ) 
+			if ( $_GET['rcw_ajax_request'] == 2 && defined( 'WP_DEBUG' ) && WP_DEBUG )
 				add_action( 'wp_loaded', array( $this, 'DumpSidebarHierarchy' ) );
 				
 		}

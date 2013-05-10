@@ -9,7 +9,7 @@
  * @since		1.1.2
  * 
  * used classes: ResponsiveColumnWidgets_HTMLElementReplacer
-	
+
 */
 
 class ResponsiveColumnWidgets_WidgetBox_ { 
@@ -129,6 +129,7 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 
 		$numWidgetOrder = 0;	// for the omit parameter		
 		$bShowOnly = ( count( $arrShowOnlys ) > 0 ) ? True : False;	// if showonly is set, render only the specified widget id.
+		$this->arrIsPluginWidgetBoxWidget = array();
 		
 		// Objects
 		$oReplace = new ResponsiveColumnWidgets_HTMLElementReplacer();
@@ -169,11 +170,19 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 			$arrParams = apply_filters( 'dynamic_sidebar_params', $arrParams );
 			$vCallback = $wp_registered_widgets[ $strWidgetID ]['callback'];
 			do_action( 'dynamic_sidebar', $wp_registered_widgets[ $strWidgetID ] );
+			
+			// since 1.1.3 - stores an array to check if the widget is the plugin widget-box widget that is added in v1.1.3.
+			// This will store true/false ( boolean ) in the array with the index that is same as the array sroing the buffer.
+			// This flag array will be passed to a filter so that it can be captured from other places.
+			$this->arrIsPluginWidgetBoxWidget[] = ( isset( $arrParams[0]['widget_id'] ) && preg_match( '/^responsive_column_widget_box-\d+/', $arrParams[0]['widget_id'] ) );
+				
+// echo ResponsiveColumnWidgets_Debug::DumpArray( $arrParams );
+// echo ResponsiveColumnWidgets_Debug::DumpArray( $this->arrIsPluginWidgetBoxWidget );
 
 			ob_start();
 			if ( is_callable( $vCallback ) ) {		
 			
-				call_user_func_array( $vCallback, $arrParams );		// will echo widgets	
+				call_user_func_array( $vCallback, $arrParams );		// will echo the widget.
 				$arrWidgetBuffer[] = $bRemoveIDAttributes ? $oReplace->RemoveIDAttributes( ob_get_contents() ) : ob_get_contents();	// deletes the ID attributes here.
 				
 			}
@@ -192,8 +201,13 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 		
 	}	
 	
-	
-
+	public function GetWidgetBoxWidgetFlagArray(){	// since 1.1.3
+		
+		// Returns the flag array indicates wether the widget is the plugin's widget-box widget 
+		// or not, with the same index(key) to the widget output array.
+		return $this->arrIsPluginWidgetBoxWidget;
+		
+	}
 
 	/*
 	 *  Currently Not Used

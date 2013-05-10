@@ -40,7 +40,7 @@ class ResponsiveColumnWidgets_Styles_ {
 		$this->strClassSelectorBox = $arrClassSelectors['box'];
 		$this->strClassSelectorColumn = $arrClassSelectors['column'];
 		$this->strClassSelectorRow = $arrClassSelectors['row'];
-		
+		$this->strClassWidgetBoxWidget = 'widget_box_widget';
 	}
 
 	/*
@@ -308,6 +308,14 @@ class ResponsiveColumnWidgets_Styles_ {
 			.element_of_11 { width: 7.63%; }
 			.element_of_12 { width: 6.86%; }
 			
+			/* Responsive Column Widget Box Widget */
+			.{$this->strClassWidgetBoxWidget} .{$this->strClassSelectorBox} {
+				margin-top: 0px;
+			}
+			.{$this->strClassSelectorColumn}.{$this->strClassWidgetBoxWidget} { 
+				margin-top: 0px;
+				margin-left: 0px;
+			}
 		";
 		
 		/*

@@ -8,9 +8,9 @@
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		1.0.0
  * @sub-classes ResponsiveColumnWidgets_Styles, ResponsiveColumnWidgets_WidgetBox, ResponsiveColumnWidgets_IDHandler
- * 
 
-	Todo: there is a claim that the scoped attribute is invalid in HTML5. 
+	Todo: there is a possibility that objects stored as the class property consumes lots of memory.
+		So start removing(do not store) the property objects and instantiate them when they are used.
 	
 */
 class ResponsiveColumnWidgets_Core_ {
@@ -72,7 +72,7 @@ class ResponsiveColumnWidgets_Core_ {
 		
 		}
 		
-		// add shortcode
+		// Add the shortcode.
 		add_shortcode( $this->strShortCode, array( $this, 'GetWidgetBoxOutput' ) );
 		
 		// parse the $post object to check shortcode in the the_posts function.
@@ -151,7 +151,6 @@ class ResponsiveColumnWidgets_Core_ {
 		if ( $arrSidebarArgs['callback'] != 'wp_widget_control' ) return;
 		
 		// echo '<pre>' . print_r( $arrSidebarArgs, true ) . '</pre>';
-
 	}
 	
 	/*
@@ -292,6 +291,9 @@ class ResponsiveColumnWidgets_Core_ {
 			$arrParams['remove_id_attributes']
 		);
 
+		// since 1.1.3 - Get the flag array indicaitng whether the widgets are the plugin's widget-box widget or not.
+		$arrFlagsWidgetBoxWidget = $oWidgetBox->GetWidgetBoxWidgetFlagArray();
+			
 		// Now, $arrWidgetBuffers contains the necessary data for the output. 
 		// Okay, go. Enclose the buffer output string with the tag having the class attribute of screen max-width.
 		$strBuffer = '';			// $strBuffer stores the string buffer output.		
@@ -299,6 +301,7 @@ class ResponsiveColumnWidgets_Core_ {
 			
 			$strBuffer .= '<div class="' 
 				. $oWidgetBox->GetClassAttribute() 	// returns the class attribute values calculated with the stored positions and parameters.
+				. ( isset( $arrFlagsWidgetBoxWidget[ $intIndex ] ) && $arrFlagsWidgetBoxWidget[ $intIndex ] ? ' widget_box_widget' : '' )	// add no margin and no padding class
 				. '">'
 				.  force_balance_tags( $strWidgetBuffer )
 				. '</div>';	
