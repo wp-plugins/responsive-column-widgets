@@ -23,6 +23,13 @@ class ResponsiveColumnWidgets_SidebarHierarchy_ {
 		
 	}
 
+	public function DumpSidebarHierarchy() {	// since 1.1.3
+		
+		$arrHierarchy = $this->GetDependencies();
+		die( '<pre class="dump-array">' . esc_html( print_r( $arrHierarchy, true ) ) . '</pre>' );
+		
+	}
+	
 	public function GetDependencies( $bIncludeSelfID=true ) {	// since 1.1.3, public as called from an instantiated object.
 		
 		// Generate the base hierarchy array from the widet options.

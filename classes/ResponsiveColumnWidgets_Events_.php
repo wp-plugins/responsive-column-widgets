@@ -23,7 +23,11 @@ class ResponsiveColumnWidgets_Events_ {
 			
 			add_action( 'wp_ajax_nopriv_get_sidebar_hierarchy', array( $this, 'WidgetRegistrationAjaxCallback' ) );
 			add_action( 'wp_ajax_get_sidebar_hierarchy', array( $this, 'WidgetRegistrationAjaxCallback' ) );
-		
+			
+			// This is for manual checks.
+			if ( $_GET['rcw_ajax_request'] == 2 ) 
+				add_action( 'wp_loaded', array( $this, 'DumpSidebarHierarchy' ) );
+				
 		}
 		
 		// For SimplePie cache renewal events - since 1.0.7
@@ -60,8 +64,14 @@ class ResponsiveColumnWidgets_Events_ {
 	
 	public function WidgetRegistrationAjaxCallback() {	 // since 1.1.3 
 		
-		$oSH = new ResponsiveColumnWidgets_SidebarHierarchy( $this->oOption );
+		$oSH = new ResponsiveColumnWidgets_SidebarHierarchy();
 		$oSH->DumpSidebarHierarchyAsJSON();
+		
+	}
+	public function DumpSidebarHierarchy() {	// since 1.1.3
+
+		$oSH = new ResponsiveColumnWidgets_SidebarHierarchy();
+		$oSH->DumpSidebarHierarchy();
 		
 	}
 	
