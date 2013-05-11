@@ -4,7 +4,7 @@ Donate link: http://en.michaeluno.jp/donate
 Tags: widget, widgets, sidebar, columns, responsive, post, posts, page, pages, plugin, miunosoft
 Requires at least: 3.2
 Tested up to: 3.5.1
-Stable tag: 1.1.2.1
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Creates a custom responsive column widget box.
@@ -124,7 +124,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.1.3 =
+= 1.1.3 - 05/10/2013 =
 * Added: the widget that encapsulates a sidebar (still experimental).
 
 = 1.1.2.1 - 04/29/2013 =
