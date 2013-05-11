@@ -124,7 +124,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.1.3 =
+= 1.1.3 - 05/10/2013 =
 * Added: the widget that encapsulates a sidebar (still experimental).
 
 = 1.1.2.1 - 04/29/2013 =
