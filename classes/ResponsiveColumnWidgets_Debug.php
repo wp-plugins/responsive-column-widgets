@@ -34,19 +34,22 @@ class ResponsiveColumnWidgets_Debug {
 	static public function EchoMemoryUsage() {
 		
 		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) return;
-		
-		$mem_usage = memory_get_usage(true);
-	   
-		if ($mem_usage < 1024)
-			echo $mem_usage." bytes";
-		elseif ($mem_usage < 1048576)
-			echo round($mem_usage/1024,2)." kilobytes";
-		else
-			echo round($mem_usage/1048576,2)." megabytes";
-		   
-		echo "<br/>";
+				   
+		echo self::GetMemoryUsage() . "<br/>";
 		
 	} 		
+
+    static public function GetMemoryUsage( $intType=1 ) {	// since 1.1.4
+       
+	   $intMemoryUsage = $intType == 1 ? memory_get_usage( true ) : memory_get_peak_usage( true );
+       
+        if ( $intMemoryUsage < 1024 ) return $intMemoryUsage . " bytes";
+        
+		if ( $intMemoryUsage < 1048576 ) return round( $intMemoryUsage/1024,2 ) . " kilobytes";
+        
+        return round( $intMemoryUsage / 1048576,2 ) . " megabytes";
+           
+    } 		
 	
 	static public function DumpOption( $strKey ) {
 

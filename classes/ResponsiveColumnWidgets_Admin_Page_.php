@@ -49,7 +49,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$this->strGetPro = __( 'Get Pro to enabel this feature!', 'responsive-column-widgets' );
 		$this->strGetProNow = __( 'Get Pro Now!', 'responsive-column-widgets' );
 		
-		
 	}
 	function Localize() {
 		
@@ -583,8 +582,21 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'type' => 'text',
 							'size' => 100,
 							'value' => $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['general']['allowedhtmltags'] ), 
-						),	
-						array(
+						),
+						array(	// since 1.1.4
+							'capability' => 'manage_options',
+							'id' => 'debug_mode',
+							'title' => __( 'Debug Mode', 'responsive-column-widgets' ),
+							'description' => __( 'This is mostly for developers. General users may occasionally need to turn this on when reporting the plugin behavior for a bug report.', 'responsive-column-widgets' ),
+							'type' => 'radio',
+							'label' => array(
+								1 => __( 'On', 'responsive-column-widgets' ),
+								0 => __( 'Off', 'responsive-column-widgets' ),
+							),
+							'delimiter' => '&nbsp;&nbsp;&nbsp;',
+							'value' => $this->oOption->arrOptions['general']['debug_mode'],
+						),							
+						array(	// since 1.1.1.2
 							'if' => isset( $this->oOption->arrOptions['general']['time_first_option_update'] ) && ( time() > $this->oOption->arrOptions['general']['time_first_option_update'] + $this->intIntervalToShowPleaseRate ),
 							'id' => 'has_reviewed',
 							'title' => __( 'Have You Rated the Plugin?', 'responsive-column-widgets' ),
@@ -721,13 +733,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			$this->SetSettingsNotice( 
 				__( 'No widget has been added to this widget box yet.', 'responsive-column-widgets' ) . ' ' 
 				. sprintf( __( "You need to add widgets in the <a href='%s'>Widgets</a> page to the widget box.", 'responsive-column-widgets' ), admin_url( 'widgets.php' ) )
-			);			
-    }
+			);	
+
+	}	
 	
 	/*
 	 *  Custom Methods
 	 */
-	
+			
 	protected function RemoveDefaultOmittingColumnElement( $arrColumnInput, $intDefaultScreenMaxWidth ) {	// since 1.1.1
 		
 		// This is just used for a displaying the option value purpose. So do not use it for modifyint the option values to save and update the data.
@@ -907,6 +920,10 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			);
 		}
 		
+		
+		// since 1.1.4
+		$this->PrintDebugInfo();
+		
 	}
 	function head_ResponsiveColumnWidgets_Admin_Page( $strHead ) {
 
@@ -946,6 +963,23 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			</table>'
 			. '</div>';
 			
+	}
+
+	public function do_after_ResponsiveColumnWidgets_Admin_Page() {
+		
+		$this->PrintDebugInfo();
+		
+	}	
+	protected function PrintDebugInfo() {
+		
+		if ( ! (
+			isset( $this->oOption->arrOptions['general']['debug_mode'] ) && $this->oOption->arrOptions['general']['debug_mode'] 
+			&& defined( 'WP_DEBUG' ) && WP_DEBUG == true 
+		) ) return;
+	
+		echo '<p>Memory Usage: ' . ResponsiveColumnWidgets_Debug::GetMemoryUsage( 1 ) . '</p>';
+		echo '<p>Memory Peak Usage: ' . ResponsiveColumnWidgets_Debug::GetMemoryUsage( 2 ) . '</p>';
+		
 	}
 	
 	/*

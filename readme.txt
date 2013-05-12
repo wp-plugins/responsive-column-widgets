@@ -125,7 +125,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 == Changelog ==
 
 = 1.1.3 - 05/10/2013 =
-* Added: the widget that encapsulates a sidebar (still experimental).
+* Added: the widget that encapsulates a sidebar.
 
 = 1.1.2.1 - 04/29/2013 =
 * Changed: the base style to use the parent class selector of the sidebar ID, which was removed in 1.1.2.

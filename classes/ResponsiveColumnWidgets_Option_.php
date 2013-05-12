@@ -85,6 +85,7 @@ class ResponsiveColumnWidgets_Option_ {
 			'has_reviewed' => false,	 // since 1.1.1.2
 			'time_first_option_update' => null,	// since 1.1.1.2 - set it null so that isset() can be used.
 			'general_css_load_in_head' => array(),	// since 1.1.2.1
+			'debug_mode' => false,	// since 1.1.4
 		),
 		// since 1.1.3
 		'hierarchy' => array( 	// stores registered sidebar IDs and their relationshipts with plugin's widget boxes.

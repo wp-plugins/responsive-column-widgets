@@ -52,14 +52,28 @@ class ResponsiveColumnWidgets_Events_ {
 			
 		}
 	
-		// Debug API that dumps requested option values
+		// Since 1.1.3 - Debug API that dumps requested option values
 		if ( isset( $_GET['responsive_column_widgets_debug'] ) ) {
 			
 			ResponsiveColumnWidgets_Debug::DumpOption( $_GET['responsive_column_widgets_debug'] );
 			exit;
 			
 		}
+
+		// Since 1.1.4 - For debug info embedded into the footer.
+		if (
+			isset( $this->oOption->arrOptions['general']['debug_mode'] ) && $this->oOption->arrOptions['general']['debug_mode'] 
+			&& defined( 'WP_DEBUG' ) && WP_DEBUG == true 
+		)	
+			add_action( 'wp_footer', array( $this, 'PrintDebugInfo' ) );
 	
+	}
+	
+	public function PrintDebugInfo() {	// since 1.1.4
+			
+		echo '<p>Memory Usage: ' . ResponsiveColumnWidgets_Debug::GetMemoryUsage( 1 ) . '</p>';
+		echo '<p>Memory Peak Usage: ' . ResponsiveColumnWidgets_Debug::GetMemoryUsage( 2 ) . '</p>';
+		
 	}
 	
 	public function WidgetRegistrationAjaxCallback() {	 // since 1.1.3 
