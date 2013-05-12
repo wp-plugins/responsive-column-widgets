@@ -26,7 +26,7 @@ class ResponsiveColumnWidgets_HTMLElementReplacer {
 	}
 				
 	public function Perform( $strHTML ) {	
-		
+	
 		// Performs replacements. This is Responsive Column Widgets specific method.
 		// replaces a tag's href values <a href="http://something"> -> <a href="http://siteurl?responsive_column_widgets_link=encodedstring">
 		// replaces img tag's src values <img src="http://something" /> -> <img src="http://siteurl?responsive_column_widgets_link=encodedstring">

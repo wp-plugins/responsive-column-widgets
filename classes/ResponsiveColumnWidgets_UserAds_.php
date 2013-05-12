@@ -12,21 +12,25 @@ class ResponsiveColumnWidgets_UserAds_ {
 	protected $oTextFeed;
 	protected $oSkyscraperFeed;
 	protected $oTopBannerFeed;
-	protected $strURLFeedText = 'http://feeds.feedburner.com/GANLinkTextRandom40';
-	protected $strURLFeed160x600 = array(
+	protected $arrURLFeedText = array( 'http://feeds.feedburner.com/GANLinkTextRandom40' );
+	protected $arrURLFeed160x600 = array(
 		'http://feeds.feedburner.com/GANLinkBanner160x600Random40',
 		'http://feeds.feedburner.com/RawBanner160x600',
 	);
-	protected $strURLFeed60x468 = array(
+	protected $arrURLFeed60x468 = array(
 		'http://feeds.feedburner.com/GANBanner60x468',
 		'http://feeds.feedburner.com/RawBanner468x60'
 	);
-	protected $strURLFeed728x90 = array(
+	protected $arrURLFeed728x90 = array(
 		'http://feeds.feedburner.com/RawBanner728x90',
 		'http://feeds.feedburner.com/CustomBanner728x90',
 	);
 		
-	// objects
+	// Container arrays
+	protected $arrTextAds = array(); // stores the output.
+	protected $arrFeedItems = array();	// stores fetched feed items.
+		
+	// Objects
 	protected $oOption;	// stores the option object.
 	protected $oReplace;	// stores the object for url replacements.
 		
@@ -34,84 +38,101 @@ class ResponsiveColumnWidgets_UserAds_ {
 		
 		global $oResponsiveColumnWidgets_Options;
 		$this->oOption = isset( $oOption ) ? $oOption : $oResponsiveColumnWidgets_Options;
-		$this->oReplace = new ResponsiveColumnWidgets_HTMLElementReplacer( get_bloginfo( 'charset' ) );
-				
+					
 	}
 	function SetOptionObj( &$oOption ) {
-		
 		$this->oOption = $oOption;
-		
 	}
 
-	
-	public function GetTextAd( $numItems=1 ) {
-
-		$this->oTextFeed = $this->GetFeedObj( $this->strURLFeedText, $numItems );
-
-		$strOut = '';
-		foreach ( $this->oTextFeed->get_items( 0, $numItems ) as $item ) 
-			$strOut .= $this->oReplace->Perform( $item->get_content() );
-		$strOut = '<div align="left" style="">' . $strOut . "</div>"; 
-		return $strOut;
-			
-	}		
-	public function GetTopBanner( $numItems=1 ) {
+	protected function FetchItems( $arrURLs, $numItems=1 ) {	// since 1.1.4
 		
-		$this->oTopBannerFeed = $this->GetFeedObj( $this->strURLFeed60x468, $numItems );
+		$strURLID = md5( serialize( is_string( $arrURLs ) ? array( $arrURLs ) : $arrURLs ) );
+		
+		if ( ! isset( $this->arrFeedItems[ $strURLID ] ) ) 
+			$this->arrFeedItems[ $strURLID ] = array();
 			
+		// If it's out of stock, fill the array by fetching the feed.
+		if ( count( $this->arrFeedItems[ $strURLID ] ) < $numItems ) {	
+			
+			$oReplace = new ResponsiveColumnWidgets_HTMLElementReplacer( get_bloginfo( 'charset' ) );
+			
+			// When an array of urls is passed to the Simple Pie's set_feed_url() method, the memory usage increases largely.
+			// So fetch the feeds one by one per url and store the output into an array.
+			foreach( $arrURLs as $strURL ) {
+				
+				$oFeed = $this->GetFeedObj( $strURL, $numItems * 3 );	// mulplied by three to store items more than enough for next calls.
+				foreach ( $oFeed->get_items( 0, $numItems * 3 ) as $item ) 
+					$this->arrFeedItems[ $strURLID ][] = $oReplace->Perform( $item->get_content() );
+				
+				// For PHP below 5.3 to release the memory.
+				$oFeed->__destruct(); // Do what PHP should be doing on it's own.
+				unset( $oFeed ); 
+				
+			}
+			unset( $oReplace );
+			
+		}
+		
 		$strOut = '';
-		foreach ( $this->oTopBannerFeed->get_items( 0, $numItems ) as $item ) 
-			$strOut .= '<div style="clear:right; margin:0; padding:0;">' 
-				. $this->oReplace->Perform( $item->get_content() ) 					
-				. '</div>';
-	
-		return '<div style="float:right; margin:0; padding:0;">' . $strOut . "</div>";
+		shuffle( $this->arrFeedItems[ $strURLID ] );
+		for ( $i = 1; $i <= $numItems; $i++ ) 
+			$strOut .= array_pop( $this->arrFeedItems[ $strURLID ] );		
+		return $strOut; 		
+		
+	}
+	public function GetBottomBanner( $numItems=1 ) {
+					
+		return '<div style="float:both; margin-top: 20px;">' 
+			. $this->FetchItems( $this->arrURLFeed728x90, $numItems )
+			. "</div>";
 		
 	}	
 	public function GetSkyscraper( $numItems=2 ) {
 		
-		$this->oSkyscraperFeed = $this->GetFeedObj( $this->strURLFeed160x600, $numItems );
-		
-		$strOut = '';
-		foreach ( $this->oSkyscraperFeed->get_items( 0, $numItems ) as $item ) 
-			$strOut .= '<div style="clear:right;">' 
-				. $this->oReplace->Perform( $item->get_content() ) 
-				. '</div>';
-
-		return '<div style="float:right; padding: 0px 0 0 20px;">' . $strOut . "</div>";
-		
-	}	
-	function GetBottomBanner( $numItems=1 ) {
-		
-		$this->oBottomBannerFeed = $this->GetFeedObj( $this->strURLFeed728x90, $numItems );
-		
-		$strOut = '';
-		foreach ( $this->oBottomBannerFeed->get_items( 0, $numItems ) as $item ) 
-			$strOut .= '<div style="clear:both;">' 
-				. $this->oReplace->Perform( $item->get_content() ) 		
-				. '</div>';
-
-		return '<div style="float:both; margin-top: 20px;">' . $strOut . "</div>";
-		
-	}
-	function InitializeTextFeed( $arrUrls='' ) {
-	
-		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeedText : $arrUrls;
-		$this->oTextFeed = $this->GetFeedObj( $arrUrls, 1, 0 );
-		
-	}	
-	function InitializeTopBannerFeed( $arrUrls='' ) {
-
-		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeed60x468 : $arrUrls;
-		$this->oTopBannerFeed = $this->GetFeedObj( $arrUrls, 1, 0 );
-
-	}	
-	function InitializeBannerFeed( $arrUrls='' ) {
-		
-		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeed160x600 : $arrUrls;
-		$this->oSkyscraperFeed = $this->GetFeedObj( $arrUrls, 1, 0 );
+		return '<div style="float:right; padding: 0px 0 0 20px;">' 
+			. $this->FetchItems( $this->arrURLFeed160x600, $numItems )
+			. "</div>";
 		
 	}		
+	public function GetTopBanner( $numItems=1 ) {
+		
+		return '<div style="float:right; margin:0; padding:0;">' 
+			. $this->FetchItems( $this->arrURLFeed60x468, $numItems )
+			. "</div>";
+		
+	}	
+	public function GetTextAd( $numItems=1 ) { 
+	
+		return '<div align="left" style="">' 
+			. $this->FetchItems( $this->arrURLFeedText, $numItems )
+			. "</div>"; 
+
+	}
+	
+	function InitializeFeeds() {
+
+		// This is used to create transients to prevent delays in page load.
+	
+		$arrAllURLs = array_merge( 
+			$this->arrURLFeedText,  
+			$this->arrURLFeed160x600,
+			$this->arrURLFeed60x468,
+			$this->arrURLFeed728x90
+		);
+// ResponsiveColumnWidgets_Debug::DumpArray( $arrAllURLs, dirname( __FILE__ ) . '/all_feed_urls.txt' );
+		foreach( $arrAllURLs as $strURL ) {
+			
+			// Passing 0 to the third parameter is the key, which renews the cache.
+			$oTextFeed = $this->GetFeedObj( $strURL, 1, 0 );	
+			
+			// For PHP below 5.3 to release the memory.
+			$oTextFeed->__destruct(); // Do what PHP should be doing on it's own.
+			unset( $oTextFeed ); 			
+			
+		}
+		
+	}
+
 	function GetFeedObj( $arrUrls, $numItem=1, $numCacheDuration=3600 ) {	// 60 seconds * 60 = 1 hour
 		
 		$oFeed = new ResponsiveColumnWidgets_SimplePie();
@@ -123,7 +144,7 @@ class ResponsiveColumnWidgets_UserAds_ {
 		$oFeed->set_feed_url( $arrUrls );	
 		$oFeed->set_item_limit( $numItem );	
 		
-		// this should be set after defineing $urls
+		// This should be set after defineing $urls
 		$oFeed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', $numCacheDuration, $arrUrls ) );	
 		$oFeed->set_stupidly_fast( true );
 		
@@ -131,20 +152,19 @@ class ResponsiveColumnWidgets_UserAds_ {
 		if ( $numCacheDuration == 0 )
 			$oFeed->SetBackground( true );	// setting it true will be considerd the background process; thus, it won't trigger the renewal event.
 		
-		// set_stupidly_fast() disables this internally so turn it on manually because it will trigger the custom sort method
+		// Set_stupidly_fast() disables this internally so turn it on manually because it will trigger the custom sort method
 		$oFeed->enable_order_by_date( true );	
 		$oFeed->init();			
 		return $oFeed;
 		
 	}	
 	function SetupTransients() {
-	
-		$this->InitializeTopBannerFeed();
+		
+		$this->InitializeFeeds();
 		$this->GetTopBanner();
-		$this->InitializeBannerFeed();
 		$this->GetSkyscraper();
-		$this->InitializeTextFeed();
 		$this->GetBottomBanner();
+		$this->GetTextAd();
 		
 	}
 }

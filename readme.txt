@@ -124,6 +124,10 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.1.4 = 
+* Reduced: the memory usage in the plugin setting pages for servers with PHP 5.3 or below.
+* Added: the Debug Mode option.
+
 = 1.1.3 - 05/10/2013 =
 * Added: the widget that encapsulates a sidebar.
 
