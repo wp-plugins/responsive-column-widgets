@@ -94,7 +94,7 @@ class ResponsiveColumnWidgets_HTMLElementReplacer {
 	public function GetAttributeReplacementArrayWithRegex( $strHTML, $strAttribute, $vReplaceCallbackFunc, $vParam=null ) {	// must be public as it is used by the instantiated objecct in the core class.
 
 		// Make sure the string is long enough to be replaced with str_replace(); if the replacing string is too short,
-		// it will match in other unexpected block strings.
+		// it will match other unexpected block strings.
 		// For more accurate performance, use preg_replace_callback()
 		
 		$arrReplacements = array( 
@@ -102,7 +102,7 @@ class ResponsiveColumnWidgets_HTMLElementReplacer {
 			'replace' => array(),
 		);		
 		
-		$intCount = preg_match_all( '/\s\Q' . $strAttribute . '\E=(["\'])(.*?)\1\s/i', $strHTML, $arrMatches );	//'
+		$intCount = preg_match_all( '/\s\Q' . $strAttribute . '\E=(["\'])(.*?)\1\s?/i', $strHTML, $arrMatches );	//'
 		
 		$bIsCallable = is_callable( $vReplaceCallbackFunc );
 
