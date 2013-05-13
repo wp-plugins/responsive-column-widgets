@@ -977,9 +977,24 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 
 	public function do_after_ResponsiveColumnWidgets_Admin_Page() {
 		
+		if ( ! (
+			isset( $this->oOption->arrOptions['general']['debug_mode'] ) && $this->oOption->arrOptions['general']['debug_mode'] 
+			&& defined( 'WP_DEBUG' ) && WP_DEBUG == true 
+		) ) return;
+		
 		$this->PrintDebugInfo();
 		
 	}	
+	public function do_after_responsive_column_widgets_general() {
+
+		if ( ! (
+			isset( $this->oOption->arrOptions['general']['debug_mode'] ) && $this->oOption->arrOptions['general']['debug_mode'] 
+			&& defined( 'WP_DEBUG' ) && WP_DEBUG == true 
+		) ) return;
+	
+		echo ResponsiveColumnWidgets_Debug::DumpArray( $this->oOption->arrOptions['general'] );
+		
+	}
 	public function PrintDebugInfo() {	// also used by hooks
 		
 		if ( ! (
@@ -1393,7 +1408,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}
 	function validation_responsive_column_widgets_manage( $arrInput ) {
 		
-		
 		/*
 		 * Delete Checked Widget Box Items
 		 * */ 
@@ -1461,12 +1475,19 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		}	
 		
 		// Format and sanitize the values
+		if ( ! isset( $arrValidate['general_css_class_attributes'] ) || empty( $arrValidate['general_css_class_attributes'] ) ) 
+			$arrValidate['general_css_class_attributes'] = $this->oOption->arrOptions['general']['general_css_class_attributes'];
 		foreach ( $arrValidate['general_css_class_attributes'] as $strKey => &$strElem ) {
 			
 			$strElem = $this->oOption->SanitizeAttribute( trim( $strElem ) );
 			$strElem = ! empty( $strElem ) ? $strElem : $this->oOption->arrOptions['general']['general_css_class_attributes'][ $strKey ];	// 'general_css_class_attributes' cannot be empty.
 			
 		}
+			
+		// For disabled fields 
+		if ( $this->numPluginType == 0 ) 			
+			$arrValidate['general_css_areas_to_load']['regular'] = 1;	// Since this field is disabled, it becomes 0 when updating. So make it true.
+		
 			
 		$arrValidate['allowedhtmltags'] = $this->oOption->ConvertStringToArray( $arrValidate['allowedhtmltags'] ); 		
 		
@@ -1492,7 +1513,11 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$this->PleaseReview();	// do it before assigning the new value.			
 			
 		// There are hidden option valuses that are not sent from the admin page ( the data sent as $arrInput ), the input data need to be merged with the previous option values.
-		$this->oOption->arrOptions['general'] = $arrValidate + $this->oOption->arrOptions['general'];
+		// $this->oOption->arrOptions['general'] = $arrValidate + $this->oOption->arrOptions['general'];
+		$this->oOption->arrOptions['general'] = $this->oOption->UniteArraysRecursive( $arrValidate, $this->oOption->arrDefaultOptionStructure['general'] );
+
+// ResponsiveColumnWidgets_Debug::DumpArray( $arrValidate, dirname( __FILE__ ) . '/validation_array.txt' );
+// ResponsiveColumnWidgets_Debug::DumpArray( $this->oOption->arrOptions['general'], dirname( __FILE__ ) . '/validation_array.txt' );
 		
 		// Update the value to the separate main option.
 		$this->oOption->Update();
