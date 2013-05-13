@@ -14,7 +14,7 @@ class ResponsiveColumnWidgets_UserAds_ {
 		'http://feeds.feedburner.com/GANLinkBanner160x600Random40',
 		'http://feeds.feedburner.com/RawBanner160x600',
 	);
-	protected $arrURLFeed60x468 = array(
+	protected $arrURLFeed468x60 = array(
 		'http://feeds.feedburner.com/GANBanner60x468',
 		'http://feeds.feedburner.com/RawBanner468x60'
 	);
@@ -77,22 +77,22 @@ class ResponsiveColumnWidgets_UserAds_ {
 	}
 	public function GetBottomBanner( $numItems=1 ) {
 					
-		return '<div style="float:both; margin-top: 20px;">' 
+		return '<div style="float:both; margin-top: 20px; width: 728px;">' 
 			. $this->FetchItems( $this->arrURLFeed728x90, $numItems )
 			. "</div>";
 		
 	}	
 	public function GetSkyscraper( $numItems=2 ) {
 		
-		return '<div style="float:right; padding: 0px 0 0 20px;">' 
+		return '<div style="float:right; padding: 0px 0 0 20px; width: 160px;">' 
 			. $this->FetchItems( $this->arrURLFeed160x600, $numItems )
 			. "</div>";
 		
 	}		
 	public function GetTopBanner( $numItems=1 ) {
 		
-		return '<div style="float:right; margin:0; padding:0;">' 
-			. $this->FetchItems( $this->arrURLFeed60x468, $numItems )
+		return '<div style="float:right; margin:0; padding:0; width: 468px;">' 
+			. $this->FetchItems( $this->arrURLFeed468x60, $numItems )
 			. "</div>";
 		
 	}	
@@ -111,7 +111,7 @@ class ResponsiveColumnWidgets_UserAds_ {
 		$arrAllURLs = array_merge( 
 			$this->arrURLFeedText,  
 			$this->arrURLFeed160x600,
-			$this->arrURLFeed60x468,
+			$this->arrURLFeed468x60,
 			$this->arrURLFeed728x90
 		);
 // ResponsiveColumnWidgets_Debug::DumpArray( $arrAllURLs, dirname( __FILE__ ) . '/all_feed_urls.txt' );
