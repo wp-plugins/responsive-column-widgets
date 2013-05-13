@@ -64,7 +64,7 @@ class ResponsiveColumnWidgets_Option_ {
 		3 => 'edit_posts',
 		4 => 'read'
 	);
-	protected $arrDefaultOptionStructure = array(
+	public $arrDefaultOptionStructure = array(	// changed to public as the Admin Page class uses it when sanitizing the option values.
 		'boxes' => array(),
 		'general' => array(
 			'capability' => 0,
@@ -560,7 +560,7 @@ class ResponsiveColumnWidgets_Option_ {
 		foreach( $arrDefault as $strKey => $v ) {
 			
 			// If the precedence does not have the key, assign the default's value.
-			if ( ! array_key_exists( $strKey, $arrPrecedence ) )
+			if ( ! array_key_exists( $strKey, $arrPrecedence ) || is_null( $arrPrecedence[ $strKey ] ) )
 				$arrPrecedence[ $strKey ] = $v;
 			else {
 				
