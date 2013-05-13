@@ -43,9 +43,11 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$this->Localize();
 		
 		$this->AddLinkToPluginDescription( $this->GetPluginDescriptionLinks() );				
+
+		// Objects
+		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug )
+			$this->oUserAds = new ResponsiveColumnWidgets_UserAds;
 		
-		$this->oUserAds = new ResponsiveColumnWidgets_UserAds;
-			
 		$this->strGetPro = __( 'Get Pro to enabel this feature!', 'responsive-column-widgets' );
 		$this->strGetProNow = __( 'Get Pro Now!', 'responsive-column-widgets' );
 		
@@ -84,7 +86,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 
 		// if ( WP_DEBUG )
 			// $this->SetCapability( 'read' );
-		
+			
 		// Build menu and pages
         $this->SetRootMenu( 'Appearance' );          // specifies to which parent menu to belong.
         $this->AddSubMenu(  
@@ -268,7 +270,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'showonly' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['showonly'] ),
 						),							
 						array(  // single button
-							'pre_html' => '<div class="text-info">' . $this->oUserAds->GetTextAd() . '</div>',
+							'pre_html' => '<div class="text-info">' . ( isset( $this->oUserAds ) ? $this->oUserAds->GetTextAd() : '' ) . '</div>',
 							'id' => 'submit_save_neworedit_middle',
 							'type' => 'submit',		// the submit type creates a button
 							'label' => $this->numPluginType == 0 || isset( $_GET['mode'] ) && $_GET['mode'] == 'edit' ? __( 'Save Changes', 'responsive-column-widgets' ) : __( 'Add New Box', 'responsive-column-widgets' ),
@@ -456,10 +458,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'cols' => 120,
 							'rows' => 6,
 							'value' => $arrWidgetBoxOptions['custom_style'],
-							// 'value' => $bIsNew ? $this->oOption->arrDefaultSidebarArgs['custom_style'] : ( isset( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['custom_style'] ) ? $this->oOption->arrOptions['boxes'][ $strSidebarID ]['custom_style'] : ''  ),
 						),
 						array(  // single button
-							'pre_html' => $this->oUserAds->GetTextAd(),
+							'pre_html' => isset( $this->oUserAds ) ? $this->oUserAds->GetTextAd() : '',
 							'id' => 'submit_save_neworedit_bottom',
 							'type' => 'submit',		// the submit type creates a button
 							'label' => $this->numPluginType == 0 || isset( $_GET['mode'] ) && $_GET['mode'] == 'edit' ? __( 'Save Changes', 'responsive-column-widgets' ) : __( 'Add New Box', 'responsive-column-widgets' ),
@@ -469,7 +470,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'redirect' => admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ),
 						),							
 					),
-				),				
+				),		
 				array(  
 					'pageslug' => $this->strPluginSlug,
 					'tabslug' => 'general',
@@ -480,7 +481,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(  
 							'id' => 'general_css_timimng_to_load',
 							'title' => __( 'Timing to Load', 'responsive-column-widgets' ),
-							'description' => __( 'Select the timing to load the plugin\'s CSS base rules. If this is set the second item, the below Area to Load option does not take effect.', 'responsive-column-widgets' ),
+							'description' => __( 'Select the timing to load the plugin\'s CSS base rules. If this is set the second item, the below Area to Load option does not take effect.', 'responsive-column-widgets' ),	//'
 							'type' => 'radio',
 							'label' => array( 
 								__( 'When the head tab is loaded. ( Default )', 'responsive-column-widgets' ),
@@ -629,7 +630,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(  
 							'id' => 'memory_allocation',
 							'title' => __( 'Attempt to Override Allocated Memory Size', 'responsive-column-widgets' ),
-							'description' => __( 'If the error, "Allowed memory size of ... bytes exhausted" occurs, try increasing the memory size allocated for PHP. Set 0 to use the server\'s setting.', 'responsive-column-widgets' ) . '<br />'
+							'description' => __( 'If the error, "Allowed memory size of ... bytes exhausted" occurs, try increasing the memory size allocated for PHP. Set 0 to use the server\'s setting.', 'responsive-column-widgets' ) . '<br />'	//'
 								. __( 'The current memory limit set by the server:', 'responsive-column-widgets' ) . ' ' . $this->oOption->GetMemoryLimit() . '<br />'
 								. ( ! function_exists( 'memory_get_usage' ) || ! function_exists( 'ini_get' ) ? '<span class="error">' . __( 'The necessary functions are disabled by the server.', 'responsive-column-widgets' ) . '</span>' : '' ),
 							'type' => 'number',
@@ -662,7 +663,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			)
 		);
 		$this->AddFormSections(
-			// Section Arrays
+			//' Section Arrays
 			array( 				
 				// Manage Options
 				array(  
@@ -735,6 +736,15 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				. sprintf( __( "You need to add widgets in the <a href='%s'>Widgets</a> page to the widget box.", 'responsive-column-widgets' ), admin_url( 'widgets.php' ) )
 			);	
 
+		// Display the memory usage in other admin pages besides the plugin's if the plugin debug mode is on.
+		if ( 
+			isset( $this->oOption->arrOptions['general']['debug_mode'] ) && $this->oOption->arrOptions['general']['debug_mode'] 
+			&& defined( 'WP_DEBUG' ) && WP_DEBUG == true 
+			&& ( ! isset( $_GET['page'] ) || $_GET['page'] != $this->strPluginSlug )
+		) 
+			add_action( 'update_footer', array( $this, 'PrintDebugInfo' ) );
+				
+			
 	}	
 	
 	/*
@@ -970,7 +980,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$this->PrintDebugInfo();
 		
 	}	
-	protected function PrintDebugInfo() {
+	public function PrintDebugInfo() {	// also used by hooks
 		
 		if ( ! (
 			isset( $this->oOption->arrOptions['general']['debug_mode'] ) && $this->oOption->arrOptions['general']['debug_mode'] 

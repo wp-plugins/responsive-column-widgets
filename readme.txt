@@ -125,6 +125,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 == Changelog ==
 
 = 1.1.4 = 
+* Fixed: an issue that images in the plugin setting pages sometimes did not load properly.
 * Reduced: the memory usage in the plugin setting pages for servers with PHP 5.3 or below.
 * Added: the Debug Mode option.
 

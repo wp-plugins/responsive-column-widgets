@@ -8,10 +8,7 @@
 */
 class ResponsiveColumnWidgets_UserAds_ {
 
-	// properties
-	protected $oTextFeed;
-	protected $oSkyscraperFeed;
-	protected $oTopBannerFeed;
+	// Properties
 	protected $arrURLFeedText = array( 'http://feeds.feedburner.com/GANLinkTextRandom40' );
 	protected $arrURLFeed160x600 = array(
 		'http://feeds.feedburner.com/GANLinkBanner160x600Random40',
@@ -27,12 +24,10 @@ class ResponsiveColumnWidgets_UserAds_ {
 	);
 		
 	// Container arrays
-	protected $arrTextAds = array(); // stores the output.
 	protected $arrFeedItems = array();	// stores fetched feed items.
 		
 	// Objects
 	protected $oOption;	// stores the option object.
-	protected $oReplace;	// stores the object for url replacements.
 		
 	function __construct( &$oOption=null ) {
 		
