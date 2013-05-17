@@ -17,13 +17,13 @@ When you want to display widgets horizontally, I know it’s such a headache to 
 [youtube http://www.youtube.com/watch?v=vo36sW7W35Y]
 
 <h4>Features</h4>
-* **Displays widgets in clolums** - the main feature of this plugin.
+* **Displays widgets in columns** - the main feature of this plugin.
 * **Responsive Design** - when the browser width changes, it automatically adjusts the layout. This is for tablet and mobile visitors.
-* **Set Number of Columns per Row** - flexibily set the number of columns in each row.
-* **Set Number of Columns per Browser Width** - flexibily set the number of columns by browser width.
+* **Set Number of Columns per Row** - flexibly set the number of columns in each row.
+* **Set Number of Columns per Browser Width** - flexibly set the number of columns by browser width.
 * **Up to 12 columns** - for example, if you have 24 registered widgets, you can displays 12 items in two rows.
 * **Works in Posts/Pages** - with the shortcode, you can embed the responsive widgets in post and pages.
-* **PHP code and Shortcode** - use them to display the widgtes in theme template or in posts/pages.
+* **PHP code and Shortcode** - use them to display the widgets in theme template or in posts/pages.
 * **Default Sidebars Integration** - The sidebars defined by your theme also can be displayed in columns.
 * **Auto Insert** - The widget box can be embedded automatically without the shortcode.
 * and [more](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/).
@@ -42,7 +42,7 @@ Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-wi
 
 = Basic Three Steps =
 1. Go to Appearance > Widgets. You'll see a new custom sidebar box named **Responsive Custom Widgets**.
-2. Add widgtes to it.
+2. Add widgets to it.
 3. To display the added widgets in a post, there are mainly two different means.
 
 * **Option A**: add the shortcode in a post.
@@ -87,8 +87,8 @@ The following example displays widgets in 5 column when the browser width is gre
 * **sidebar** - the ID of the sidebar to show. Default: responsive_column_widgets. For the twenty-twelve theme, sidebar-1, would show the default first sidebar contents. 
 * **maxwidgets** - the allowed number of widgets to display. Set 0 for no limitation. Default: 0.
 * **maxrows** - the allowed number of rows to display. Set 0 for no limitation. Default: 0.
-* **omit** - the numbers of the widget order of the items to omit, separated by commas. e.g. **3, 5** would skip the third and fifth registered widgtes.
-* **showonly** - the numbers of the widget order of the items to show, separated by commas. e.g. **2, 7** would only show the second and seventh registered widtges. Other items will be skipped.
+* **omit** - the numbers of the widget order of the items to omit, separated by commas. e.g. **3, 5** would skip the third and fifth registered widgets.
+* **showonly** - the numbers of the widget order of the items to show, separated by commas. e.g. **2, 7** would only show the second and seventh registered widgets. Other items will be skipped.
 * **label** - the label name of the widget box. Default: Responsive Column Widgets.
 
 = Video Tutorials =
@@ -118,16 +118,20 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 == Screenshots ==
 
 1. ***Adding Widgets***
-2. ***Three-Two-Five Colums Combination Example***
+2. ***Three-Two-Five Columns Combination Example***
 3. ***Four Column Example***
 4. ***Responsiveness***
 
 == Changelog ==
 
-= 1.1.4 = 
+= 1.1.4.1 - 05/17/2013 = 
+* Added: the option to enable/disable the Responsive Column Widget Box widget. 
+* Added: the ability for the ResponsiveColumnWidgets() function to be called without a parameter.
+
+= 1.1.4 - 05/13/2013 = 
 * Fixed: a bug that updating the options in the General Options page caused the Areas to Load and Class Selector Names values to be empty.
 * Fixed: an issue that images in the plugin setting pages sometimes did not load properly.
-* Reduced: the memory usage in the plugin setting pages for servers with PHP 5.3 or below.
+* Reduced: the memory usage in the plugin setting pages for servers with PHP below 5.3.
 * Added: the Debug Mode option.
 
 = 1.1.3 - 05/10/2013 =
@@ -147,7 +151,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 * Added: the edit icon in the Manage page.
 
 = 1.1.1.1 - 04/22/2013 =
-* Tweaked: user input sanitization for string option values including *Number of Columns* and *Class Names*.
+* Tweaked: user input sanitisation for string option values including *Number of Columns* and *Class Names*.
 * Tweaked: the CSS rules for widget box rows.
 
 = 1.1.1 - 04/21/2013 =
@@ -165,7 +169,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 * Added: the option for the timing of loading the plugins' CSS base rules.
 * Changed: from loading the CSS file in the header but to insert the CSS rules as text to support variadic class attribute names.
 * Added: the options for specifying the class name attributes for the CSS rules.
-* Added: the options for selecting the areas to load the plguin CSS rules.
+* Added: the options for selecting the areas to load the plugin CSS rules.
 
 = 1.0.9 - 04/07/2013 =
 * Added: the ability to load the plugin CSS rules in login pages. To display the widget box in the login page, either use the PHP code or set the custom filter in the Auto-Insert section of the plugin admin page.
@@ -177,7 +181,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 * Removed: (**Breaking Change**) the *responsive_column_widget_area* class attribute. Those who have been using it, should simply change it to *responsive_column_widget_box* instead.
 
 = 1.0.8.7 - 04/05/2013 =
-* Tweaked: the form data sanitization functionality for the numeric sequence values with the comma delimiter.
+* Tweaked: the form data sanitisation functionality for the numeric sequence values with the comma delimiter.
 * Changed: the class attribute name for each column from, *col*, to *responsitve_column_widgts_column*, in order to avoid being too generic which may result on conflicts with other plugins or themes.
 * Fixed: a bug the *responsitve_column_widgts_column_1* class attribute was not displayed correctly introduced in 1.0.8.6.
 
@@ -223,7 +227,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 * Raised: the required WordPress version to 3.2 from 3.0.
 * Fixed: an issue that the user with a custom access level could not change the options.
 * Fixed: minor typographical errors in the setting page.
-* Added: the sanitization functionality for option values with delimiters including *Numbers of Columns*, *Omitting Widgets*, *Show-only Widgets*, *Width Percentage Offsets*, and *Additional Allowed HTML Tags*.
+* Added: the sanitisation functionality for option values with delimiters including *Numbers of Columns*, *Omitting Widgets*, *Show-only Widgets*, *Width Percentage Offsets*, and *Additional Allowed HTML Tags*.
 * Added: the requirement check which includes PHP version to 5.2.4 or higher.
 * Tweaked: the code to load the pages faster in the admin pages.
 
@@ -269,7 +273,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 * Added: the ability to reset all saved option values.
 * Added: the ability to set custom HTML tags to be posted in the setting page.
 * Added: the Access Rights option in the setting pages.
-* Changed: the default value of the offsets paramter to 600:12, which is 100% compatible with the versions prior to 1.0.3.
+* Changed: the default value of the offsets parameter to 600:12, which is 100% compatible with the versions prior to 1.0.3.
 * Added: the ability to set the options without the parameters; the saved option values in the setting page will be used.
 * Added: the ability to set a custom message when no widget is added.
 * Added: the ability to set opening/closing HTML code in front of the widget output and title.

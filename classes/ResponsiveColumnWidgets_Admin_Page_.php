@@ -596,6 +596,19 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							),
 							'delimiter' => '&nbsp;&nbsp;&nbsp;',
 							'value' => $this->oOption->arrOptions['general']['debug_mode'],
+						),	
+						array(	// since 1.1.4.1
+							'capability' => 'manage_options',
+							'id' => 'widget_responsive_column_widget_box',
+							'title' => __( 'Responsive Column Widget Box Widget', 'responsive-column-widgets' ),
+							'description' => __( 'Enable the plugin widget that encapsulates a sidebar in the Widgets page.', 'responsive-column-widgets' ),
+							'type' => 'radio',
+							'label' => array(
+								1 => __( 'Enable', 'responsive-column-widgets' ),
+								0 => __( 'Disable', 'responsive-column-widgets' ),
+							),
+							'delimiter' => '&nbsp;&nbsp;&nbsp;',
+							'value' => $this->oOption->arrOptions['general']['widget_responsive_column_widget_box'],
 						),							
 						array(	// since 1.1.1.2
 							'if' => isset( $this->oOption->arrOptions['general']['time_first_option_update'] ) && ( time() > $this->oOption->arrOptions['general']['time_first_option_update'] + $this->intIntervalToShowPleaseRate ),

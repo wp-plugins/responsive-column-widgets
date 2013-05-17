@@ -22,7 +22,13 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 	
 	public static function RegisterWidget() {
 	
-		return register_widget( 'ResponsiveColumnWidgets_Widget' );	// class name
+		global $oResponsiveColumnWidgets_Options;
+		if ( ! isset( $oResponsiveColumnWidgets_Options ) ) return;
+		
+		// Register the widget only if the option is set to Enable.
+		if ( isset( $oResponsiveColumnWidgets_Options->arrOptions['general']['widget_responsive_column_widget_box'] ) 
+			&& $oResponsiveColumnWidgets_Options->arrOptions['general']['widget_responsive_column_widget_box'] )
+			return register_widget( 'ResponsiveColumnWidgets_Widget' );	// the class name
 
 	}	
 	public function __construct() {
@@ -345,7 +351,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 		<?php
 	}
 		
-	public function widget( $arrArgs, $arrInstance ) {	// must be public, the protected scope will case fatal error.
+	public function widget( $arrArgs, $arrInstance ) {	// must be public, the protected scope will cause fatal error.
 		
 		echo $arrArgs['before_widget']; 
 		
@@ -446,7 +452,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 						
 					// If the container sidebar	ID has the parsing sidebar ID as its dependency, disable it.
 					// This should not be commented out but currently the JavaScript scripts of this plugin are not able to enable this item
-					// when the position of widget is changed. Until the script to fix it is added, leat it being commented out.
+					// when the position of widget is changed. Until the script to fix it is added, let it being commented out.
 					// if ( isset( $arrDependencies[ $this->strContainerSidebarID ] ) && in_array( $arrSidebar['id'], $arrDependencies[ $this->strContainerSidebarID ] ) )
 						// $bDisabled = true;
 					

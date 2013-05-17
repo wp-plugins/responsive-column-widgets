@@ -13,9 +13,9 @@
 
 /*
  * Used Actions - parameters
- * RCW_action_started : triggred right after all necessary classes are loaded. The option object is passed to the first parametr.
+ * RCW_action_started : triggered right after all necessary classes are loaded. The option object is passed to the first parameter.
  *  1. the option object
- * Lots of hoooks for admin pages supproted by Admin Page Framework.
+ * Lots of hooks for admin pages supported by Admin Page Framework.
  * */
  
  
@@ -134,7 +134,7 @@ function ResponsiveColumnWidgets_Startup() {
 /*
  * Front-end functions for general plugin users.
  * */
-function ResponsiveColumnWidgets( $arrParams ) {
+function ResponsiveColumnWidgets( $arrParams=array() ) {
 	
 	global $oResponsiveColumnWidgets;
 
@@ -144,14 +144,14 @@ function ResponsiveColumnWidgets( $arrParams ) {
 	}
 	
 	// Render the widget box.
-	$oResponsiveColumnWidgets->RenderWidgetBox( $arrParams, false );	// the second paremeter indicates that additional styles will use the scoped attribute.
+	$oResponsiveColumnWidgets->RenderWidgetBox( $arrParams, false );	// the second parameter indicates that additional styles will use the scoped attribute.
 	
 }
 function ResponsiveColumnWidgets_EnqueueStyle( $arrParams ) {	// since 1.1.2.1
 	
 	global $arrResponsiveColumnWidgets_Flags;
 	
-	// Shcedules to load the given widget box's ( sidebar ID ) style in the head tag.
+	// Schedules to load the given widget box's ( sidebar ID ) style in the head tag.
 	// This is used to avoid the style tag to be embedded inside the body tag with the scoped attribute
 	// for the use of shortcode, the PHP code ( the above ResponsiveColumnWidgets() function ), and user-defined custom hooks.
 	// This must be done prior to the head tag.
