@@ -601,7 +601,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'capability' => 'manage_options',
 							'id' => 'widget_responsive_column_widget_box',
 							'title' => __( 'Responsive Column Widget Box Widget', 'responsive-column-widgets' ),
-							'description' => __( 'Enable the plugin widget that encapsulates a sidebar in the Widgets page.', 'responsive-column-widgets' ),
+							'description' => __( 'Enable / disable the plugin widget that encapsulates a sidebar in the Widgets page.', 'responsive-column-widgets' ),
 							'type' => 'radio',
 							'label' => array(
 								1 => __( 'Enable', 'responsive-column-widgets' ),
