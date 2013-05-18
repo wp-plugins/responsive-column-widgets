@@ -58,7 +58,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 	
 	public function EnqueueStyles() {	// since 1.1.3, public as called from hooks.
 		
-		// This method must be loaded after the $wp_registered_widgets varibale is set
+		// This method must be loaded after the $wp_registered_widgets variable is set
 		// ,after these hooks: widgets_init, register_sidebar, wp_register_sidebar_widget.
 		
 		// Retrieve the active registered plugin widgets.
@@ -332,9 +332,9 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 			}			
 			
 			// Hook the save button press(click) event
-			jQuery( document ).ready( function(){	// prevent multiple calls
+			// jQuery( document ).ready( function(){	// prevent multiple calls <-- this freezes the page in IE
 			
-				// If the jQuery verion is 1.8.x or below, use the live() method; otherwise, use the on() method
+				// If the jQuery version is 1.8.x or below, use the live() method; otherwise, use the on() method
 				// as the live() method is removed as of v1.9.
 				console.log( '(RCW Log) the jQuery version is: ' + jQuery.fn.jquery );
 				if ( /^1\.[012345678]/.test( jQuery.fn.jquery ) ) {
@@ -346,7 +346,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 						ResponsiveColumnWidgets_WidgetSaveButtonPressEvent( this );						
 					});			
 				}
-			});				
+			// });				
 		</script>
 		<?php
 	}
@@ -495,7 +495,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				
 			}
 			
-			jQuery( document ).ready( function(){	// prevent multiple calls
+			// jQuery( document ).ready( function(){	// prevent multiple calls  <-- this freezes the page in IE
 				
 				// When the widget is drag'n-dropped,
 				var container_divs = selects.closest( "div.widgets-sortables" );
@@ -514,7 +514,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 					// ResponsiveColumnWidgets_WidgetSaveButtonPressEvent( this );						
 				// });
 				
-			});	
+			// });	
 	
 		</script>
 		<?php 	

@@ -124,6 +124,11 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.1.4.2 - 05/18/2013 =
+* Tweaked: the administration object not to load if non-admin pages are loaded.
+* Tweaked: the plugin not to load when accessed directly.
+* Fixed: a bug that a freeze occurred in the widgets.php page in IE. 
+
 = 1.1.4.1 - 05/17/2013 = 
 * Added: the option to enable/disable the Responsive Column Widget Box widget. 
 * Added: the ability for the ResponsiveColumnWidgets() function to be called without a parameter.
