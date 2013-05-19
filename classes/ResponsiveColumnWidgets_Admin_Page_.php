@@ -48,7 +48,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug )
 			$this->oUserAds = new ResponsiveColumnWidgets_UserAds;
 		
-		$this->strGetPro = __( 'Get Pro to enabel this feature!', 'responsive-column-widgets' );
+		$this->strGetPro = __( 'Get Pro to enable this feature!', 'responsive-column-widgets' );
 		$this->strGetProNow = __( 'Get Pro Now!', 'responsive-column-widgets' );
 		
 	}
