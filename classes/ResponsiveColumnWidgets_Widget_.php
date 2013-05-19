@@ -41,7 +41,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 		$this->strClassSelectorFormOption = $this->strBaseID . '_form_option';
 		
 		// Add a common JavaScript script into the head tag of the widget.php admin page.
-		if ( $GLOBALS['pagenow'] == 'widgets.php' ) 
+		if ( is_admin() && $GLOBALS['pagenow'] == 'widgets.php' ) 
 			add_action( 'admin_head', array( $this, 'AddJavaScript_CommonFunctions' ) );
 				
 		// Register the widget
