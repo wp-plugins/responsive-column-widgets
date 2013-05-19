@@ -103,9 +103,8 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 		if ( isset( $this->vSetURL ) && ! $this->bIsBackground ) {
 			
 			$bHasExpired = false;
-// $arrDump = array();
 			foreach ( ( array) $this->vSetURL as $strURL ) {
-// $arrDump[] = get_transient( 'RCWFeed_M_' . '_' . md5( $strURL ) );
+
 				// 'RCWFeed_M__' stores the saved time that the cache was created with the real expiration life time.
 				// 'RCWFeed_M_' also stores the same value but it won't barely expires. Threfore, check the former to see if the cache should be renewed or not.
 				// be careful with the use of md5() since the user may set a different type for it. ( IIRC, SimplePie supporeted changing the hash type.)
@@ -120,17 +119,7 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 			// The event action must be loaded (added) when the plugin is loaded. We use a separate event object for that.
 			// wp_schedule_single_event() requires the argument to be enclosed in an array.
 			if ( $bHasExpired ) {
-// file_put_contents( dirname( __FILE__ ) . '/info_expired.txt' , 
-	// __FILE__ . PHP_EOL 
-	// . __METHOD__ . PHP_EOL
-	// . print_r( 'The cache is expired! Scheduleing the background renewal event.', true ) . PHP_EOL
-	// . 'Set Cache Duration: ' . print_r( $this->cache_duration, true ) . PHP_EOL
-	// . 'Saved Modified Times: ' . print_r( $arrDump, true ) . PHP_EOL
-	// . 'URLs: ' . print_r( $this->vSetURL, true ) . PHP_EOL
-	// . 'Current Time: ' . time() . PHP_EOL
-	// . PHP_EOL . PHP_EOL
-	// , FILE_APPEND 
-// );	
+
 				// let the scheduling task at the end of the script.
 				add_action( 'shutdown', array( $this, 'ScheduleCacheRenewal' ) );
 				
