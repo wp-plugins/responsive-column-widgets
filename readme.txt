@@ -1,7 +1,7 @@
 ﻿=== Responsive Column Widgets ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
-Tags: widget, widgets, sidebar, columns, responsive, post, posts, page, pages, plugin, miunosoft
+Tags: widget, widgets, sidebar, sidebars, column, columns, responsive, post, posts, page, pages, plugin, miunosoft
 Requires at least: 3.2
 Tested up to: 3.5.1
 Stable tag: 1.1.4.3
