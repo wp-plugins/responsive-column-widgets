@@ -11,13 +11,11 @@ Creates a custom responsive column widget box.
 
 == Description ==
 
-When you want to display widgets horizontally, I know it’s such a headache to edit the theme and repeat the numerous times of trial and error. If you feel the same way, this would save the time for you.
-
 <h4>How It Works</h4>
 [youtube http://www.youtube.com/watch?v=vo36sW7W35Y]
 
 <h4>Features</h4>
-* **Displays widgets in columns** - the main feature of this plugin.
+* **Displays widgets in columns** - the main feature of this plugin. It displays widgets horizontally with a grid system.
 * **Responsive Design** - when the browser width changes, it automatically adjusts the layout. This is for tablet and mobile visitors.
 * **Set Number of Columns per Row** - flexibly set the number of columns in each row.
 * **Set Number of Columns per Browser Width** - flexibly set the number of columns by browser width.
@@ -26,8 +24,9 @@ When you want to display widgets horizontally, I know it’s such a headache to 
 * **PHP code and Shortcode** - use them to display the widgets in theme template or in posts/pages.
 * **Default Sidebars Integration** - The sidebars defined by your theme also can be displayed in columns.
 * **Auto Insert** - The widget box can be embedded automatically without the shortcode.
+* **Sidebar Encapsulation** - With the widget that the plugin provides, the whole sidebar contents can be embedded as a widget item into another sidebar.
 * and [more](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/).
-  
+ 
 == Installation ==
 
 = Install = 
@@ -123,6 +122,10 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 4. ***Responsiveness***
 
 == Changelog ==
+
+= 1.1.4.3 - 06/03/2013 =
+* Tweaked: to return the passed value for filters of the Auto-Insert feature if it is not a string.
+* Supported: Twenty Thirteen 0.1.
 
 = 1.1.4.2 - 05/18/2013 =
 * Tweaked: the administration object not to load if non-admin pages are loaded.

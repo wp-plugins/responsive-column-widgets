@@ -316,6 +316,12 @@ class ResponsiveColumnWidgets_Styles_ {
 				margin-top: 0px;
 				margin-left: 0px;
 			}
+			
+			/* Twenty Thirteen support */
+			.site-main .{$this->strClassSelectorBox}.widget-area {
+				width: 100%;
+				margin-right: auto;
+			}
 		";
 		
 		/*

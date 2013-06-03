@@ -124,7 +124,8 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 	}
 	public function DoFilter( $strFilter, $strContent ) {	// since 1.0.9
 		
-		if ( ! isset( $this->arrHookFilters[ $strFilter ]  ) ) return;
+		if ( ! isset( $this->arrHookFilters[ $strFilter ]  ) ) return $strContent;
+		if ( ! is_string( $strContent ) ) return $strContent;
 		
 		$strPre = '';
 		$strPost = '';
