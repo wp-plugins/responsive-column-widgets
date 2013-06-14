@@ -18,22 +18,26 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 	 * This class must be instantiated per widget box as it stores the iterating positions in the properties.
 	*/
 	
-	function __construct( &$arrParams, &$arrMaxCols, &$arrClassAttributes ) {
+	function __construct( &$arrParams, &$arrMaxCols, &$arrColSpans, &$arrClassAttributes ) {
 		
 		$this->arrParams = $arrParams;
-		$this->arrPositions = $this->FormatPositionsArray( $arrMaxCols, $arrClassAttributes );
+		$this->arrPositions = $this->formatPositionsArray( $arrMaxCols, $arrColSpans, $arrClassAttributes );
 
 	}
-	protected function FormatPositionsArray( &$arrMaxColsByPixel, &$arrClassAttributes ) {	// since 1.1.1, moved from the core class in 1.1.2
+	protected function formatPositionsArray( &$arrMaxColsByPixel, &$arrColSpansByPixel, &$arrClassAttributes ) {	// since 1.1.1, moved from the core class in 1.1.2
 	
 		$arrPositions = array();	// returning array
 		foreach ( $arrMaxColsByPixel as $intScreenMaxWidth => $arrMaxCols ) {
 			$arrPositions[ $intScreenMaxWidth ] =  array(
+				'intCellIndex' => 1,	// since 1.1.5 - the index of the cell
+				'intWidgetIndex' => 1,	// since 1.1.5 - the index of the widget
 				'arrMaxCols' => $arrMaxCols,
 				'intCurrentMaxCol' => $this->GetLowestKeyElement( $arrMaxCols ),
 				'intColPosInRow' => 1,	// one-base
 				'intRowPos' => 1,		// one-base
-				'intScreenMaxWidth' => $intScreenMaxWidth,	// this is refered from the methods that need to know the screen max-width of the passed position array.
+				'arrColSpans' => isset( $arrColSpansByPixel[ $intScreenMaxWidth ] ) ? $arrColSpansByPixel[ $intScreenMaxWidth ] : array(),	// since 1.1.5
+				'intCurrentColSpan' => isset( $arrColSpansByPixel[ $intScreenMaxWidth ][ 1 ] ) ?  $arrColSpansByPixel[ $intScreenMaxWidth ][ 1 ] : 1,	// since 1.1.5
+				'intScreenMaxWidth' => $intScreenMaxWidth,	// this is refereed from the methods that need to know the screen max-width of the passed position array.
 				'strClassSelectorBox' => $intScreenMaxWidth == 0 ? $arrClassAttributes['box'] : $arrClassAttributes['box'] . '_' . $intScreenMaxWidth,
 				'strClassSelectorColumn' => $intScreenMaxWidth == 0 ? $arrClassAttributes['column'] : $arrClassAttributes['column'] . '_' . $intScreenMaxWidth,
 				'strClassSelectorRow' => $intScreenMaxWidth == 0 ? $arrClassAttributes['row'] : $arrClassAttributes['row'] . '_' . $intScreenMaxWidth,
@@ -46,17 +50,32 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 	/*
 	 * Used to generate tag class selector names based on the given widget position.
 	*/
-	public function AdvancePositions() {	// since 1.1.2, must be public as called from an instantiated object
+	public function setColSpans( $intWidgetIndex ) {	// since 1.1.5
 		
-		foreach ( $this->arrPositions as &$arrPosition ) 
-			$arrPosition = $this->AdvancePosition( $arrPosition );
+		// This should be performed prior to GetClassAttribute().
+		foreach ( $this->arrPositions as &$arrPosition )  {
 			
+			$arrPosition['intWidgetIndex'] = $intWidgetIndex; // the overall index of the widgets. One-base.	
+			$arrPosition['intCurrentColSpan'] = $this->getCurrentColSpan( $arrPosition );
+			
+		}
 	}
-	protected function AdvancePosition( $arrPosition ) {	// since 1.1.2
+	public function advancePositions() {	// since 1.1.2, must be public as called from an instantiated object
+
+		foreach ( $this->arrPositions as &$arrPosition ) {
+			$intColsToMove = $arrPosition['intCurrentColSpan'];
+			// $intColsToMove = $this->getCurrentColSpan( $arrPosition );
+			for ( $i = 1; $i <= $intColsToMove; $i++ )
+				$arrPosition = $this->advancePosition( $arrPosition );	
+		}
 		
-		// Called from the above AdvancePositions() method.
+	}
+	protected function advancePosition( $arrPosition ) {	// since 1.1.2
+		
+		// Called from the above advancePositions() method.
 	
-		$arrPosition['intColPosInRow']++;
+		$arrPosition['intCellIndex']++; 	// the overall index of the cell.
+		$arrPosition['intColPosInRow']++;	// one-base.
 
 		// If the current column position can be divided without any surplus by the maximum number of allowed columns, it means it's the last item in the row.
 		if ( ( ( $arrPosition['intColPosInRow'] - 1 ) % $arrPosition['intCurrentMaxCol'] ) == 0 ) {
@@ -66,15 +85,15 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 			
 		}	
 		
-		$arrPosition['intCurrentMaxCol'] = $this->GetCurrentMaxColumns( $arrPosition );
-		
+		$arrPosition['intCurrentMaxCol'] = $this->getCurrentMaxColumns( $arrPosition );
+				
 		return $arrPosition;
 		// $this->strClassSelectorColumnFirst = $arrPosition['intColPosInRow'] == 1 ? " {$this->strClassSelectorColumn}_first" : "";
 		
 	}
-	protected function GetCurrentMaxColumns( $arrPosition ) {
+	protected function getCurrentMaxColumns( $arrPosition ) {
 		
-		// A position array must be formatted to use this method. For the necessary keys, see FormatPositionsArray().
+		// A position array must be formatted to use this method. For the necessary keys, see formatPositionsArray().
 		
 		$intColIndex = $arrPosition[ 'intRowPos' ] - 1;	// minus 1 because arrays are zero-base and the position we use is one-base.
 		return ( isset( $arrPosition['arrMaxCols'][ $intColIndex ] ) ) 	// array is zero-base
@@ -82,25 +101,46 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 		
 	}
 	
+	protected function getCurrentColSpan( $arrPosition ) {	// since 1.1.5
+			
+		$intWidgetIndex = $arrPosition['intWidgetIndex'];
+			
+		// If the index key is not set, return 1, which is default.
+		if ( ! isset( $arrPosition['arrColSpans'][ $intWidgetIndex ] ) ) return 1;
+		$intColSpan = $arrPosition['arrColSpans'][ $intWidgetIndex ];
+		
+		// If the current column position + the specified col-span does not exceed the set max-column, return the col-span.
+		if ( $arrPosition['intColPosInRow'] + $intColSpan - 1 <= $arrPosition['intCurrentMaxCol'] )
+			return $intColSpan;
+
+		// Otherwise, reduce the col-span to fit in the row.
+		return $arrPosition['intCurrentMaxCol'] - $arrPosition['intColPosInRow'] + 1;
+	}
+	
 	public function GetClassAttribute() {	// since 1.1.2, called from an object instance so it must be public.
 
-		$strClassAttribute = '';
+		$arrClassSelectors = array();
 		foreach ( $this->arrPositions as &$arrPosition ) 
-			$strClassAttribute .= $this->GetClassSelectors( $arrPosition ) . ' ';
-
-		return rtrim( $strClassAttribute );
-
+			$arrClassSelectors[] = $this->GetClassSelectors( $arrPosition );
+		
+		$arrClassSelectors = array_unique( $arrClassSelectors );
+		return implode( ' ', $arrClassSelectors );
+		
 	}
 	protected function GetClassSelectors( &$arrPosition ) {	// since 1.1.2
 		
 		// Called from the above GetClassAttribute method.
+		
+		// Set the col span selector sub string.
+		$strColSpan = $arrPosition['intCurrentColSpan'] == 1 ? '' : $arrPosition['intCurrentColSpan'] . '_';
+		
 		$strElementOf = ( $arrPosition['intScreenMaxWidth'] == 0 ? "" : "{$arrPosition['strClassSelectorColumn']}_" )
-			. "element_of_{$arrPosition['intCurrentMaxCol']} ";
+			. "element_{$strColSpan}of_{$arrPosition['intCurrentMaxCol']} ";
 		
 		// responsive_column_widgets_column element_of_5 responsive_column_widgets_column_1 responsive_column_widgets_row_1
 		return "{$arrPosition['strClassSelectorColumn']} "
 			. $strElementOf
-			. "{$arrPosition['strClassSelectorColumn']}_element_of_{$arrPosition['intCurrentMaxCol']} "
+			. "{$arrPosition['strClassSelectorColumn']}_element_{$strColSpan}of_{$arrPosition['intCurrentMaxCol']} "
 			. "{$arrPosition['strClassSelectorColumn']}_{$arrPosition['intColPosInRow']} "
 			. "{$arrPosition['strClassSelectorRow']}_{$arrPosition['intRowPos']}"
 			// If the number of rows exceeds the set max-rows, hide the element so that it will be invisible.
@@ -176,9 +216,6 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 			// This flag array will be passed to a filter so that it can be captured from other places.
 			$this->arrIsPluginWidgetBoxWidget[] = ( isset( $arrParams[0]['widget_id'] ) && preg_match( '/^responsive_column_widget_box-\d+/', $arrParams[0]['widget_id'] ) );
 				
-// echo ResponsiveColumnWidgets_Debug::DumpArray( $arrParams );
-// echo ResponsiveColumnWidgets_Debug::DumpArray( $this->arrIsPluginWidgetBoxWidget );
-
 			ob_start();
 			if ( is_callable( $vCallback ) ) {		
 			
@@ -249,6 +286,7 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 	*/
 	function GetLowestKeyElement( $arr ) {
 		
+		if ( ! is_array( $arr ) ) return;
 		return $arr[ min( array_keys( $arr ) ) ];
 		
 	}

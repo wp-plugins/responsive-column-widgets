@@ -56,9 +56,9 @@ class ResponsiveColumnWidgets_UserAds_ {
 			// When an array of urls is passed to the Simple Pie's set_feed_url() method, the memory usage increases largely.
 			// So fetch the feeds one by one per url and store the output into an array.
 			foreach( $arrURLs as $strURL ) {
-				
+								
 				$oFeed = $this->GetFeedObj( $strURL, $numItems * 3 );	// multiplied by three to store items more than enough for next calls.
-				foreach ( $oFeed->get_items( 0, $numItems * 3 ) as $item ) 
+				foreach ( $oFeed->get_items() as $item ) 	// foreach ( $oFeed->get_items( 0, $numItems * 3 ) as $item ) does not change the memory usage
 					$this->arrFeedItems[ $strURLID ][] = $oReplace->Perform( $item->get_content() );
 				
 				// For PHP below 5.3 to release the memory.

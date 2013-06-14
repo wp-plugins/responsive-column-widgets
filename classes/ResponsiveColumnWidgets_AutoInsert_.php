@@ -83,6 +83,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 						$arrParams['default_media_only_screen_max_width'] 
 					)		
 				),
+				$this->oOption->formatColSpanArray( $arrParams['colspans'] ),
 				$this->arrClassSelectors
 			);	
 			
@@ -293,7 +294,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 	
 		// since 1.0.7, in 1.0.8, moved from the core object
 		if ( is_string( $arrPostIDs ) )
-			$arrPostIDs = $this->oOption->ConvertStringToArray( $arrPostIDs );
+			$arrPostIDs = $this->oOption->ConvertStringToArray( $arrPostIDs, ',' );
 		
 		if ( ! is_array( $arrPostIDs ) ) return null;
 

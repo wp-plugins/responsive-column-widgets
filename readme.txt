@@ -1,7 +1,7 @@
 ﻿=== Responsive Column Widgets ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
-Tags: widget, widgets, sidebar, sidebars, column, columns, responsive, post, posts, page, pages, plugin, miunosoft
+Tags: widget, widgets, sidebar, sidebars, column, columns, responsive, responsive design, grid, grid system, post, posts, page, pages, plugin, miunosoft
 Requires at least: 3.2
 Tested up to: 3.5.1
 Stable tag: 1.1.4.3
@@ -19,12 +19,13 @@ Creates a custom responsive column widget box.
 * **Responsive Design** - when the browser width changes, it automatically adjusts the layout. This is for tablet and mobile visitors.
 * **Set Number of Columns per Row** - flexibly set the number of columns in each row.
 * **Set Number of Columns per Browser Width** - flexibly set the number of columns by browser width.
-* **Up to 12 columns** - for example, if you have 24 registered widgets, you can displays 12 items in two rows.
+* **Up to 12 columns** - for example, if you have 24 registered widgets, you can place them in two rows consisting of 12 items across horizontally in each row.
 * **Works in Posts/Pages** - with the shortcode, you can embed the responsive widgets in post and pages.
 * **PHP code and Shortcode** - use them to display the widgets in theme template or in posts/pages.
 * **Default Sidebars Integration** - The sidebars defined by your theme also can be displayed in columns.
 * **Auto Insert** - The widget box can be embedded automatically without the shortcode.
 * **Sidebar Encapsulation** - With the widget that the plugin provides, the whole sidebar contents can be embedded as a widget item into another sidebar.
+* **Column Span** - column spans can be configurable.
 * and [more](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/).
  
 == Installation ==
@@ -77,7 +78,7 @@ There are other parameters besides *columns*.
 
 * **columns** - the number of columns to show. Default: 3. If you want to specify the number of columns in each row, put the numbers separated by commas. For instance, 3, 2, 4 would display 3 columns in the first row and 2 columns in the second row and four columns in the third row and so on. The rest rows follow the last set number. To set the number of columns by screen max-width, use the colon(:) character after the width, and use the pipe (|) character to delimit each set of number of columns. If the pixel is omitted, it is considered no limit. If the pipe delimiter is not present, the plugin will add 600: 1 internally by default.
 
-`Format: column value | pixel: column value | pixel: column value` 
+`Format: column value | pixel: column value | pixel: column value | ...` 
 
 The following example displays widgets in 5 column when the browser width is greater than 800, and four when the width is 601 to 800, and three when the width is 481 to 600, and one when the width is 1 to 480.
 
@@ -89,6 +90,17 @@ The following example displays widgets in 5 column when the browser width is gre
 * **omit** - the numbers of the widget order of the items to omit, separated by commas. e.g. **3, 5** would skip the third and fifth registered widgets.
 * **showonly** - the numbers of the widget order of the items to show, separated by commas. e.g. **2, 7** would only show the second and seventh registered widgets. Other items will be skipped.
 * **label** - the label name of the widget box. Default: Responsive Column Widgets.
+* **colspans** - the column spans. 
+
+`Format: widget index - column span, widget index - column span, widget index - column span, ...`
+
+The following parameter value of *colspans* will result on the first widget with 3 column space and the fourth widget with two column space and the seventh takes four column space. Unspecified widget items will have one column span.
+
+`1-3, 4-2, 7-4`
+
+To set them by screen max-width, like the *columns* parameter, use the colon(:) character after the width in pixel, and use the pipe (|) character to delimit each set of column spans. If the pixel is omitted, it is considered no limit. These widths need to correspond to the value passed to the *columns* parameter.
+
+e.g. `1-3, 4-2, 7-4 | 600: 1-2, 3-2, 7-3 | 480: 1-2`
 
 = Video Tutorials =
 http://en.michaeluno.jp/responsive-column-widgets/tutorials/
@@ -123,6 +135,9 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.1.5 =
+* Added: the *colspans* parameter. 
+
 = 1.1.4.3 - 06/03/2013 =
 * Tweaked: to return the passed value for filters of the Auto-Insert feature if it is not a string.
 * Supported: Twenty Thirteen 0.1.
@@ -134,7 +149,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 = 1.1.4.1 - 05/17/2013 = 
 * Added: the option to enable/disable the Responsive Column Widget Box widget. 
-* Added: the ability for the ResponsiveColumnWidgets() function to be called without a parameter.
+* Added: the ability for the *ResponsiveColumnWidgets()* function to be called without a parameter.
 
 = 1.1.4 - 05/13/2013 = 
 * Fixed: a bug that updating the options in the General Options page caused the Areas to Load and Class Selector Names values to be empty.
@@ -155,7 +170,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 = 1.1.1.2 - 04/23/2013 =
 * Added: the option to decide whether ID attributes should be removed or not.
-* Fixed: an issue that updating option items of the General Options removed some of the internal settings.
+* Fixed: an issue that updating option items of the *General Options* removed some of the internal settings.
 * Added: the edit icon in the Manage page.
 
 = 1.1.1.1 - 04/22/2013 =

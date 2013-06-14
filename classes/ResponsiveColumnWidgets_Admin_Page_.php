@@ -226,12 +226,12 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 								$bIsNew ? $this->oOption->GetDefaultValue( 'default_media_only_screen_max_width' ) : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['default_media_only_screen_max_width'] 
 							),
 							'pre_field' => $this->GetColumnValueDetails( $bIsNew ? $this->oOption->arrDefaultParams['columns'] : $this->oOption->arrOptions['boxes'][ $strSidebarID ]['columns'] ),
-							'post_field' => '<p class="description">' . __( 'Set the number of columns separated by commnas. Each delimited element number corresponds to the order number of the rows.', 'responsive-column-widgets' ) . '&nbsp;'
+							'post_field' => '<p class="description">' . __( 'Set the number of columns separated by commas. Each delimited element number corresponds to the order number of the rows.', 'responsive-column-widgets' ) . '&nbsp;'
 								. __( 'Min', 'responsive-column-widgets' ) . ' 1 ' . __( 'Max', 'responsive-column-widgets' ) . ' 12 '
 								. __( '( for each row )', 'responsive-column-widgets' ) . '</p>e.g. <code>4, 2, 3</code>'
-								. '<p class="description">' . __( 'To set the number of columns by screen max-width, use the colon(:) character after the width, and use the pipe (|) character to delimit each set of number of columns. If the pixel is omitted, it is considered no limit. If the pipe delimiter is not present, the plugin will add 600: 1 internally by default.', 'responsive-column-widgets' ) 
+								. '<p class="description">' . __( 'To set the number of columns by screen max-width, use the colon(:) character after the width in pixel, and use the pipe (|) character to delimit each set of number of columns. If the pixel is omitted, it is considered no limit. If the pipe delimiter is not present, the plugin will add 600: 1 internally by default.', 'responsive-column-widgets' ) 
 								. '</p>'
-								. '<p class="description">' . __( 'Format', 'responsive-column-widgets' ) . ': <code>' . __( 'column value | pixel: column value | pixel: column value ', 'responsive-column-widgets' ) . '</code><br />'
+								. '<p class="description">' . __( 'Format', 'responsive-column-widgets' ) . ': <code>' . __( 'column value | pixel: column value | pixel: column value | ...', 'responsive-column-widgets' ) . '</code><br />'
 								. __( 'The following example displays widgets in 5 column when the browser width is greater than 800, and four when the width is 601 to 800, and three when the width is 481 to 600, and one when the width is 1 to 480.', 'responsive-column-widgets' ) . '</p>e.g. <code>5 | 800: 4 | 600: 3 |480: 1</code>',
 							'type' => 'text',	// must not be number because it's a string containing a sequence of numbers with commas.
 						),		
@@ -268,7 +268,19 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 								. ' e.g. "1, 3" ' . __( 'where only the first and the third ones will be shown.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'value' => $bIsNew ? $this->oOption->GetDefaultValue( 'showonly' ) : $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['showonly'] ),
-						),							
+						),			
+						array(
+							'id' => 'colspans',
+							'title' => __( 'Column Spans', 'responsive-column-widgets' ),
+							'size' => 100,
+							'description' => __( 'Set the column spans separated by comma and dash.', 'responsive-column-widgets' ) . '<br />'
+								. __( 'Format', 'responsive-column-widgets' ) . ': <code>widget index - column span, widget index - column span, widget index - column span, ...</code><br />' 
+								. 'e.g. "<code>1-3, 4-2, 7-4</code>", ' . __( 'where the first widget takes 3 columns and the fourth widget takes two and the seventh takes four. Unspecified widget items will have one column span.', 'responsive-column-widgets' ) . '<br />'
+								. __( 'To set them by screen max-width, use the colon(:) character after the width in pixel, and use the pipe (|) character to delimit each set of column spans. If the pixel is omitted, it is considered no limit. These widths need to correspond to the above Number of Columns parameter.', 'responsive-column-widgets' ) . '<br />'
+								. ' e.g. <code>1-3, 4-2, 7-4 | 600: 1-2, 3-2, 7-3 | 480: 1-2</code>',
+							'type' => 'text',
+							'value' => $bIsNew ? $this->getColSpanValueForInput( $arrWidgetBoxOptions['colspans'] ) : $this->getColSpanValueForInput( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['colspans'] ),
+						),						
 						array(  // single button
 							'pre_html' => '<div class="text-info">' . ( isset( $this->oUserAds ) ? $this->oUserAds->GetTextAd() : '' ) . '</div>',
 							'id' => 'submit_save_neworedit_middle',
@@ -805,6 +817,28 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		return "<{$strParentTag}>" . $strList . "</{$strParentTag}>";
 		
 	}
+	
+	protected function getColSpanValueForInput( $vInput ) {	// since 1.1.5
+		
+		$strColSpans = '';
+		$vInput = is_array( $vInput ) ? $vInput : array();
+		foreach ( $vInput as $intScreenMaxWidth => &$vColSpans ) {
+	
+			// now $vColSpans becomes a string.
+			$strWidth = $intScreenMaxWidth == 0 ? '' : $intScreenMaxWidth . ': ';
+			
+			$strColSpans = "{$strWidth}";
+			foreach( $vColSpans as $intWidgetIndex => $intColSpan )  
+				$strColSpans .= "{$intWidgetIndex}-{$intColSpan}, ";
+			$vColSpans = rtrim( $strColSpans, ', ' );
+			// $vColSpans = ' ' . $strWidth . $this->oOption->ConvertOptionArrayValueToString( $vColSpans, array( '-', ', '  ) ) . ' ';
+			
+		}
+		$strColSpans = $this->oOption->ConvertOptionArrayValueToString( $vInput, array( ' | ' ) );
+		return trim( $strColSpans );	// since white spaces are added around the each string element, remove them.
+	
+	}
+	
 	protected function GetColumnStringValueForInput( $arrColumnInput, $intDefaultScreenMaxWidth=600 ) {	// since 1.1.1
 		
 		// This is used to get a string value for the user input field.
@@ -826,7 +860,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		if ( ! $this->oOption->IsFormattedColumnArray( $arrColumnInput ) )
 			return $this->oOption->ConvertOptionArrayValueToString( $arrColumnInput );	// now $vInput becomes a string
 			
-		// Case 1 - formatted correctly. Note that it is sorted by decsending order.
+		// Case 1 - formatted correctly. Note that it is sorted by descending order.
 	
 		// The default omitting element array( 600 => array( 1 ) ) should be omitted if it is the least screen-max width.
 		$arrColumnInput = $this->RemoveDefaultOmittingColumnElement( $arrColumnInput, $intDefaultScreenMaxWidth );
@@ -834,7 +868,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		// We need to put the 0 key value to the beginning of the array without resorting the entire array.
 		$arrKeyZero = $arrColumnInput[0];
 		unset( $arrColumnInput[0] );
-		$arrColumnInput = $this->oOption->PrependArrayElement( $arrColumnInput, 0, $arrKeyZero );	// array_unshift will resort the array so avoid usint that.
+		$arrColumnInput = $this->oOption->PrependArrayElement( $arrColumnInput, 0, $arrKeyZero );	// array_unshift will resort the array so avoid using that.
 		
 		foreach ( $arrColumnInput as $intScreenMaxWidth => &$arrColumn ) {
 	
@@ -843,7 +877,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			$arrColumn = ' ' . $strWidth . $this->oOption->ConvertOptionArrayValueToString( $arrColumn, array( ', ' ) ) . ' ';
 			
 		}
-// echo $this->DumpArray( $arrColumnInput );
+
 		$strReturn = $this->oOption->ConvertOptionArrayValueToString( $arrColumnInput, array( '|' ) );
 		return trim( $strReturn );	// since white spaces are added around the each string element, remove them.
 		
@@ -943,7 +977,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			);
 		}
 		
-		
 		// since 1.1.4
 		$this->PrintDebugInfo();
 		
@@ -1008,6 +1041,16 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		echo ResponsiveColumnWidgets_Debug::DumpArray( $this->oOption->arrOptions['general'] );
 		
 	}
+	public function do_after_responsive_column_widgets_neworedit() {
+		return;
+		if ( ! (
+			isset( $this->oOption->arrOptions['general']['debug_mode'] ) && $this->oOption->arrOptions['general']['debug_mode'] 
+			&& defined( 'WP_DEBUG' ) && WP_DEBUG == true 
+		) ) return;
+	
+		echo ResponsiveColumnWidgets_Debug::DumpArray( $this->oOption->arrOptions['boxes'] );
+		
+	}	
 	public function PrintDebugInfo() {	// also used by hooks
 		
 		if ( ! (
@@ -1310,13 +1353,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}
 	function UpdateBoxOptions( $arrInput, $bIsNew ) {
 		
-		// Sanitization for the first two sections.
+		// Sanitisation for the first two sections.
 		$arrInput['maxwidgets'] = $this->oUtil->FixNumber( $arrInput['maxwidgets'], 0, 0 );
 		$arrInput['maxrows'] = $this->oUtil->FixNumber( $arrInput['maxrows'], 0, 0 );
 		$arrInput['sidebar'] = ! empty( $_POST['isnew'] ) ? $this->GetAvailableSidebarID() : $arrInput['sidebar'];
 		$arrInput['label'] = isset( $arrInput['label'] ) ? $arrInput['label'] : $this->oOption->arrOptions['boxes'][ $arrInput['sidebar'] ]['label'];
 		$arrInput['omit'] = $this->SanitizeNumericSequenceToArray( $arrInput['omit'] );
 		$arrInput['showonly'] = $this->SanitizeNumericSequenceToArray( $arrInput['showonly'] );		
+		$arrInput['colspans'] = $this->oOption->formatColSpanArray( $arrInput['colspans'] );		// since 1.1.5	
 		// $arrInput['offsets'] = $this->SanitizeStringToArray( $arrInput['offsets'], false, ',', ':' );
 		// $arrInput['offsets'] = empty( $arrInput['offsets'] ) ? $this->oOption->arrDefaultParams['offsets'] : $arrInput['offsets'];
 
@@ -1367,7 +1411,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		// e.g. 3, 4, 63  --> array( 3, 4, 63 )
 		// e.g. ada, 9,, 4 --> array( 9, 4 ) 
 		
-		$arr = $this->oOption->ConvertStringToArray( $str );	// comma delimited
+		$arr = $this->oOption->ConvertStringToArray( $str, ',' );	// comma delimited
 		$arr = $this->oUtil->FixNumbers( $arr, $intDefault, $intMin, $intMax );
 		$arr = $this->oUtil->UnsetEmptyArrayElements( $arr );
 		if ( $bValueUnique ) $arr = array_unique( $arr );
@@ -1502,7 +1546,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			$arrValidate['general_css_areas_to_load']['regular'] = 1;	// Since this field is disabled, it becomes 0 when updating. So make it true.
 		
 			
-		$arrValidate['allowedhtmltags'] = $this->oOption->ConvertStringToArray( $arrValidate['allowedhtmltags'] ); 		
+		$arrValidate['allowedhtmltags'] = $this->oOption->ConvertStringToArray( $arrValidate['allowedhtmltags'], ',' ); 		
 		
 		$arrValidate['general_css_load_in_head'] = preg_split( "/[\r]\s*/", $arrValidate['general_css_load_in_head'] ); 	// since 1.1.2.1
 		foreach( $arrValidate['general_css_load_in_head'] as $intIndex => $strParams ) {
@@ -1522,13 +1566,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				32 	// minimum
 			);
 
-		// Please review.
-		$this->PleaseReview();	// do it before assigning the new value.			
-			
-		// There are hidden option valuses that are not sent from the admin page ( the data sent as $arrInput ), the input data need to be merged with the previous option values.
+		// Please review
+		$arrValidate['time_first_option_update'] = isset( $this->oOption->arrOptions['general']['time_first_option_update'] ) ? $this->oOption->arrOptions['general']['time_first_option_update'] : time();
+		
+		// There are hidden option values that are not sent from the admin page ( the data sent as $arrInput ), the input data need to be merged with the previous option values.
 		// $this->oOption->arrOptions['general'] = $arrValidate + $this->oOption->arrOptions['general'];
 		$this->oOption->arrOptions['general'] = $this->oOption->UniteArraysRecursive( $arrValidate, $this->oOption->arrDefaultOptionStructure['general'] );
 
+		
 // ResponsiveColumnWidgets_Debug::DumpArray( $arrValidate, dirname( __FILE__ ) . '/validation_array.txt' );
 // ResponsiveColumnWidgets_Debug::DumpArray( $this->oOption->arrOptions['general'], dirname( __FILE__ ) . '/validation_array.txt' );
 		

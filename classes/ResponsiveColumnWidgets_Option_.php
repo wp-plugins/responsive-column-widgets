@@ -17,6 +17,8 @@ class ResponsiveColumnWidgets_Option_ {
 			array( 600, 12 ),
 		),	//'600: 12', // e.g. '800: 1, 600: 2, 480: 3, 320: 4, 240: 5',	// added since 1.0.3
 		'default_media_only_screen_max_width' => 600,	// since 1.1.1 - it mens when the browser widths gets 600px or below, the media only rules will be applied
+		'colspans' => array( array() ),	// since 1.1.5 - two-dimensional array.
+// 'colspans' => array( 0 => array( 1 => 2, 3 => 4 ), 600 => array( 2 => 5 )  ),	// since 1.1.5 - two-dimensional array.
 	);
 	public $arrDefaultSidebarArgs = array(	// must be public; accessed in the core object for register_sidebar()
 		'description' 						=> '',
@@ -137,7 +139,7 @@ class ResponsiveColumnWidgets_Option_ {
 		// Since 1.0.6.1
 		// Returns the default value of the given key from the default option array for the default Widget Box
 		// If the value is an array it will convert it to string. ( this is useful to display in a form field )
-		// If the array to string convertsion is on, it uses $strDelim1 and $strDelim2 to implode() the array.
+		// If the array to string conversion is on, it uses $strDelim1 and $strDelim2 to implode() the array.
 		// Up to the second dimension is supported for multi-dimensional arrays.
 				
 		$vValue = isset( $this->arrDefaultParams[ $strKey ] ) ? $this->arrDefaultParams[ $strKey ] : null;
@@ -195,8 +197,8 @@ class ResponsiveColumnWidgets_Option_ {
  	 */
 	public function IsOneColumm( $arrColumns ) {		// since 1.1.1, used not only by this class but also by the admin page class. So it must be public.
 	
-		// Determines whether the passed column array yeilds one.
-
+		// Determines whether the passed column array yields one.
+// if ( ! is_array( $arrColumns ) ) return false;
 		$arrResult = array_diff( array_unique( $arrColumns ), array( 1 ) );
 		return empty( $arrResult ); // if it's not empty, it means it's different. Otherwise, it's the same and therefore, it's one.
 		
@@ -206,7 +208,7 @@ class ResponsiveColumnWidgets_Option_ {
 		// If the user does not specify the screen max-width, by default the format method will add 600px for it.
 		// However, if the user set it by themselves but do not set the column number that is to be one, it will not be a perfect responsive design;
 		// even though the browser width is diminished, the columns remain multiple.
-		// There shuold be a safe guard to force the minimum number of the columns at some point. Let's make it 240px which should be narrow enough 
+		// There should be a safe guard to force the minimum number of the columns at some point. Let's make it 240px which should be narrow enough 
 		// for most browsers to have mere a single column.
 		
 		$intMinimumScreenMaxWidth = 240;
@@ -251,18 +253,18 @@ class ResponsiveColumnWidgets_Option_ {
 	}	
 	public function IsFormattedColumnArray( $vInput ) {	// since 1.1.1, used not only by this class itself but also by the admin page class. So must be public.
 		
-		// Determins whether the given value is formatted correctly for the plugin to output the widget buffers.
-		// Returns true if it's okay; othewise false.
+		// Determines whether the given value is formatted correctly for the plugin to output the widget buffers.
+		// Returns true if it's okay; otherwise false.
 		
-		if ( is_array( $vInput ) && $this->CountArrayDimension( $vInput ) == 2 ) return true;
-			
+		if ( is_array( $vInput ) && $this->CountArrayDimension( $vInput ) == 2 ) return true;			
 		return false;
 		
 	}
+	
 	protected function SanitizeColumnArray( $arrColumnsInput ) {	// since 1.1.1
 		
 		/*
-		 * Column array sanitization
+		 * Column array sanitisation
 		 * Step 1. each delimited element must not be empty
 		 * Step 2. each column number must be within 1 to 12 and empty elements are not allowed.
 
@@ -283,9 +285,9 @@ class ResponsiveColumnWidgets_Option_ {
 	
 		foreach( $arrColumnsInput as $intScreenMaxWidth => &$arrColumns ) {
 			
-			if ( is_string( $arrColumns ) )
-				$arrColumns = $this->ConvertStringToArray( $arrColumns );
-							
+			if ( ! is_array( $arrColumns ) ) 
+				$arrColumns = $this->ConvertStringToArray( $arrColumns, ',' );
+	
 			$arrColumns = $this->FixNumbers( $arrColumns, 
 				$this->arrDefaultParams['columns'][0], // should be 3
 				1, 
@@ -350,32 +352,25 @@ class ResponsiveColumnWidgets_Option_ {
 		}
 		/*	
 		 * 	At this point the array structure looks like the following.
-			Array
-			(
-				[0] => Array
-					(
-						[0] => 3, 4, ,1
-					)
-
-				[1] => Array
-					(
-						[0] => 600
-						[1] => 1
-					)
+			Array (
+				[0] => Array (
+					[0] => 3, 4, ,1
+				)
+				[1] => Array (
+					[0] => 600
+					[1] => 1
+				)
 			)
 			Now we need to make it like this:
-			Array
-			(
-				[600] => Array
-					(
-						[0] => 1
-					)
-				[0] => Array
-					(
-						[0] => 3
-						[1] => 4
-						[2] => 1
-					)					
+			Array (
+				[600] => Array (
+					[0] => 1
+				)
+				[0] => Array (
+					[0] => 3
+					[1] => 4
+					[2] => 1
+				)					
 			)
 		*/
 
@@ -394,13 +389,13 @@ class ResponsiveColumnWidgets_Option_ {
 			
 			if ( ! is_numeric( $intMaxScreenWidth ) ) {	// broken input
 				
-				$arrMaxColsByPixel[ 0 ] = $this->ConvertStringToArray( $arrMaxCols[1] );
+				$arrMaxColsByPixel[ 0 ] = $this->ConvertStringToArray( $arrMaxCols[1], ',' );
 				$arrMaxColsByPixel[ $intDefaultScreenMaxWidth ] = array( 1 );
 				continue;
 				
 			}
 			
-			$arrMaxColsByPixel[ $intMaxScreenWidth ] = $this->ConvertStringToArray( $arrMaxCols[1] );	
+			$arrMaxColsByPixel[ $intMaxScreenWidth ] = $this->ConvertStringToArray( $arrMaxCols[1], ',' );	
 		
 		}
 			
@@ -410,6 +405,128 @@ class ResponsiveColumnWidgets_Option_ {
 		return $this->SanitizeColumnArray( $arrMaxColsByPixel );
 		
 	}	
+	public function formatColSpanArray( $vInput ) {	// since 1.1.5
+			
+		// If it's already formatted, return the passed value.
+		if ( is_array( $vInput ) && $this->CountArrayDimension( $vInput ) == 2 ) return $vInput;				
+			
+		// $arrColSpanArray must be an four-dimensional array.
+		/*	e.g. 
+		 * Step1 : $vInput = '1-3, 4-2, 7-4 | 600: 1-2, 3-2, 7-3 | 480: 1-2 ';
+		 * Step2 : Convert the string to the four-dimensional array.
+			 * Array (
+				[0] => Array (
+					[0] => Array (
+						[0] => Array (
+							[0] => 1
+							[1] => 3
+						)
+						[1] => Array (
+							[0] => 4
+							[1] => 2
+						)
+						[2] => Array (
+							[0] => 7
+							[1] => 4
+						)
+					)
+				)
+				[1] => Array (
+					[0] => Array (
+						[0] => Array (
+							[0] => 600
+						)
+					)
+					[1] => Array (
+						[0] => Array (
+							[0] => 1
+							[1] => 2
+						)
+						[1] => Array (
+							[0] => 3
+							[1] => 2
+						)
+						[2] => Array (
+							[0] => 7
+							[1] => 3
+						)
+					)
+				)
+				[2] => Array (
+					[0] => Array (
+						[0] => Array (
+							[0] => 480
+						)
+					)
+					[1] => Array (
+						[0] => Array (
+							[0] => 1
+							[1] => 2
+						)
+					)
+				)
+			)
+		Step 3: convert it to a multi-dimensional array like this.
+			Array (
+				[0] => Array (
+					[1] => 3
+					[4] => 2
+					[7] => 4
+				)
+				[600] => Array (
+					[1] => 2
+					[3] => 2
+					[7] => 3
+				)
+				[480] => Array (
+					[1] => 2
+				)
+			)
+		 * */
+		
+		
+		
+		$arrColSpanArray = is_string( $vInput ) ? $this->ConvertStringToArray( $vInput, '|', ':', ',', '-' ) : array();
+
+		$arrFormat = array();
+		foreach( $arrColSpanArray as $arrElems ) {
+		
+			if ( empty( $arrElems ) ) continue;
+		
+			if ( count( $arrElems ) == 1 ) {	// the screen width is not specified, meaning no-limit
+			
+				if ( isset( $arrElems[0][0][1] ) )	// if the key pair is set
+					$arrFormat[ 0 ] = $arrElems[ 0 ];
+				continue;
+				
+			}
+			
+			$intScreenMaxWidth = $arrElems[ 0 ][ 0][ 0 ];
+			unset( $arrElems[ 0 ] );
+			$arrFormat[ $intScreenMaxWidth ] = $arrElems[ 1 ];
+		
+		}
+		
+		$arrFormat2 = array();
+		foreach ( $arrFormat as $intScreen => $arrElemsByScreen ) {
+
+			foreach( $arrElemsByScreen as $arrElems ) {			
+			
+				if ( ! isset( $arrElems[ 0 ], $arrElems[ 1 ] ) ) continue;
+			
+				$intKey = $this->FixNumber( $arrElems[ 0 ], 1, 1 );
+				$arrFormat2[ $intScreen ][ $intKey ] = $this->FixNumber( $arrElems[ 1 ], 1, 1, 12 );	
+				
+			}
+			
+		}	
+		return $arrFormat2;
+		
+	}	
+	public function _formatColSpanArray( $vInput='' ) {	// since 1.1.5
+return array( 0 => array( 1 => 2, 4 => 3, 5 => 3 ), 600 => array( 1 => 3, 3=> 2 ) );
+	}
+	
 	
 	/*
 	 * Public Utilities - helper methods which can be used outside the plugin
@@ -448,9 +565,9 @@ class ResponsiveColumnWidgets_Option_ {
 	public function FixNumbers( $arrNumbers, $numDefault, $numMin="", $numMax="" ) {	// since 1.1.1
 		
 		// An array version of FixNumber(). The array must be numerically indexed.
-		
-		foreach( $arrNumbers as &$intNumber )
-			$intNumber = $this->FixNumber( $intNumber, $numDefault, $numMin, $numMax );
+		// if ( is_array( $arrNumbers ) )
+			foreach( $arrNumbers as &$intNumber )
+				$intNumber = $this->FixNumber( $intNumber, $numDefault, $numMin, $numMax );
 		
 		return $arrNumbers;
 		
@@ -459,7 +576,7 @@ class ResponsiveColumnWidgets_Option_ {
 	
 		// Checks if the passed value is a number and set it to the default if not.
 		// if it is a number and exceeds the set maximum number, it sets it to the max value.
-		// if it is a number and is below the minimum number, it sets to the minimium value.
+		// if it is a number and is below the minimum number, it sets to the minimum value.
 		// set a blank value for no limit.
 		// This is useful for form data validation.
 		
@@ -483,35 +600,31 @@ class ResponsiveColumnWidgets_Option_ {
 		return $intCount;
 				
 	}
-	function EchoMemoryLimit() {
+	function EchoMemoryLimit() {	// since 1.0.7.1
 		
-		// since 1.0.7.1
 		echo $this->arrOptions['general']['memory_allocation'] . '<br />';
 		echo $this->GetMemoryLimit();
 		
 	}
-	function GetMemoryLimit() {
-		
-		// since 1.0.7.1
+	function GetMemoryLimit() {	// since 1.0.7.1
+			
 		// if ( ! function_exists( 'memory_get_usage' ) ) return;
 		if ( ! function_exists( 'ini_get' ) ) return;		// some servers disable ini_get()
 		return @ini_get( 'memory_limit' );		// returns the string with the traling M characeter. e.g. 128M
 
 	}
-	function SetMemoryLimit( $numMegabytes ) {
-		
-		// since 1.0.7.1
+	function SetMemoryLimit( $numMegabytes ) {	// since 1.0.7.1
+	
 		// unlike GetMemoryLimit() the passed value should not contain the M character at the end.
 		// if ( ! function_exists( 'memory_get_usage' ) ) return;		
 		if ( ! function_exists( 'ini_set' ) ) return;		// some servers disable ini_set()
 		@ini_set( 'memory_limit', rtrim( $numMegabytes, 'M' ) . 'M' );
 		
 	}	 
-	function ImplodeRecursive( $arrInput, $arrGlues ) {
-		
-		// since 1.0.6.1
+	function ImplodeRecursive( $arrInput, $arrGlues ) {		// since 1.0.6.1
+	
 		// Implodes the given multi-dimensional array.
-		// $arrGlues should be an array nummerically indexed with the values of glue. 
+		// $arrGlues should be an array numerically indexed with the values of glue. 
 		// Each element should represent the glue of the dimension corresponding to the depth of the array.
 		// 	e.g. array( ',', ':' ) will glue the elements of first dimension with comma and second dimension with colon.
 		
@@ -529,7 +642,39 @@ class ResponsiveColumnWidgets_Option_ {
 		return implode( $arrGlues[0], $arrInput );
 
 	}	
-	public function ConvertStringToArray( $strInput, $strDelim=',', $strDelim2='' ) {
+	public function ConvertStringToArray() {	// since 1.1.5
+		
+		// Converts string with delimiters to multi-dimensional array.
+		// Parameters: 
+		// 1: haystack string
+		// 2, 3, 4...: delimiter
+		// e.g. $arr = ConvertStringToArray( 'a-1,b-2,c,d|e,f,g', "|", ',', '-' );
+
+		$intArgs = func_num_args();
+		$arrArgs = func_get_args();
+		$strInput = $arrArgs[ 0 ];			
+		$strDelimiter = $arrArgs[ 1 ];
+		
+		if ( ! is_string( $strDelimiter ) || $strDelimiter == '' ) return $strInput;
+		if ( is_array( $strInput ) ) return $strInput;	// note that is_string( 1 ) yields false.
+			
+		$arrElems = preg_split( "/[{$strDelimiter}]\s*/", trim( $strInput ), 0, PREG_SPLIT_NO_EMPTY );
+		if ( ! is_array( $arrElems ) ) return array();
+		
+		foreach( $arrElems as &$strElem ) {
+			
+			$arrParams = $arrArgs;
+			$arrParams[0] = $strElem;
+			unset( $arrParams[ 1 ] );	// remove the used delimiter.
+			// now $strElem becomes an array.
+			if ( count( $arrParams ) > 1 ) // if the delimiters are gone, 
+				$strElem = call_user_func_array( array( $this, 'ConvertStringToArray' ), $arrParams );
+
+		}
+		return $arrElems;
+
+	}	
+	public function _ConvertStringToArray( $strInput, $strDelim=',', $strDelim2='' ) {
 		
 		// Since 1.0.6.1
 		// explodes the given array into string and it supports up tp the second dimension.

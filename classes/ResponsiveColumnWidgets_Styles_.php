@@ -17,18 +17,18 @@ class ResponsiveColumnWidgets_Styles_ {
 	
 	// Default Properties
 	protected $strColPercentages = array(
-		1 =>	'100%',
-		2 =>	'49.2%',
-		3 =>	'32.2%',
-		4 =>	'23.8%',
-		5 =>	'18.72%',
-		6 =>	'15.33%',
-		7 =>	'12.91%',
-		8 =>	'11.1%',
-		9 =>	'9.68%',
-		10 =>	'8.56%',
-		11 =>	'7.63%',
-		12 =>	'6.86%',
+		1 =>	100,
+		2 =>	49.2,
+		3 =>	32.2,
+		4 =>	23.8,
+		5 =>	18.72,
+		6 =>	15.33,
+		7 =>	12.91,
+		8 =>	11.1,
+		9 =>	9.68,
+		10 =>	8.56,
+		11 =>	7.63,
+		12 =>	6.86,
 	);		
 	
 	// Dynamic Properties
@@ -64,7 +64,6 @@ class ResponsiveColumnWidgets_Styles_ {
 		
 		/*
 		 * Retrieve the CSS rules.
-		 * Todo: there is a claim that the scoped attribute is invalid in HTML5. 
 		*/
 		$strStyles = '';
 		
@@ -107,7 +106,7 @@ class ResponsiveColumnWidgets_Styles_ {
 									
 			// If the screen max-width is 0, meaning no-limit, skip, because it's already defined in the base rules.
 			// We need to set style rules for no-limit screen max widths as well later at some point when the width offset option is implemented.
-			// For now and for the back-ward compatilibity, just skip them and leave them untouched.
+			// For now and for the back-ward compatibility, just skip them and leave them untouched.
 			if ( $intScreenMaxWidth == 0 ) continue;
 			
 			// Set the prefixes.
@@ -120,12 +119,16 @@ class ResponsiveColumnWidgets_Styles_ {
 			
 			foreach ( $this->strColPercentages as $intElement => $strWidthPercentage ) 	{
 				
+				$strWidthPercentage = "{$strWidthPercentage}%";
 				$strClearLeft = $intElement == 1 ? " clear: left;" : "";
-				$strMargin = $intElement == 1 ? " margin: 1% 0 1% 0%;" : "";
+				$strMargin = $intElement == 1 ? " margin: 1% 0 1% 0;" : "";
 				$strFloat = " display: block; float:left;";
 				$strStyleRules .= " .{$strSidebarID} .{$strPrefixElementOf}{$intElement} { width:{$strWidthPercentage};{$strClearLeft}{$strMargin}{$strFloat} } " . PHP_EOL;
 			
 			}
+			
+			// Add the widths for col-spans. ( since 1.1.5 )
+			$strStyleRules .= $this->getWidthsForColSpans( $strSidebarID, $strPrefixColumn . '_' );
 			
 			// Override the other screen max-widths clear property.
 			$strStyleRules .= $this->GetClearProperties( $strSidebarID, $arrScreenMaxWidths, $intScreenMaxWidth );
@@ -165,7 +168,7 @@ class ResponsiveColumnWidgets_Styles_ {
 	
 	public function GetWidgetBoxStyleIfNotAddedYet( $strSidebarID, $strCallID, $arrScreenMaxWidths, $bIsScoped=true ) {	// since 1.1.2, called from the instantiated core class so it must be public.
 
-		// $strCallID must be a unique string that represends the call of a particular widget box's rendering request.
+		// $strCallID must be a unique string that represents the call of a particular widget box's rendering request.
 		
 		global $arrResponsiveColumnWidgets_Flags;
 		
@@ -216,7 +219,7 @@ class ResponsiveColumnWidgets_Styles_ {
 			
 			$oStyleLoader = new ResponsiveColumnWidgets_StyleLoader( 
 				shortcode_parse_atts( $strParams ), 
-				array() 		// pass empty arrays to disalbe hooks.
+				array() 		// pass empty arrays to disable hooks.
 			);	
 			$strStyles .= $oStyleLoader->AddStyleInHead();
 			unset( $oStyleLoader );	// ensure it's released for PHP below 5.3.
@@ -229,7 +232,7 @@ class ResponsiveColumnWidgets_Styles_ {
 			
 			$oStyleLoader = new ResponsiveColumnWidgets_StyleLoader( 
 				$arrParams, 
-				array() 		// pass empty arrays to disalbe hooks.
+				array() 		// pass empty arrays to disable hooks.
 			);	
 			$strStyles .= $oStyleLoader->AddStyleInHead();
 			unset( $oStyleLoader );	// ensure it's released for PHP below 5.3.
@@ -245,10 +248,33 @@ class ResponsiveColumnWidgets_Styles_ {
 		return $oStyleLoader->AddStyleInHead();
 		
 	}
+	protected function getWidthForColSpan( $intMaxCol, $intColSpan ) {	// since 1.1.5
+
+		// If the both numbers are the same, it means it's as one element, one column.
+		if ( $intMaxCol == $intColSpan ) return 100 - 1.6;	// 98.4%. 1.6% is the left margin.
+		
+		return ( ( $this->strColPercentages[ $intMaxCol ] + 1.6 ) * $intColSpan ) - 1.6;
+		
+	}
+	protected function getWidthsForColSpans( $strPrefix1='', $strPrefix2='' ) {	// since 1.1.5
+		
+		$strRule = "";
+		$strPrefix1 = $strPrefix1 ? ".{$strPrefix1} " : '';	
+		for ( $intMaxCol = 2; $intMaxCol <= 12; $intMaxCol++ ) {
+			
+			for ( $intColSpan = 2; $intColSpan <= $intMaxCol; $intColSpan++ ) {
+				$strWidth = $this->getWidthForColSpan( $intMaxCol, $intColSpan );
+				$strRule .= " {$strPrefix1}.{$strPrefix2}element_{$intColSpan}_of_{$intMaxCol} { width: {$strWidth}%; }" . PHP_EOL;
+			}
+		}
+		return $strRule;
+
+	}
 	protected function GetBaseStyles( $bIsScoped=false ) {	// since 1.1.0, moved from the core class in 1.1.2.
 		
 		$strScoped = $bIsScoped ? "scoped" : "";
 		$strHide = 'none';
+		$strWidthsForColSpans = $this->getWidthsForColSpans();
 		$strCSS = "
 			.{$this->strClassSelectorBox} .widget {
 				padding: 4px;
@@ -294,7 +320,7 @@ class ResponsiveColumnWidgets_Styles_ {
 				margin: 1% 0 1% 1.6%;
 			}					
 			
-			/*  GRID OF TWO   ============================================================================= */
+			/*  GRID  ============================================================================= */
 			.element_of_1 { width: 100%; }
 			.element_of_2 {	width: 49.2%; }
 			.element_of_3 {	width: 32.2%; }
@@ -308,6 +334,8 @@ class ResponsiveColumnWidgets_Styles_ {
 			.element_of_11 { width: 7.63%; }
 			.element_of_12 { width: 6.86%; }
 			
+			/*  GRID for Col-spans ============================================================================= */
+			{$strWidthsForColSpans}			
 			/* Responsive Column Widget Box Widget */
 			.{$this->strClassWidgetBoxWidget} .{$this->strClassSelectorBox} {
 				margin-top: 0px;

@@ -53,6 +53,7 @@ class ResponsiveColumnWidgets_StyleLoader {
 					$arrParams['default_media_only_screen_max_width'] 
 				)		
 			),
+			$oOption->formatColSpanArray( $arrParams['colspans'] ),
 			$oCore->arrClassSelectors
 		);	
 		

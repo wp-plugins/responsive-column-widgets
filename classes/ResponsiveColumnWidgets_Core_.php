@@ -1,6 +1,6 @@
 <?php
 /**
-	Displays widgtes in multiple columns
+	Displays widgets in multiple columns
 	
  * @package     Responsive Column Widgets
  * @copyright   Copyright (c) 2013, Michael Uno
@@ -8,9 +8,6 @@
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		1.0.0
  * @sub-classes ResponsiveColumnWidgets_Styles, ResponsiveColumnWidgets_WidgetBox, ResponsiveColumnWidgets_IDHandler
-
-	Todo: there is a possibility that objects stored as the class property consumes lots of memory.
-		So start removing(do not store) the property objects and instantiate them when they are used.
 	
 */
 class ResponsiveColumnWidgets_Core_ {
@@ -23,10 +20,10 @@ class ResponsiveColumnWidgets_Core_ {
 	protected $strShortCode;
 	// protected $strCSSDirURL;
 	protected $strPluginName = 'responsive-column-widgets';		// used to the name attribute of the script
-	protected $arrDefaultParams = array();	// will be overriden by the option object's array in the constructor.
+	protected $arrDefaultParams = array();	// will be overridden by the option object's array in the constructor.
 			
 	protected $strClassSelectorBox2 ='widget-area';
-	public $arrClassSelectors = array(	// overriden by the option in the constructor, made it public in 1.1.2.1 to allow the StyleLoader class to access it.
+	public $arrClassSelectors = array(	// overridden by the option in the constructor, made it public in 1.1.2.1 to allow the StyleLoader class to access it.
 		'box' => 'responsive_column_widgets_box',
 		'column' => 'responsive_column_widgets_column',
 		'row' => 'responsive_column_widgets_row',
@@ -202,7 +199,8 @@ class ResponsiveColumnWidgets_Core_ {
 	}	
 	public function GetWidgetBoxOutput( $arrParams, $bIsStyleNotScoped=false ) {	// since 1.0.4
 		
-		// The function callback for shortcode. Notice that the last part is returning the output.
+		// This method can be the callback for shortcode or manually called by the front-end function.
+		// Notice that the last part is returning the output.
 		$arrParams = $this->oOption->FormatParameterArray( $arrParams );
 
 		// If this is a callback for the shortcode, the second parameter will be false. Reverse the value.
@@ -212,7 +210,7 @@ class ResponsiveColumnWidgets_Core_ {
 		if ( ! is_active_sidebar( $arrParams['sidebar'] ) ) 
 			return '<p>' . $arrParams['message_no_widget'] . '</p>';	
 				
-		// Generate the ID - Get a unique ID selector based on the sidebar ID and the parameters.
+		// Generate the ID - Get a unique ID selector based on the combination of the sidebar ID and the parameters.
 		$oID = new ResponsiveColumnWidgets_IDHandler;
 		$strCallID = $oID->GetCallID( $arrParams['sidebar'], $arrParams );	// an ID based on the sidebar ID + parameters; there could be the same ID if the passed values are the same.
 		$strIDSelector = $oID->GenerateIDSelector( $strCallID );	// a unique ID throughout the script load 
@@ -279,25 +277,28 @@ class ResponsiveColumnWidgets_Core_ {
 					$arrParams['default_media_only_screen_max_width'] 
 				)		
 			),
+			$this->oOption->formatColSpanArray( $arrParams['colspans'] ),
 			$this->arrClassSelectors
 		);	
-		
+				
 		// Next, store the output buffers into an array.
 		$arrWidgetBuffers = $oWidgetBox->GetWidgetsBufferAsArray( 
 			$strSidebarID, 
 			$arrSidebarsWidgets,
-			$this->oOption->ConvertStringToArray( $arrParams['showonly'] ),
-			$this->oOption->ConvertStringToArray( $arrParams['omit'] ),
+			$this->oOption->ConvertStringToArray( $arrParams['showonly'], ',' ),
+			$this->oOption->ConvertStringToArray( $arrParams['omit'], ',' ),
 			$arrParams['remove_id_attributes']
 		);
 
-		// since 1.1.3 - Get the flag array indicaitng whether the widgets are the plugin's widget-box widget or not.
+		// since 1.1.3 - Get the flag array indicating whether the widgets are the plugin's widget-box widget or not.
 		$arrFlagsWidgetBoxWidget = $oWidgetBox->GetWidgetBoxWidgetFlagArray();
-			
+						
 		// Now, $arrWidgetBuffers contains the necessary data for the output. 
 		// Okay, go. Enclose the buffer output string with the tag having the class attribute of screen max-width.
 		$strBuffer = '';			// $strBuffer stores the string buffer output.		
 		foreach ( $arrWidgetBuffers as $intIndex => $strWidgetBuffer ) 	{
+			
+			$oWidgetBox->setColSpans( $intIndex + 1 ); // the widget index is one-base while the array index is zero-base.
 			
 			$strBuffer .= '<div class="' 
 				. $oWidgetBox->GetClassAttribute() 	// returns the class attribute values calculated with the stored positions and parameters.
@@ -310,7 +311,7 @@ class ResponsiveColumnWidgets_Core_ {
 			// For the max-rows, it depends on the screen max-widths, so it will be dealt with the style.
 			if (  $arrParams['maxwidgets'] != 0 &&  ( $intIndex + 1 ) >= $arrParams['maxwidgets'] ) break;
 				
-			$oWidgetBox->AdvancePositions();	// increments the position values stored in the object properties.
+			$oWidgetBox->advancePositions();	// increments the position values stored in the object properties.
 				
 		}	
 		
