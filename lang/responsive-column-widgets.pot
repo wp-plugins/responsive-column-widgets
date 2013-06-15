@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Responsive Column Widgets package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Responsive Column Widgets 1.0.8.4\n"
+"Project-Id-Version: Responsive Column Widgets 1.1.5\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/responsive-column-widgets\n"
-"POT-Creation-Date: 2013-03-26 01:07:15+00:00\n"
+"POT-Creation-Date: 2013-06-15 23:48:46+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,506 +12,798 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:32
-msgid "Get Pro to enabel this feature!"
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:51
+msgid "Get Pro to enable this feature!"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:33
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:52
 msgid "Get Pro Now!"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:70
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:753
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:73
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1117
 msgid "Get Pro"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:71
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:74
 msgid "Donate"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:72
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:75
 msgid "Order custom plugin"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:97
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:101
 msgid "New"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:97
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1264
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1415
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:101
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1666
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1872
 msgid "Edit"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:98
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:102
 msgid "Manage"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:99
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:438
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:103
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:570
 msgid "General Options"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:100
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:104
 msgid "Information"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:101
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:105
 msgid "Get Pro!"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:118
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:124
 msgid "No widgetd is added yet."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:126
-msgid "No widget has been added to this widget box yet."
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:127
-msgid ""
-"You need to add widgets in the <a href='%s'>Widgets</a> page to the widget "
-"box."
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:138
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:135
 msgid "Add New Widget Box"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:138
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:135
 msgid "Edit Widget Box"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:142
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:139
 msgid "Widget Box Label"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:143
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:140
 msgid "Set a unique name for the widget box."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:144
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:141
 msgid ""
 "The label neither cannot be empty nor use the same one that already exists."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:153
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:151
 msgid "Widget Box Sidebar ID"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:154
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:157
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:152
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:155
 msgid "The sidebar ID associated with this widget box."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:156
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:154
 msgid "A new ID will be automatically generated."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:163
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:166
 msgid "Widget Box Description"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:164
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:167
 msgid "Additional notes for this box."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:171
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:174
 msgid "Widget Beginning Tag"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:172
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:175
 msgid "Set the before_widget html opening tag."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:179
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:182
 msgid "Widget Ending Tag"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:180
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:183
 msgid "Set the after_widget html closing tag."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:187
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:190
 msgid "Starting Tag for Box Title"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:188
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:191
 msgid "Set the before_title html opening tag."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:195
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:198
 msgid "Ending Tag for Box Title"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:196
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:199
 msgid "Set the after_title html closing tag."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:203
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:206
 msgid "Message for No Widget"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:204
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:207
 msgid ""
 "Set the message which appears when no widget is added; thus, nothing can be "
 "rendered."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:215
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:218
 msgid "Widget Box Parameter Values"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:219
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:223
 msgid "Numbers of Columns"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:220
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:229
 msgid ""
-"Set the number of columns separated by commnas. Each delimited element "
-"number corresponds to the order number of the rows."
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:221
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:222
-msgid "Min"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:223
-msgid "( for each row )"
+"Set the number of columns separated by commas. Each delimited element number "
+"corresponds to the order number of the rows."
 msgstr ""
 
 #: classes/ResponsiveColumnWidgets_Admin_Page_.php:230
-msgid "Number of Max Widgets"
+msgid "Min"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:230
+msgid "Max"
 msgstr ""
 
 #: classes/ResponsiveColumnWidgets_Admin_Page_.php:231
-msgid "Set the number of max widgets. 0 for no limit."
+msgid "( for each row )"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:238
-msgid "Number of Max Rows"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:239
-msgid "Set the number of max rows. 0 for no limit."
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:246
-msgid "Omitting Widgets"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:248
-msgid "Set the numbers of omitting widgets separated by commas."
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:249
-msgid "where the second, the fifth, and the eighth ones will be skipped."
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:255
-msgid "Show-only Widgets"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:257
-msgid "Set the numbers of show-only widgets separated by commas."
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:258
-msgid "where only the first and the third ones will be shown."
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:264
-msgid "Width Percentage Offsets"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:265
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:232
 msgid ""
-"Set the offsets for width percentage. The higher the offset nubmer is, the "
-"less will the number of clummns be displayed."
+"To set the number of columns by screen max-width, use the colon(:) character "
+"after the width in pixel, and use the pipe (|) character to delimit each set "
+"of number of columns. If the pixel is omitted, it is considered no limit. If "
+"the pipe delimiter is not present, the plugin will add 600: 1 internally by "
+"default."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:266
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:234
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:277
 msgid "Format"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:266
-msgid "Pixel: Offset, Pixel: Offset, ...."
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:234
+msgid "column value | pixel: column value | pixel: column value | ..."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:277
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:470
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:689
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:691
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:235
+msgid ""
+"The following example displays widgets in 5 column when the browser width is "
+"greater than 800, and four when the width is 601 to 800, and three when the "
+"width is 481 to 600, and one when the width is 1 to 480."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:240
+msgid "Max Number of Widgets"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:241
+msgid "Set the max number of widgets. 0 for no limit."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:248
+msgid "Max Number of Rows"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:249
+msgid "Set the max number of rows. 0 for no limit."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:256
+msgid "Omitting Widgets"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:258
+msgid "Set the numbers of omitting widgets separated by commas."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:259
+msgid "where the second, the fifth, and the eighth ones will be skipped."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:265
+msgid "Show-only Widgets"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:267
+msgid "Set the numbers of show-only widgets separated by commas."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:268
+msgid "where only the first and the third ones will be shown."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:274
+msgid "Column Spans"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:276
+msgid "Set the column spans separated by comma and dash."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:278
+msgid ""
+"where the first widget takes 3 columns and the fourth widget takes two and "
+"the seventh takes four. Unspecified widget items will have one column span."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:279
+msgid ""
+"To set them by screen max-width, use the colon(:) character after the width "
+"in pixel, and use the pipe (|) character to delimit each set of column "
+"spans. If the pixel is omitted, it is considered no limit. These widths need "
+"to correspond to the above Number of Columns parameter."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:288
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:478
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:641
 msgid "Save Changes"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:277
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:533
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:691
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:722
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1413
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:288
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:478
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:704
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1086
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1870
 msgid "Add New Box"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:287
-msgid "Insert Widget Box into Footer"
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:300
+msgid "Auto-Insert"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:291
-msgid "Footer"
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:304
+msgid "Enable Auto-insert"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:292
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:293
-msgid "Insert the widget box into the footer."
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:296
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:382
-msgid "The below options will not take effect unless this is checked."
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:301
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:353
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:398
-msgid "Disable the Widget Box in"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:302
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:354
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:399
-msgid "Home / Front Page"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:311
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:360
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:405
-msgid "Post / Page ID to Disable the Widget Box"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:312
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:362
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:407
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:305
 msgid ""
-"Enter the post IDs where the widget box should not be displayed, separated "
-"by commas. This will take effects if the above checkbox option at the top is "
-"checked in this section."
+"Insert the widget box automatically. If this is Off, the below settings in "
+"this section do not take effects."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:309
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:606
+msgid "On"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:310
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:607
+msgid "Off"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:317
+msgid "Areas ( hook )"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:321
+msgid "Post / Page Content ( the_content )"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:322
+msgid "Footer ( wp_footer )"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:323
+msgid "Comment Text ( comment_text )"
 msgstr ""
 
 #: classes/ResponsiveColumnWidgets_Admin_Page_.php:325
-msgid "Insert Widget Box into Posts and Pages"
+msgid "Check where the auto-insertion should be performed."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:329
-msgid "Posts and Pages"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:330
-msgid "Insert the widget box into posts and pages."
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:331
+msgid "Filters"
 msgstr ""
 
 #: classes/ResponsiveColumnWidgets_Admin_Page_.php:332
-msgid "Insert the widget box into posts."
+msgid ""
+"Enter the WordPress <a href=\"%1$s\">filters</a> with which the auto-"
+"insertion is performed, separated by commas."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:333
-msgid "Insert the widget box into pages."
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:337
-msgid "The below options will not take effect unless one of these is checked."
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:338
+msgid "Position"
 msgstr ""
 
 #: classes/ResponsiveColumnWidgets_Admin_Page_.php:342
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:387
-msgid "Posision"
+msgid "Above"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:343
+msgid "Below"
 msgstr ""
 
 #: classes/ResponsiveColumnWidgets_Admin_Page_.php:344
-msgid "Above Content"
+msgid "Both"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:345
-msgid "Below Content"
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:347
+msgid ""
+"This option determines whether the widet box should be placed before or "
+"after ( above or below ) the provided contents by the hooking filters. This "
+"does not take effects for action hooks such as wp_footer."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:373
-msgid "Insert Widget Box into Comment Form Section"
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:353
+msgid "Actions"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:377
-msgid "Comment Form Section"
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:354
+msgid ""
+"Enter the WordPress <a href=\"%1$s\">actions</a> with which the auto-"
+"insertion is performed, separated by commas."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:378
-msgid "Insert the widget box into the comment form section."
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:361
+msgid "Limit Auto-Insert to Checked Page Types"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:379
-msgid "Insert widget box into the comment form section."
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:365
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:403
+msgid "Home / Front Page"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:389
-msgid "Above Comment Form"
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:366
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:404
+msgid "Archives"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:390
-msgid "Below Comment Form"
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:367
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:405
+msgid "404 Page"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:418
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:820
-msgid "Custom Style"
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:368
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:406
+msgid "Search Results"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:370
+msgid ""
+"Check the page types that the auto-insertion should be performed to restrict "
+"it to certain page types. Leave them all unchecked if you want the auto-"
+"insertion to perform in all types of pages."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:375
+msgid "Limit Auto-Insert to Checked Post Types"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:376
+msgid ""
+"Check the post types that the auto-insertion should be performed to restrict "
+"it to certain post types. Leave them all unchecked if you want the auto-"
+"insertion to perform in all types of posts."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:383
+msgid "Limit Auto-Insert to Checked Categories"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:384
+msgid ""
+"Check the categories that the auto-insertion should be performed. This only "
+"applies to posts. Leave them all unchecked to aplly the auto-insertion to "
+"all posts."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:392
+msgid "Limit Auto-Insert to Certain Post / Page IDs"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:393
+msgid ""
+"Enter the post IDs where the auto-insertion should be performed, separated "
+"by commas. Set empty to apply the auto-insertion to all posts."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:399
+msgid "Page Types to Disable Auto-Insert"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:408
+msgid ""
+"Check the page types that the auto-insertion should be disabled. Leave them "
+"all unchecked if you want the auto-insertion to perform in all types of "
+"pages."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:413
+msgid "Post Types to Disable Auto-Insert"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:414
+msgid ""
+"Check the post types that the auto-insertion should be disabled. Leave them "
+"all unchecked if you want the auto-insertion to perform in all types of "
+"posts."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:421
+msgid "Categories to Disable Auto-Insert"
 msgstr ""
 
 #: classes/ResponsiveColumnWidgets_Admin_Page_.php:422
-msgid "CSS Rule"
+msgid ""
+"Check the categories that the auto-insertion should be disabled. This only "
+"applies to posts."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:423
-msgid "Define your custom CSS rules here."
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:430
+msgid "Post / Page ID to Disable Auto-Insert"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:445
-msgid "Access Rights"
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:431
+msgid ""
+"Enter the post IDs where the auto-insertion should be disabled, separated by "
+"commas. Set empty not to disable the auto-insertion in any post."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:442
+msgid "HTML"
 msgstr ""
 
 #: classes/ResponsiveColumnWidgets_Admin_Page_.php:446
-msgid "Set the access level to this setting pages."
+msgid "Remove ID Attributes"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:449
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:632
+msgid "Yes"
 msgstr ""
 
 #: classes/ResponsiveColumnWidgets_Admin_Page_.php:450
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:633
+msgid "No"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:462
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1184
+msgid "Custom Style"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:466
+msgid "CSS Rule"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:467
+msgid "Define your custom CSS rules here."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:491
+msgid "CSS"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:495
+msgid "Timing to Load"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:496
+msgid ""
+"Select the timing to load the plugin's CSS base rules. If this is set the "
+"second item, the below Area to Load option does not take effect."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:499
+msgid "When the head tab is loaded. ( Default )"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:500
+msgid "When the first widget box is loaded."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:506
+msgid "Areas to Load"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:507
+msgid ""
+"Select the areas to load the plugin CSS rules besides the front end pages."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:510
+msgid "Regular Pages"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:511
+msgid "Login Page"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:512
+msgid "Administration Panel"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:523
+msgid "Class Selector Names"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:526
+msgid ""
+"Set the custom class selector names for the class attributes which is "
+"applied to the widget boxes. This cannot be empty."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:531
+msgid "Box"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:532
+msgid "Row"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:533
+msgid "Column"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:543
+msgid "Enqueue Styles in Head Tag"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:544
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:547
+msgid ""
+"This is for those who use the shortcode or the PHP function, "
+"<code>ResponsiveColumnWidgets()</code>, directly into posts or the theme but "
+"do not want the style tag to be embedded in the body tag."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:545
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:548
+msgid ""
+"The plugin creates CSS rules based on the passed parameters. So you need to "
+"tell the plugin which parameters you used."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:550
+msgid ""
+"Specify the parameters used in the shorcode or the PHP function per line."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:551
+msgid ""
+"They need to be entered in the format of shortcode. If you use <code>array"
+"( 'label' => 'my_widget_box', 'columns' => '3, 4, 1' )</code> in the PHP "
+"function, change it to, <code>label=\"my_widget_box\" columns=\"3, 4, 1\"</"
+"code>."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:552
+msgid "The one with a blank parameter is already registered by default."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:577
+msgid "Access Rights"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:578
+msgid "Set the access level to this setting pages."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:582
 msgid "Administrator"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:451
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:583
 msgid "Editor"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:452
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:584
 msgid "Author"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:453
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:585
 msgid "Contributor"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:454
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:586
 msgid "Subscriber"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:460
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:592
 msgid "Additional Allowed HTML Tags"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:461
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:593
 msgid ""
 "Specify which HTML tags are allowed to be posted in the New / Edit page to "
 "prevent them from being stripped out by the WordPress KSES filter, separated "
 "by commas. For security, many tags are not allowed by default."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:480
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:602
+msgid "Debug Mode"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:603
+msgid ""
+"This is mostly for developers. General users may occasionally need to turn "
+"this on when reporting the plugin behavior for a bug report."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:615
+msgid "Responsive Column Widget Box Widget"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:616
+msgid ""
+"Enable / disable the plugin widget that encapsulates a sidebar in the "
+"Widgets page."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:619
+msgid "Enable"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:620
+msgid "Disable"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:628
+msgid "Have You Rated the Plugin?"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:629
+msgid "If you have <a href=\"%1$s\">rated</a> the plugin, set it Yes."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:651
 msgid "Option Management"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:481
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:652
 msgid "Be carefult to perform these operations."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:486
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:657
 msgid "Attempt to Override Allocated Memory Size"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:487
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:658
 msgid ""
 "If the error, \"Allowed memory size of ... bytes exhausted\" occurs, try "
 "increasing the memory size allocated for PHP. Set 0 to use the server's "
 "setting."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:488
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:659
 msgid "The current memory limit set by the server:"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:489
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:660
 msgid "The necessary functions are disabled by the server."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:497
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:506
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:668
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:677
 msgid "Initialize"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:502
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:673
 msgid "Initialize Options"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:503
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:674
 msgid "Clean all saved data and intialize to the default."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:512
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:683
 msgid "Perform"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:547
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:734
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1414
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:718
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1098
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1871
 msgid "Delete Checked"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:558
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1416
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:729
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1873
 msgid "Export All"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:559
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1417
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:730
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1874
 msgid "Export Checked"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:570
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1419
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:741
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1876
 msgid "Import Widget Boxes"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:705
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:986
-msgid "The widget box options have been saved."
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:760
+msgid "No widget has been added to this widget box yet."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:750
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:761
+msgid ""
+"You need to add widgets in the <a href='%s'>Widgets</a> page to the widget "
+"box."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:800
+msgid "Registered Codes"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:896
+msgid "Screen Max Width (pixel)"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:897
+msgid "Number of Columns"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:968
+msgid ""
+"Thanks for using Responsive Column Widgets. Your feedback is very important "
+"to us. Please <a href=\"%1$s\">rate</a> the plugin so that it can be "
+"improved further. Thank you!"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:972
+msgid ""
+"This message can be disabled in the <a href=\"%1$s\">Geneneral Options</a> "
+"page."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1114
 msgid "Please Review"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:751
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1115
 msgid ""
 "If you find the plugin useful, please <a href=\"http://wordpress.org/support/"
 "view/plugin-reviews/responsive-column-widgets\">rate</a> it so that others "
 "can know it."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:754
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1118
 msgid ""
 "If you like the plugin and want more useful features, please upgrade it to "
 "<a href=\"http://en.michaeluno.jp/responsive-column-widgets/responsive-"
 "column-widgets-pro\">Pro</a>."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:756
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1120
 msgid "Exchanges"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:757
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1121
 msgid ""
 "You may receive a discount or a copy of the plugin by contributing one of "
 "the followings. A contribution does not have to be for this plugin. It can "
 "be for any product of miunosoft. Please just ask."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:760
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1124
 msgid ""
 "<strong>Testing Development Version</strong> - If the development version is "
 "greater than the current stable version, tell the developer that the "
@@ -519,16 +811,16 @@ msgid ""
 "a 20% off coupon for miunosoft products."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:762
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1126
 msgid ""
 "The development version number can be confirmed <a href=\"%1$s\">here</a>."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:764
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1128
 msgid "It can be downloaded <a href=\"%1$s\">here</a>."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:767
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1131
 msgid ""
 "<strong>Translation</strong> - submitting a localization file for an "
 "untranslated languge. With a plugin called <a href=\"http://wordpress.org/"
@@ -536,279 +828,296 @@ msgid ""
 "a> no programming skill is required to create a language file."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:768
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1132
 msgid ""
 "<strong>Testimonial</strong> - with your photo, comments, and a link to your "
 "SNS page will be on the plugin site."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:769
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1133
 msgid "<strong>Graphic Design</strong> - icons, banners etc. for the plugin."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:770
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1134
 msgid ""
 "<strong>Review Article</strong> - requires Google PageRank 3 or higher and "
 "the link to the product page."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:771
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1135
 msgid ""
 "<strong>Video Tutorial</strong> - a brief instruction video tutorial with "
 "your narration."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:772
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1136
 msgid "Something else - please ask for something else for the exchange."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:774
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1138
 msgid "Contanct Info"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:782
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1146
 msgid ""
 "Please consider upgrading to the Pro version if you like the plugin and want "
 "more useful features."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:784
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1148
 msgid "Supported Features"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:791
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1155
 msgid "Standard"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:794
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1158
 msgid "Pro"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:799
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1163
 msgid "Multiple Columns"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:806
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1170
 msgid "Edit and Save Parameter Values"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:813
-msgid "Auto-insert into Footer, Posts, and Pages"
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1177
+msgid "Auto-insert"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:827
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1191
 msgid "Multiple Widget Boxes"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:834
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1198
 msgid "Export / Import Widget Boxes Options"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:841
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1205
 msgid "Ad Removal"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:875
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1212
+msgid "CSS Custom Class Attribute Names"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1246
 msgid "Available"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:875
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1246
 msgid "Unavailable"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:934
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1297
 msgid "The label cannot be empty."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:941
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1306
 msgid "The same label already used."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1100
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1335
+msgid "The widget box options have been saved."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1480
 msgid "There was a broken item and it has been removed."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1120
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1500
 msgid "The selected widget boxes have been deleted."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1232
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1634
 msgid "Box Label"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1232
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1634
 msgid "Description"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1235
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1637
 msgid "Sidebar ID"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1238
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1640
 msgid "Shortcode"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1238
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1640
 msgid "PHP Code"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1238
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1640
 msgid "Example"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1241
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1643
 msgid "Operation"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1412
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1869
 msgid ""
 "<a href=\"http://wordpress.org/extend/plugins/responsive-column-widgets/"
 "other_notes/\">Responsive Column Widgets</a> needs to be installed and "
 "activated."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1418
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1875
 msgid "Failed to validate the license key."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1420
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1877
 msgid "License Key"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1421
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1878
 msgid "License Status"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1422
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1879
 msgid "Not Verified"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1423
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1880
 msgid "Nothing could be exporeted."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1424
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1881
 msgid "Pro Settings"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1425
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1882
 msgid ""
 "Set the license key provided by miunosoft written in the purchase receipt."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1426
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1883
 msgid "The current status of the license of this plugin."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1427
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1884
 msgid "The license key has been verified."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1428
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1885
 msgid "The main plugin's version must be at least 1.0.4.8."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1429
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1886
 msgid "The plugin, Responsive Column Widgets Pro, was deactivated."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1430
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1887
 msgid ""
 "There was %d box(es) with borken options that were unable to be imported."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1431
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1888
 msgid "Validate"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1432
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1889
 msgid "View"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:503
-msgid "Powered by"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:522
-msgid "Settings"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:580
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:945
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:550
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2541
 msgid "Upload Image"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:581
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1407
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:551
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1175
 msgid "Use This Image"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:850
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:858
-msgid "Submit"
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1008
+msgid "Options have been updated."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:867
-msgid "Import Options"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:895
-msgid "Export Options"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:946
-msgid "Delete Image"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:947
-msgid "Unset Image"
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:984
-msgid "No url has been set."
-msgstr ""
-
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1422
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1192
 msgid "The file is bigger than this PHP installation allows."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1423
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1193
 msgid "The file is bigger than this form allows."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1424
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1194
 msgid "Only part of the file was uploaded."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1425
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1195
 msgid "No file was uploaded."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1430
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1200
 msgid "Import Error: Wrong file type."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1436
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1206
 msgid "Import Error: Wrong text format."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1458
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1228
 msgid "The importing process has been failed."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1469
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1239
 msgid "Options were imported."
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Core_.php:123
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1535
+msgid "Settings"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1562
+msgid "Powered by"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2217
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2244
+msgid "Export Options"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2264
+msgid "Import Options"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2473
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2493
+msgid "Submit"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2542
+msgid "Delete Image"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2543
+msgid "Unset Image"
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2580
+msgid "No url has been set."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Core_.php:131
 msgid "Example Shortcode"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Core_.php:125
+#: classes/ResponsiveColumnWidgets_Core_.php:133
 msgid "Example PHP Code"
 msgstr ""
 
-#: classes/ResponsiveColumnWidgets_Option_.php:72
+#: classes/ResponsiveColumnWidgets_ImageHandler.php:122
+msgid "The image data is empty."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Option_.php:104
 msgid "The default widget box of Responsive Column Widgets."
 msgstr ""
 
@@ -816,7 +1125,21 @@ msgstr ""
 msgid "Deactivating the plugin."
 msgstr ""
 
-#: responsive-column-widgets.php:185
+#: classes/ResponsiveColumnWidgets_Widget_.php:51
+msgid "A widget that encapsulates a sidebar."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Widget_.php:363
+msgid ""
+"A dependency conflict occurred. Please reselect a child widget in the "
+"Widgets page of the administration area."
+msgstr ""
+
+#: classes/ResponsiveColumnWidgets_Widget_.php:428
+msgid "Select Sidebar"
+msgstr ""
+
+#: responsive-column-widgets.php:146
 msgid ""
 "Responsive Column Widgets classes have not been instantiated. Try using this "
 "later than the plugins_loaded hook."

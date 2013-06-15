@@ -350,6 +350,9 @@ class ResponsiveColumnWidgets_Styles_ {
 				width: 100%;
 				margin-right: auto;
 			}
+			.widget_box_widget div.widget {
+				background:none;
+			}
 		";
 		
 		/*

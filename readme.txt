@@ -1,7 +1,7 @@
 ﻿=== Responsive Column Widgets ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
-Tags: widget, widgets, sidebar, sidebars, column, columns, responsive, responsive design, grid, grid system, post, posts, page, pages, plugin, miunosoft
+Tags: widget, widgets, sidebar, sidebars, column, columns, row, rows, responsive, responsive design, layout, style, css, css3, html5, grid, grid system, grid layout, magazine layout, post, posts, page, pages, content, plugin, plugins, theme, shortcode, miunosoft
 Requires at least: 3.2
 Tested up to: 3.5.1
 Stable tag: 1.1.5
@@ -25,7 +25,7 @@ Creates a custom responsive column widget box.
 * **Default Sidebars Integration** - The sidebars defined by your theme also can be displayed in columns.
 * **Auto Insert** - The widget box can be embedded automatically without the shortcode.
 * **Sidebar Encapsulation** - With the widget that the plugin provides, the whole sidebar contents can be embedded as a widget item into another sidebar.
-* **Column Span** - column spans can be configurable.
+* **Column Span** - column spans are configurable so that you can set wider widget areas.
 * and [more](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/).
  
 == Installation ==
@@ -90,17 +90,19 @@ The following example displays widgets in 5 column when the browser width is gre
 * **omit** - the numbers of the widget order of the items to omit, separated by commas. e.g. **3, 5** would skip the third and fifth registered widgets.
 * **showonly** - the numbers of the widget order of the items to show, separated by commas. e.g. **2, 7** would only show the second and seventh registered widgets. Other items will be skipped.
 * **label** - the label name of the widget box. Default: Responsive Column Widgets.
-* **colspans** - the column spans. 
+* **colspans** - the column spans. This determines how wide the specified widget item is.
 
 `Format: widget index - column span, widget index - column span, widget index - column span, ...`
 
-The following parameter value of *colspans* will result on the first widget with 3 column space and the fourth widget with two column space and the seventh takes four column space. Unspecified widget items will have one column span.
+The following parameter value of *colspans* will set the first widget with 3 column space and the fourth widget with two column space and the seventh takes four column space. Unspecified widget items will have one column span.
 
 `1-3, 4-2, 7-4`
 
-To set them by screen max-width, like the *columns* parameter, use the colon(:) character after the width in pixel, and use the pipe (|) character to delimit each set of column spans. If the pixel is omitted, it is considered no limit. These widths need to correspond to the value passed to the *columns* parameter.
+To set them by screen max-width, like the *columns* parameter, use the colon(:) character after the width in pixel, and use the pipe (|) character to delimit each set of column spans. If the pixel is omitted, it is considered no limit. These widths need to correspond to the value passed to the *columns* parameter. e.g.
 
-e.g. `1-3, 4-2, 7-4 | 600: 1-2, 3-2, 7-3 | 480: 1-2`
+`1-3, 4-2, 7-4 | 600: 1-2, 3-2, 7-3 | 480: 1-2`
+
+If the column span exceeds the set number of max column, the column span will follow the max column. Note that the widget index of omitted widgets will not be considered(counted) in the widget index of this parameter.
 
 = Video Tutorials =
 http://en.michaeluno.jp/responsive-column-widgets/tutorials/
@@ -132,10 +134,18 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 2. ***Three-Two-Five Columns Combination Example***
 3. ***Four Column Example***
 4. ***Responsiveness***
+5. ***Example of the columns Parameter by Screen Width***
+6. ***Column Spans***
+7. ***Sidebar Encapsulation***
 
 == Changelog ==
 
-= 1.1.5 =
+= 1.1.5.1 =
+* Updated: the POT file.
+* Fixed: a bug that the registered code with a blank parameter was listed twice in the *Enqueue Styles in Head Tag* option area in the setting page.
+* Tweaked: the style for Twenty Thirteen 0.1.
+
+= 1.1.5 - 06/14/2013 =
 * Added: the *colspans* parameter. 
 
 = 1.1.4.3 - 06/03/2013 =
@@ -304,8 +314,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 * Added: the setting pages under the Appearance menu.
 
 = 1.0.3 - 02/28/2013 =
-* Notes: **THIS UPDATE INCLUDES POSSIBLE BREAKING CHANGES. PLEASE TEST IT FIRST ON A LOCAL SERVER BEFORE UPDATING.**
-* **Changed: the default number of columns to 3 from 1.**
+* Changed: (**Breaking Change**) the default number of columns to 3 from 1.
 * Added: the ability to flexibly change the number of columns by pixel width with the offsets parameter.
 
 = 1.0.2 - 02/23/2013 = 

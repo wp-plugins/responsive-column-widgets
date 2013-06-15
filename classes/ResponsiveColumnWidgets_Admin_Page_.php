@@ -808,12 +808,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	protected function GetListFromArray( $arr, $strParentTag='ul' ) {	// since 1.1.2.1
 	
 		$strList = "<li>[" . RESPONSIVECOLUMNWIDGETSKEY . "]</li>";	// the default empty parameter.
-		foreach( $arr as $strElem ) 
+		foreach( $arr as $strElem ) {
+			if ( empty( $strElem ) ) continue;
 			$strList .= "<li>[" 
 				. RESPONSIVECOLUMNWIDGETSKEY 
-				. ( empty( $strElem ) ? $strElem : ' ' . $strElem )
+				. ' ' . $strElem 
 				. "]</li>";
-		
+		}
 		return "<{$strParentTag}>" . $strList . "</{$strParentTag}>";
 		
 	}
