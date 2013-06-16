@@ -1,7 +1,7 @@
 ﻿=== Responsive Column Widgets ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
-Tags: widget, widgets, sidebar, sidebars, column, columns, row, rows, responsive, responsive design, layout, style, css, css3, html5, grid, grid system, grid layout, magazine layout, post, posts, page, pages, content, plugin, plugins, theme, shortcode, miunosoft
+Tags: column, columns, row, rows, responsive, responsive design, layout, style, css, css3, html5, grid, grid system, grid layout, magazine layout, post, posts, page, pages, content, plugin, plugins, theme, shortcode, miunosoft, widget, widgets, sidebar, sidebars
 Requires at least: 3.2
 Tested up to: 3.5.1
 Stable tag: 1.1.5.1
@@ -140,7 +140,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.1.5.1 =
+= 1.1.5.1 - 06/16/2013 =
 * Updated: the POT file.
 * Fixed: a bug that the registered code with a blank parameter was listed twice in the *Enqueue Styles in Head Tag* option area in the setting page.
 * Tweaked: the style for Twenty Thirteen 0.1.
