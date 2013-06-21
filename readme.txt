@@ -1,7 +1,7 @@
 ﻿=== Responsive Column Widgets ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
-Tags: column, columns, row, rows, responsive, responsive design, layout, style, css, css3, html5, grid, grid system, grid layout, magazine layout, post, posts, page, pages, content, plugin, plugins, theme, shortcode, miunosoft, widget, widgets, sidebar, sidebars
+Tags: column, columns, content, css, css3, grid, grid layout, grid system, layout, html5, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
 Requires at least: 3.2
 Tested up to: 3.5.1
 Stable tag: 1.1.5.1
@@ -45,7 +45,7 @@ Go to the [Other Notes](http://wordpress.org/extend/plugins/responsive-column-wi
 2. Add widgets to it.
 3. To display the added widgets in a post, there are mainly two different means.
 
-* **Option A**: add the shortcode in a post.
+* **Option A**: add the shortcode in the post.
 
  `[responsive_column_widgets]`
 
@@ -78,7 +78,9 @@ There are other parameters besides *columns*.
 
 * **columns** - the number of columns to show. Default: 3. If you want to specify the number of columns in each row, put the numbers separated by commas. For instance, 3, 2, 4 would display 3 columns in the first row and 2 columns in the second row and four columns in the third row and so on. The rest rows follow the last set number. To set the number of columns by screen max-width, use the colon(:) character after the width, and use the pipe (|) character to delimit each set of number of columns. If the pixel is omitted, it is considered no limit. If the pipe delimiter is not present, the plugin will add 600: 1 internally by default.
 
-`Format: column value | pixel: column value | pixel: column value | ...` 
+**Format:**
+
+`column value | pixel: column value | pixel: column value | ...` 
 
 The following example displays widgets in 5 column when the browser width is greater than 800, and four when the width is 601 to 800, and three when the width is 481 to 600, and one when the width is 1 to 480.
 
@@ -92,7 +94,9 @@ The following example displays widgets in 5 column when the browser width is gre
 * **label** - the label name of the widget box. Default: Responsive Column Widgets.
 * **colspans** - the column spans. This determines how wide the specified widget item is.
 
-`Format: widget index - column span, widget index - column span, widget index - column span, ...`
+**Format:**
+
+`widget index - column span, widget index - column span, widget index - column span, ...`
 
 The following parameter value of *colspans* will set the first widget with 3 column space and the fourth widget with two column space and the seventh takes four column space. Unspecified widget items will have one column span.
 
