@@ -8,23 +8,42 @@
 */
 class ResponsiveColumnWidgets_UserAds_ {
 
-	// Properties
-	protected $arrURLFeedText = array( 
-		'http://feeds.feedburner.com/GANLinkTextRandom40'
-	);
+	// Properties		
+	// URLs by locale - since 1.1.5.2
+	protected $arrURLFeedText = array(
+		'en' => array( 'http://feeds.feedburner.com/GANLinkTextRandom40' ),
+		'ja' => array( 'http://feeds.feedburner.com/MiunosoftTextLinks-Jp' ),
+	);	
+	protected $arrURLFeed160xNTopRight = array(
+		'en' => array( 'http://feeds.feedburner.com/Miunosoft-160xnTopRight' ),
+		'ja' => array( 'http://feeds.feedburner.com/Miunosoft-160xnTopRight-Jp' ),
+	);	
+	protected $arrURLFeed160xN = array(
+		'en' => array( 'http://feeds.feedburner.com/Miunosoft-160xnImageLinks' ),
+		'ja' => array( 'http://feeds.feedburner.com/Miunosoft-160xnImageLinks-Jp' ),
+	);	
 	protected $arrURLFeed160x600 = array(
-		'http://feeds.feedburner.com/GANLinkBanner160x600Random40',
-		'http://feeds.feedburner.com/RawBanner160x600',
+		'en' => array(
+			'http://feeds.feedburner.com/GANLinkBanner160x600Random40',
+			'http://feeds.feedburner.com/RawBanner160x600',	
+		),
+		'ja' => array( 'http://feeds.feedburner.com/Miunosoft-160x600ImageBanners-Jp' ),
 	);
 	protected $arrURLFeed468x60 = array(
-		'http://feeds.feedburner.com/GANBanner60x468',
-		'http://feeds.feedburner.com/RawBanner468x60'
-	);
+		'en' => array(
+			'http://feeds.feedburner.com/GANBanner60x468',
+			'http://feeds.feedburner.com/RawBanner468x60'		
+		),
+		'ja' => array( 'http://feeds.feedburner.com/Miunosoft-468x60ImageBanners-Jp' ),
+	);	
 	protected $arrURLFeed728x90 = array(
-		'http://feeds.feedburner.com/RawBanner728x90',
-		'http://feeds.feedburner.com/CustomBanner728x90',
-	);
-		
+		'en' => array( 
+			'http://feeds.feedburner.com/RawBanner728x90',
+			'http://feeds.feedburner.com/CustomBanner728x90',
+		),
+		'ja' => array( 'http://feeds.feedburner.com/Miunosoft-728x90ImageBanners-Jp' ),
+	);	
+	
 	// Container arrays
 	protected $arrFeedItems = array();	// stores fetched feed items.
 		
@@ -35,6 +54,14 @@ class ResponsiveColumnWidgets_UserAds_ {
 		
 		global $oResponsiveColumnWidgets_Options;
 		$this->oOption = isset( $oOption ) ? $oOption : $oResponsiveColumnWidgets_Options;
+		
+		$strLangKey = defined( 'WPLANG' ) ? WPLANG : 'en';
+		$this->arrURLFeedText = isset( $this->arrURLFeedText[ $strLangKey ] ) ? $this->arrURLFeedText[ $strLangKey ] : $this->arrURLFeedText['en'];
+		$this->arrURLFeed160xNTopRight = isset( $this->arrURLFeed160xNTopRight[ $strLangKey ] ) ? $this->arrURLFeed160xNTopRight[ $strLangKey ] : $this->arrURLFeed160xNTopRight['en'];
+		$this->arrURLFeed160xN = isset( $this->arrURLFeed160xN[ $strLangKey ] ) ? $this->arrURLFeed160xN[ $strLangKey ] : $this->arrURLFeed160xN['en'];
+		$this->arrURLFeed160x600 = isset( $this->arrURLFeed160x600[ $strLangKey ] ) ? $this->arrURLFeed160x600[ $strLangKey ] : $this->arrURLFeed160x600['en'];
+		$this->arrURLFeed468x60 = isset( $this->arrURLFeed468x60[ $strLangKey ] ) ? $this->arrURLFeed468x60[ $strLangKey ] : $this->arrURLFeed468x60['en'];
+		$this->arrURLFeed728x90 = isset( $this->arrURLFeed728x90[ $strLangKey ] ) ? $this->arrURLFeed728x90[ $strLangKey ] : $this->arrURLFeed728x90['en'];
 					
 	}
 	function SetOptionObj( &$oOption ) {
@@ -77,6 +104,21 @@ class ResponsiveColumnWidgets_UserAds_ {
 		return $strOut; 		
 		
 	}
+	
+	public function get160xNTopRight( $numItems=1 ) {	// since 1.1.5.2
+	
+		return '<div style="float:right; padding: 0 0 0 20px; width: 160px;">' 
+			. $this->FetchItems( $this->arrURLFeed160xNTopRight, $numItems )
+			. "</div>";		
+			
+	}
+	public function get160xN( $numItems=10 ) {	// since 1.1.5.2
+	
+		return '<div style="float:right; padding: 0 0 0 20px; width: 160px;">' 
+			. $this->FetchItems( $this->arrURLFeed160xN, $numItems )
+			. "</div>";				
+			
+	}	
 	public function GetBottomBanner( $numItems=1 ) {
 					
 		return '<div style="margin: 20px 0 8px; width: 728px;">' 
@@ -161,6 +203,8 @@ class ResponsiveColumnWidgets_UserAds_ {
 		$this->GetSkyscraper();
 		$this->GetBottomBanner();
 		$this->GetTextAd();
+		$this->get160xNTopRight();
+		$this->get160xN();
 		
 	}
 }

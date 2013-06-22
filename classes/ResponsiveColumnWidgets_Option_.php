@@ -89,9 +89,10 @@ class ResponsiveColumnWidgets_Option_ {
 			'general_css_load_in_head' => array(),	// since 1.1.2.1
 			'debug_mode' => false,	// since 1.1.4
 			'widget_responsive_column_widget_box' => true,	// since 1.1.4.1
+			'general_css_minify' => false, // since 1.1.5.2
 		),
 		// since 1.1.3
-		'hierarchy' => array( 	// stores registered sidebar IDs and their relationshipts with plugin's widget boxes.
+		'hierarchy' => array( 	// stores registered sidebar IDs and their relationships with plugin's widget boxes.
 			'responsive_column_widgets' => array(),
 		),
 	);
@@ -410,7 +411,7 @@ class ResponsiveColumnWidgets_Option_ {
 		// If it's already formatted, return the passed value.
 		if ( is_array( $vInput ) && $this->CountArrayDimension( $vInput ) == 2 ) return $vInput;				
 			
-		// $arrColSpanArray must be an four-dimensional array.
+		// $arrColSpanArray must be a four-dimensional array.
 		/*	e.g. 
 		 * Step1 : $vInput = '1-3, 4-2, 7-4 | 600: 1-2, 3-2, 7-3 | 480: 1-2 ';
 		 * Step2 : Convert the string to the four-dimensional array.
@@ -484,8 +485,6 @@ class ResponsiveColumnWidgets_Option_ {
 			)
 		 * */
 		
-		
-		
 		$arrColSpanArray = is_string( $vInput ) ? $this->ConvertStringToArray( $vInput, '|', ':', ',', '-' ) : array();
 
 		$arrFormat = array();
@@ -523,9 +522,6 @@ class ResponsiveColumnWidgets_Option_ {
 		return $arrFormat2;
 		
 	}	
-	public function _formatColSpanArray( $vInput='' ) {	// since 1.1.5
-return array( 0 => array( 1 => 2, 4 => 3, 5 => 3 ), 600 => array( 1 => 3, 3=> 2 ) );
-	}
 	
 	
 	/*

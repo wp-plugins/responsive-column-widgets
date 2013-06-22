@@ -559,6 +559,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'cols' => 100,
 							'rows' => 8,							
 							'value' => $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['general']['general_css_load_in_head'], array( PHP_EOL ) ),
+						),	
+						array(  // since 1.1.5.2
+							'id' => 'general_css_minify',
+							'title' => __( 'Minify CSS Code', 'responsive-column-widgets' ),
+							'label' => __( 'Make the size of CSS code that the plugin generates.', 'responsive-column-widgets' ),
+							'type' => 'checkbox',
+							'value' => $this->oOption->arrOptions['general']['general_css_minify'],
 						),							
 					),
 				),				
@@ -636,6 +643,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $this->oOption->arrOptions['general']['has_reviewed'],
 						),	
 						array(  // single button
+							'pre_html' => '<div class="text-info">' . ( isset( $this->oUserAds ) ? $this->oUserAds->GetTextAd() : '' ) . '</div>',						
 							'id' => 'submit_save_2',
 							'type' => 'submit',		// the submit type creates a button
 							'label' => __( 'Save Changes', 'responsive-column-widgets' ),
@@ -998,17 +1006,35 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}
 	function foot_ResponsiveColumnWidgets_Admin_Page( $strFoot ) {
 		
-		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'neworedit' ? 6 : 2;
-		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'manage' ? 1 : $numItems;
-		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'information' ? 1 : $numItems;
-		$numItems = isset( $_GET['tab'] ) && $_GET['tab'] == 'getpro' ? 2 : $numItems;
+		$numItems = 4;
+		if ( isset( $_GET['tab'] ) ) {
+			switch ( $_GET['tab'] ) {
+				case 'neworedit':
+					$numItems = defined( 'WPLANG' ) && WPLANG == 'ja' ? 12 : 16;
+					break;
+				case 'manage':
+				case 'information':
+					$numItems = 2;
+					break;
+				case 'general':
+				case 'getpro':
+					$numItems = 6;
+					break;
+				default:
+					$numItems = 4;
+					break;
+			}	
+		}
+		
 		return $strFoot 
 			. '<div style="float:left; margin-top: 10px" >' 
 			. $this->oUserAds->GetTextAd() 
 			. '</div>'
 			. '</td>
 			<td valign="top" rowspan="2">' 
-			. $this->oUserAds->GetSkyscraper( $numItems ) 
+			. $this->oUserAds->get160xNTopRight() 
+			. $this->oUserAds->get160xN( $numItems ) 
+			// . $this->oUserAds->GetSkyscraper( $numItems ) 
 			. '</td>
 			</tr>
 			<tr>
@@ -1214,7 +1240,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				array( 'type' => 'image', 'value' => False, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'second-col' ),
 				array( 'type' => 'image', 'value' => True, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'third-col' ),				
 			) 			
-		);			
+		);
+		echo $this->GetComparisionTableTR( 
+			array( 
+				array( 'type' => 'text', 'value' => __( 'Premium Support', 'responsive-column-widgets' ), 'align' => 'center', 'class' => 'first-col' ),
+				array( 'type' => 'image', 'value' => False, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'second-col' ),
+				array( 'type' => 'image', 'value' => True, 'align' => 'center', 'width' => 32, 'height' => 32, 'class' => 'third-col' ),				
+			) 			
+		);				
 		echo '</tbody>';
 		echo '</table>';
 		echo '</div>';

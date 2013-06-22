@@ -100,7 +100,7 @@ class ResponsiveColumnWidgets_Styles_ {
 	protected function GetWidgetBoxStyle( $strSidebarID, $strCallID, $arrScreenMaxWidths, $bIsScoped=true ) {	// since 1.1.1
 				
 		$strScoped = $bIsScoped ? ' scoped' : '';
-		$strStyleRules = "<style type='text/css' class='style_{$strCallID}'{$strScoped}>";	// The name attribute is invalid in a scoped tag. use the class attribute to identify this call.
+		$strStyleRules = '';
 		
 		foreach ( $arrScreenMaxWidths as $intScreenMaxWidth ) {
 									
@@ -138,7 +138,12 @@ class ResponsiveColumnWidgets_Styles_ {
 			$strStyleRules .= "}" . PHP_EOL;
 				
 		}	
-		return $strStyleRules . '</style>';
+		
+		$strStyleRules = "<style type='text/css' class='style_{$strCallID}'{$strScoped}>"	// The name attribute is invalid in a scoped tag. use the class attribute to identify this call.
+			. ( $this->oOption->arrOptions['general']['general_css_minify'] ? $this->minifyCSS( $strStyleRules ) : $strStyleRules )
+			. '</style>';
+			
+		return $strStyleRules;
 		
 	}
 	protected function GetClearProperties( $strSidebarID, $arrScreenMaxWidths, $intThisScreenMaxWidth ) {	// since 1.1.2
@@ -200,8 +205,8 @@ class ResponsiveColumnWidgets_Styles_ {
 		// Okay, return the custom CSS rules.
 		$strIDAttribute = 'style_custom_' . $strIDSelector;
 		$strScoped = $bIsScoped ? ' scoped' : '';
-		return '<style type="text/css" id="' . $strIDAttribute . '"' . $strScoped . '>' 
-			. $strCustomCSSRules
+		return '<style type="text/css" id="' . $strIDAttribute . '"' . $strScoped . '>'
+			. ( $this->oOption->arrOptions['general']['general_css_minify'] ? $this->minifyCSS( $strCustomCSSRules ) : $strCustomCSSRules )
 			. '</style>' . PHP_EOL;		
 		
 	}
@@ -382,9 +387,22 @@ class ResponsiveColumnWidgets_Styles_ {
 			}
 			*/			
 		$strIDAttr = $this->oOption->SanitizeAttribute( "{$this->oOption->oInfo->Name} {$this->oOption->oInfo->Version}" );
+		$strCSS = apply_filters( 'RCW_filter_base_styles', $strCSS );
+		$strCSS = $this->oOption->arrOptions['general']['general_css_minify'] ? $this->minifyCSS( $strCSS ) : $strCSS;
 		return "<style type='text/css' id='{$strIDAttr}' {$strScoped}>" 
-			. apply_filters( 'RCW_filter_base_styles', $strCSS )
+			. $strCSS
 			. "</style>" . PHP_EOL;
 		
-	}		
+	}
+
+	protected function minifyCSS( $strCSSRules ) {	// since 1.1.5.2
+		
+		// by Jean-Baptiste Jung. http://www.catswhocode.com/blog/3-ways-to-compress-css-files-using-php
+		// Remove comments
+		$strCSSRules = preg_replace( '!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $strCSSRules );
+		// Remove tabs, spaces, newlines, etc. 
+		$strCSSRules = str_replace( array( "\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $strCSSRules );
+		return $strCSSRules;
+		
+	}	
 }
