@@ -563,7 +563,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(  // since 1.1.5.2
 							'id' => 'general_css_minify',
 							'title' => __( 'Minify CSS Code', 'responsive-column-widgets' ),
-							'label' => __( 'Make the size of CSS code that the plugin generates.', 'responsive-column-widgets' ),
+							'label' => __( 'Compress the size of CSS code that the plugin generates.', 'responsive-column-widgets' ),
 							'type' => 'checkbox',
 							'value' => $this->oOption->arrOptions['general']['general_css_minify'],
 						),							
