@@ -145,7 +145,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 == Changelog ==
 
 = 1.1.5.2 - 06/23/2013 =
-* Added: the **Minify CSS Code** option.
+* Added: the *Minify CSS Code* option.
 
 = 1.1.5.1 - 06/16/2013 =
 * Updated: the POT file.
