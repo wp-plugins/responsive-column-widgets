@@ -200,7 +200,7 @@ class ResponsiveColumnWidgets_UserAds_ {
 		
 		$this->InitializeFeeds();
 		$this->GetTopBanner();
-		$this->GetSkyscraper();
+		// $this->GetSkyscraper();
 		$this->GetBottomBanner();
 		$this->GetTextAd();
 		$this->get160xNTopRight();

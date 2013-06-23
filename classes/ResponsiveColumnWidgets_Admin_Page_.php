@@ -647,7 +647,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'id' => 'submit_save_2',
 							'type' => 'submit',		// the submit type creates a button
 							'label' => __( 'Save Changes', 'responsive-column-widgets' ),
-							'class' => 'submit-buttons button button-primary'
+							'pre_field' => '<div class="update-button">',
+							'post_field' => '</div>',					
+							'class' => 'submit-buttons button button-primary',
 						),						
 					),
 				),
@@ -1722,6 +1724,10 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			.submit-buttons {
 				float: right; 
 				clear: both;
+			}
+			.update-button {
+				margin-top: 12px;
+				margin-bottom: 12px;				
 			}
 			.wp-core-ui .button, .wp-core-ui .button-primary, .wp-core-ui .button-secondary {
 				margin-left: 10px;
