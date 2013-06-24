@@ -8,6 +8,7 @@
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		1.0.0
  * @sub-classes ResponsiveColumnWidgets_Styles, ResponsiveColumnWidgets_WidgetBox, ResponsiveColumnWidgets_IDHandler
+ * @filters		RCW_filter_widgetbox_output - applies to the outputs of widget boxes
 	
 */
 class ResponsiveColumnWidgets_Core_ {
@@ -221,6 +222,7 @@ class ResponsiveColumnWidgets_Core_ {
 			. '</div>';
 			
 		// Done!
+		$strOut = apply_filters( 'RCW_filter_widgetbox_output', $strOut );
 		return $strOut . $this->GetCredit();
 		
 	}

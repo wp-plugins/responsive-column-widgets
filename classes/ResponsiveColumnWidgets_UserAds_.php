@@ -107,14 +107,14 @@ class ResponsiveColumnWidgets_UserAds_ {
 	
 	public function get160xNTopRight( $numItems=1 ) {	// since 1.1.5.2
 	
-		return '<div style="float:right; padding: 0 0 0 20px; width: 160px;">' 
+		return '<div style="float:right; padding: 0 0 0 20px; width: 160px; clear:right;">' 
 			. $this->FetchItems( $this->arrURLFeed160xNTopRight, $numItems )
 			. "</div>";		
 			
 	}
 	public function get160xN( $numItems=10 ) {	// since 1.1.5.2
 	
-		return '<div style="float:right; padding: 0 0 0 20px; width: 160px;">' 
+		return '<div style="float:right; padding: 0 0 0 20px; width: 160px; clear:right;">' 
 			. $this->FetchItems( $this->arrURLFeed160xN, $numItems )
 			. "</div>";				
 			

@@ -67,6 +67,16 @@ class ResponsiveColumnWidgets_Events_ {
 		)	
 			add_action( 'wp_footer', array( $this, 'PrintDebugInfo' ) );
 	
+	
+		// Since 1.1.5.3 - For shortcode execution in text widgets.
+		if ( isset( $this->oOption->arrOptions['general']['execute_shortcode_in_widgets'] ) ) {
+		
+			if ( $this->oOption->arrOptions['general']['execute_shortcode_in_widgets'] == 1 )
+				add_filter( 'widget_text', 'do_shortcode' );
+			else if ( $this->oOption->arrOptions['general']['execute_shortcode_in_widgets'] == 2 )
+				add_filter( 'RCW_filter_widgetbox_output', 'do_shortcode' );
+				
+		}
 	}
 	
 	public function PrintDebugInfo() {	// since 1.1.4
@@ -112,10 +122,10 @@ class ResponsiveColumnWidgets_Events_ {
 		// Set urls
 		$oFeed->set_feed_url( $vURLs );	
 		
-		// this should be set after defineing $vURLs
+		// this should be set after defining $vURLs
 		$oFeed->set_cache_duration( 0 );	// 0 seconds, means renew the cache right away.
 	
-		// Set the background flag to True so that it won't trigger the event action reccursively.
+		// Set the background flag to True so that it won't trigger the event action recursively.
 		$oFeed->SetBackground( True );
 		$oFeed->init();	
 		

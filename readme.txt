@@ -144,6 +144,11 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.1.5.3 - 06/25/2013 =
+* Tweaked: the layout in the settings pages.
+* Added: the *Execute Shortcodes in Widget Boxes* option.
+* Added: the *RCW_filter_widgetbox_output* filter that applies to the widget box outputs.
+
 = 1.1.5.2 - 06/23/2013 =
 * Added: the *Minify CSS Code* option.
 

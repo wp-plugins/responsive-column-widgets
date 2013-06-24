@@ -90,6 +90,7 @@ class ResponsiveColumnWidgets_Option_ {
 			'debug_mode' => false,	// since 1.1.4
 			'widget_responsive_column_widget_box' => true,	// since 1.1.4.1
 			'general_css_minify' => false, // since 1.1.5.2
+			'execute_shortcode_in_widgets' => 0,	// since 1.1.5.3, 0 through 2.
 		),
 		// since 1.1.3
 		'hierarchy' => array( 	// stores registered sidebar IDs and their relationships with plugin's widget boxes.

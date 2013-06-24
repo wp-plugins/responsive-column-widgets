@@ -566,7 +566,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'label' => __( 'Compress the size of CSS code that the plugin generates.', 'responsive-column-widgets' ),
 							'type' => 'checkbox',
 							'value' => $this->oOption->arrOptions['general']['general_css_minify'],
-						),							
+						),											
 					),
 				),				
 				// General Options
@@ -628,7 +628,19 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							),
 							'delimiter' => '&nbsp;&nbsp;&nbsp;',
 							'value' => $this->oOption->arrOptions['general']['widget_responsive_column_widget_box'],
-						),							
+						),	
+						array(  // since 1.1.5.3
+							'capability' => 'manage_options',
+							'id' => 'execute_shortcode_in_widgets',
+							'title' => __( 'Execute Shortcodes in Widget Boxes', 'responsive-column-widgets' ),
+							'label' => array( 
+								0 => __( 'No (Default)', 'responsive-column-widgets' ),
+								1 => __( 'Execute shortcodes in text widgets.', 'responsive-column-widgets' ),
+								2 => __( 'Execute shortcodes in whole widget boxes.', 'responsive-column-widgets' ),
+							),
+							'type' => 'radio',
+							'value' => $this->oOption->arrOptions['general']['execute_shortcode_in_widgets'],
+						),						
 						array(	// since 1.1.1.2
 							'if' => isset( $this->oOption->arrOptions['general']['time_first_option_update'] ) && ( time() > $this->oOption->arrOptions['general']['time_first_option_update'] + $this->intIntervalToShowPleaseRate ),
 							'id' => 'has_reviewed',
@@ -1008,7 +1020,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}
 	function foot_ResponsiveColumnWidgets_Admin_Page( $strFoot ) {
 		
-		$numItems = 4;
+		$numItems = 12;
 		if ( isset( $_GET['tab'] ) ) {
 			switch ( $_GET['tab'] ) {
 				case 'neworedit':
