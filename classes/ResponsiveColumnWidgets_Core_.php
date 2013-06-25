@@ -215,6 +215,7 @@ class ResponsiveColumnWidgets_Core_ {
 		$oID = new ResponsiveColumnWidgets_IDHandler;
 		$strCallID = $oID->GetCallID( $arrParams['sidebar'], $arrParams );	// an ID based on the sidebar ID + parameters; there could be the same ID if the passed values are the same.
 		$strIDSelector = $oID->GenerateIDSelector( $strCallID );	// a unique ID throughout the script load 
+		unset( $oID );	// release the object for below PHP 5.3 
 		
 		// Retrieve the widget output buffer.
 		$strOut = '<div id="' . $strIDSelector . '" class="' . $this->arrClassSelectors['box'] . ' ' . $this->strClassSelectorBox2 . ' ' . $arrParams['sidebar'] . '">' 
