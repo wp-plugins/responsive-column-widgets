@@ -1619,7 +1619,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 		// There are hidden option values that are not sent from the admin page ( the data sent as $arrInput ), the input data need to be merged with the previous option values.
 		// $this->oOption->arrOptions['general'] = $arrValidate + $this->oOption->arrOptions['general'];
-		$this->oOption->arrOptions['general'] = $this->oOption->UniteArraysRecursive( $arrValidate, $this->oOption->arrDefaultOptionStructure['general'] );
+		// $this->oOption->arrOptions['general'] = $this->oOption->UniteArraysRecursive( $arrValidate, $this->oOption->arrDefaultOptionStructure['general'] );
+		$this->oOption->arrOptions['general'] = $this->oOption->UniteArraysRecursive( $arrValidate, $this->oOption->arrOptions['general'] );
 
 		
 // ResponsiveColumnWidgets_Debug::DumpArray( $arrValidate, dirname( __FILE__ ) . '/validation_array.txt' );
