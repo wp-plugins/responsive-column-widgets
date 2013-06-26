@@ -144,6 +144,9 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.1.5.5 - 06/26/2013 =
+* Tweaked: the code to reduce the number of queries performed in the settings pages of the plugin.
+
 = 1.1.5.4 - 06/25/2013 =
 * Fixed: a bug that updating the options in the *General Options* page removed a license value for the Pro version.
 

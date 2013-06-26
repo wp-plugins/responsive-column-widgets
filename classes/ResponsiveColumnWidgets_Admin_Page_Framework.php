@@ -4,7 +4,7 @@
 	Plugin URI: http://wordpress.org/extend/plugins/admin-page-framework/
 	Author:  Michael Uno
 	Author URI: http://michaeluno.jp
-	Version: 1.0.4.1
+	Version: 1.0.4.2
 	Requirements: WordPress 3.2 or above, PHP 5.2.4 or above.
 	Description: Provides simpler means of building administration pages for plugin and theme developers. 
 	Usage: 1. Extend the class 2. Override the SetUp() method. 3. Use the hook functions.
@@ -69,8 +69,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 	
 	// Containter arrays
 	public $arrPageTitles = array();		// stores the added page titles with key of the page slug. Must be public as referenced by oLink.
-	protected $arrSections = array();		// stores registerd form(settings) sections.
-	protected $arrFields = array();			// stores registerd form(settings) fields.
+	protected $arrSections = array();		// stores registered form(settings) sections.
+	protected $arrFields = array();			// stores registered form(settings) fields.
 	protected $arrTabs = array();			// a two-dimensional array with the keys of sub-page slug in the first dimension and with the key of tab slug in the second dimension.
 	protected $arrHiddenTabs = array();		// since 1.0.2.1 - a two-dimensional array similar to the above $arrTabs but stores the tab which should be hidden ( still accessible with the direct url. )
 	protected $arrIcons = array();			// stores the page screen 32x32 icons. For the main root page, which is invisible, 16x16 icon url will be stored.
@@ -105,7 +105,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 	protected $strPathIcon16x16 = null; // set by the constructor and the SetMenuIcon() method.
 	protected $numPosition	= null;		// this will be rarely used so put it aside until a good reason gets addressed to flexibly change it.
 	protected $strPageSlug = '';		// the extended class name will be assigned by default in the constructor but will be overwritten by the SetRootMenu() method.	
-	protected $strOptionKey = null;		// determins which key to use to store options in the database.
+	protected $strOptionKey = null;		// determines which key to use to store options in the database.
 	protected $numRootPages = 0;		// stores the number of created root pages 
 	protected $numSubPages = 0;			// stores the number of created sub pages 
 	protected $strThickBoxTitle = '';	// stores the media upload thick box's window title.
@@ -196,7 +196,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 	}
 	
 	/*
-		Front-End methods - the user may call it but it shoud not necessaliry be customized in the extended class.
+		Front-End methods - the user may call it but it should not necessarily be customized in the extended class.
 	*/
 	/*
 	 *	Add Links 
@@ -648,7 +648,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
 		$strFieldID = substr( $strMethodName, strlen( $this->prefix_field ) + 4 );	// field_pre_X
 		if ( !isset( $this->arrFields[$strFieldID] ) ) return;	// if it is not added, return
 
-		$oFields = new ResponsiveColumnWidgets_Admin_Page_Framework_Input_Filed_Types( $arrField, $this->strOptionKey, $this->strClassName );
+		$this->arrErrors = isset( $this->arrErrors ) ? $this->arrErrors : get_transient( md5( $this->strClassName . '_' . $arrField['page_slug'] ) );
+		$oFields = new ResponsiveColumnWidgets_Admin_Page_Framework_Input_Filed_Types( $arrField, $this->strOptionKey, $this->strClassName, $this->arrErrors );
 		$strOutput = $oFields->GetInputField( $arrField['type'] );
 		
 		// Render the input field
@@ -2011,9 +2012,9 @@ class ResponsiveColumnWidgets_Admin_Page_Framework_Input_Filed_Types {	// since 
 	protected $strFieldName;	// Stores the value for the name attribute to assign.
 	protected $strTagID;		// Stores the rendering input tag ID to assign.
 	protected $vValue;			// array or string. Stores the value either string or array for the value attribute to assign.
-	protected $vDisable;		// array or string. Stores the value for the disable attribe to assign, could be stored as as array for multiple elements.
+	protected $vDisable;		// array or string. Stores the value for the disable attribute to assign, could be stored as as array for multiple elements.
 	
-	function __construct( &$arrField, &$strOptionKey, &$strClassName ) {
+	function __construct( &$arrField, &$strOptionKey, &$strClassName, $arrErrors=array() ) {
 		
 		// Objects
 		$this->oUtil = new ResponsiveColumnWidgets_Admin_Page_Framework_Utilities;
@@ -2026,7 +2027,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework_Input_Filed_Types {	// since 
 	
 		// Set up the field error array
 		// The 'settings-updated' key will be set in the $_GET array when redirected by Settings API 
-		$this->arrErrors = get_transient( md5( $strClassName . '_' . $arrField['page_slug'] ) );
+		$this->arrErrors = $arrErrors;
+		// $this->arrErrors = get_transient( md5( $strClassName . '_' . $arrField['page_slug'] ) );	// <-- this caused so many database queries.
 		$this->arrErrors = ( isset( $_GET['settings-updated'] ) &&  $this->arrErrors ) ? $this->arrErrors  : null;		
 		
 		// Set up the field array. Merging with the default keys will prevent PHP undefined key warnings.
