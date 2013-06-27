@@ -108,14 +108,9 @@ class ResponsiveColumnWidgets_Events_ {
 	}
 	
 	function RenewCaches( $vURLs ) {
-		
-		// If the transient exists, it has been renewed during the scheduling process. 
-		// So avoid duplicated renew tasks.
-		$bTransientExists = False;
-		foreach( ( array ) $vURLs as $strURL ) 
-			$bTransientExists = get_transient( 'RCWFeed_M__' . md5( $strURL ) ) ? True : False;
-		if ( $bTransientExists ) return;
-		
+
+// ResponsiveColumnWidgets_Debug::DumpArray( $vURLs, dirname( __FILE__ ) . '/cache_renewal.txt'  );		
+
 		// Setup Caches
 		$oFeed = new ResponsiveColumnWidgets_SimplePie();
 

@@ -18,14 +18,13 @@ class ResponsiveColumnWidgets_Cleaner {
 		
 		// Delete transients
 		global $wpdb, $table_prefix;
-		$strPrefixFeedTransient = 'RCWFeed_';	
-		$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_%{$strPrefixFeedTransient}%' )" );
-		$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_timeout%{$strPrefixFeedTransient}%' )" );
-		
-		$strPrefixTransient = 'RCW_IMG';	
-		$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_%{$strPrefixTransient}%' )" );
-		$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_timeout%{$strPrefixTransient}%' )" );
-		
+		$arrPrefixes = array( 'RCWFeed', 'RCWUserAds_', 'RCW_IMG', 'RCWCache' );
+		foreach( $arrPrefixes as $strPrefix ) {
+			
+			$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_%{$strPrefix}%' )" );
+			$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_timeout_%{$strPrefix}%' )" );
+		}
+	
 	}
 	
 }

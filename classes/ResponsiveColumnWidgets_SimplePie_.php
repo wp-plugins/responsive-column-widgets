@@ -11,7 +11,13 @@
 /*
  * Custom Hooks
  * - RCWP_action_simplepie_renew_cache : the event action that renew caches in the background.
- * 		
+ * - SimplePie_filter_cache_transient_lifetime_{FileID} : applies to cache transients. FileID is md5( $url ).
+ * 
+ * Global Variables
+ * - $arrSimplePieCacheModTimestamps : stores mod timestamps of cached data. This will be stored in a transient when WordPress exits, 
+ *   which prevents multiple calls of get_transiet() that performs a database query ( slows down the page load ).
+ * - $arrSimplePieCacheExpiredItems : stores expired cache items. This will be saved in the transient at the WordPress shutdown action event.
+ * 
  * */
 
 // make sure that SimplePie has been already loaded
@@ -21,7 +27,7 @@ if ( ! class_exists( 'SimplePie' ) )
 	include_once( ABSPATH . WPINC . '/class-feed.php' );		
 
 // If the WordPress version is below 3.5, which uses SimplePie below 1.3.
-if ( version_compare( get_bloginfo('version') , '3.5', "<" ) ) {	
+if ( version_compare( get_bloginfo( 'version' ) , '3.5', "<" ) ) {	
 
 	class ResponsiveColumnWidgets_SimplePie__ extends SimplePie {
 		
@@ -31,7 +37,7 @@ if ( version_compare( get_bloginfo('version') , '3.5', "<" ) ) {
 			// Sort 
 			// by date
 			if ( self::$sortorder == 'date' ) 
-				return $a->get_date('U') <= $b->get_date('U');		
+				return $a->get_date( 'U' ) <= $b->get_date( 'U' );
 			// by title ascending
 			if ( self::$sortorder == 'title' ) 
 				return self::sort_items_by_title( $a, $b );
@@ -54,7 +60,7 @@ if ( version_compare( get_bloginfo('version') , '3.5', "<" ) ) {
 			// Sort 
 			// by date
 			if ( self::$sortorder == 'date' ) 
-				return $a->get_date('U') <= $b->get_date('U');		
+				return $a->get_date( 'U' ) <= $b->get_date( 'U' );
 			// by title ascending
 			if ( self::$sortorder == 'title' ) 
 				return self::sort_items_by_title( $a, $b );
@@ -76,76 +82,114 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 	public static $bKeepRawTitle = false;
 	public static $strCharEncoding = 'UTF-8';
 	var $vSetURL;	// stores the feed url(s) set by the user.
-	var $bIsBackground = false;		// indicates whether it is from the event action ( background call )
+	var $fIsBackgroundProcess = false;		// indicates whether it is from the event action ( background call )
 	var $numCacheLifetimeExpand = 100;
-	var $strRealCacheModTimePrefix = 'RCWFeed_M__';	// the double underscores are used.
-	/*
-	 * For backgound cache renewal task.
-	 * */
-	public function set_feed_url( $url ) {
+	protected $strRealModTimestamps = 'RCWFeed_Ms';
+	
+	public function __construct() {
+	
+		// Set up the global arrays. Consider the cases that multiple instances of this object are created so the arrays may have been already created.
+		// - This stores real mod timestamps.
+		$GLOBALS['arrSimplePieCacheModTimestamps'] = isset( $GLOBALS['arrSimplePieCacheModTimestamps'] ) && is_array( $GLOBALS['arrSimplePieCacheModTimestamps'] ) 
+			? $GLOBALS['arrSimplePieCacheModTimestamps'] 
+			: ( array ) get_transient( $this->strRealModTimestamps ) ;
+// ResponsiveColumnWidgets_Debug::DumpArray( $GLOBALS['arrSimplePieCacheModTimestamps'], dirname( __FILE__ ) . '/mods.txt'  );
+			
+		// - this stores expired cache items.
+		$GLOBALS['arrSimplePieCacheExpiredItems'] = isset( $GLOBALS['arrSimplePieCacheExpiredItems'] ) && is_array( $GLOBALS['arrSimplePieCacheExpiredItems'] ) 
+			? $GLOBALS['arrSimplePieCacheExpiredItems']
+			: array();
 		
-		$this->vSetURL = $url;	// array or string
-		parent::set_feed_url( $url );
+		// Schedule the transient update task.
+		add_action( 'shutdown', array( $this, 'updateCacheItems' ) );
+		
+		parent::__construct();
+			
+	}
+	public function updateCacheItems() {	
+	
+		// Saves the global array, $arrSimplePieCacheModTimestamps, into the transient of the option table.
+		// This is used to avoid multiple calls of set_transient() by the cache class.
+		if ( ! ( isset( $GLOBALS['arrSimplePieCacheModTimestamps']['bIsCacheTransientSet'] ) && $GLOBALS['arrSimplePieCacheModTimestamps']['bIsCacheTransientSet'] ) ) {
+			unset( $GLOBALS['arrSimplePieCacheModTimestamps']['bIsCacheTransientSet'] ); // remove the unnecessary data.
+			set_transient( $this->strRealModTimestamps, $GLOBALS['arrSimplePieCacheModTimestamps'], $this->cache_duration * $this->numCacheLifetimeExpand );
+			$GLOBALS['arrSimplePieCacheModTimestamps']['bIsCacheTransientSet'] = true;
+		}
+		
+		$GLOBALS['arrSimplePieCacheExpiredItems'] = array_unique( $GLOBALS['arrSimplePieCacheExpiredItems'] );
+		if ( count( $GLOBALS['arrSimplePieCacheExpiredItems'] ) > 0 )
+			$this->scheduleCacheRenewal( $GLOBALS['arrSimplePieCacheExpiredItems'] );
+		
+
+	}
+	protected function scheduleCacheRenewal( $arrURLs ) {
+		
+		// Schedules the action to run in the background with WP Cron.
+		if ( wp_next_scheduled( 'RCWP_action_simplepie_renew_cache', array( $arrURLs ) ) ) return;		
+		wp_schedule_single_event( time() , 'RCWP_action_simplepie_renew_cache', array( $arrURLs ) );
+				
+	}
+	
+	public function setCacheTransientLifetime( $intLifespan, $strFileID ) {	 // since 1.1.5.6
+		
+		// this is a call back for the filter that sets cache duration for the SimplePie cache object.
+		return isset( $this->cache_duration ) ? $this->cache_duration : 0;
+		
+	}
+	
+	/*
+	 * For background cache renewal task.
+	 * */		
+	public function set_feed_url( $vURL ) {
+		
+		$this->vSetURL = $vURL;	// array or string
+		
+		// Hook the cache lifetime filter
+		foreach( ( array ) $vURL as $strURL ) 
+			add_filter( 'SimplePie_filter_cache_transient_lifetime_' . md5( $strURL ), array( $this, 'setCacheTransientLifetime' ) );
+		
+		return parent::set_feed_url( $vURL );
 		
 	}
 	public function init() {
 
 		// Setup Caches
-		$this->enable_cache( True );
+		$this->enable_cache( true );
 		
 		// force the cache class to the custom plugin cache class
 		$this->set_cache_class( 'ResponsiveColumnWidgets_Cache' );
 		$this->set_file_class( 'WP_SimplePie_File' );
-			
-		// fore the life time to be expanded so that the cache barely refreshes by itself.
-		$this->cache_duration = $this->cache_duration * $this->numCacheLifetimeExpand;
+					
+		// for the life time to be expanded so that the cache barely refreshes by itself.
+		// $this->cache_duration = $this->cache_duration * $this->numCacheLifetimeExpand;
 		
-		if ( isset( $this->vSetURL ) && ! $this->bIsBackground ) {
+		if ( isset( $this->vSetURL ) && ! $this->fIsBackgroundProcess ) {
 			
-			$bHasExpired = false;
 			foreach ( ( array) $this->vSetURL as $strURL ) {
 
-				// 'RCWFeed_M__' stores the saved time that the cache was created with the real expiration life time.
-				// 'RCWFeed_M_' also stores the same value but it won't barely expires. Threfore, check the former to see if the cache should be renewed or not.
-				// be careful with the use of md5() since the user may set a different type for it. ( IIRC, SimplePie supporeted changing the hash type.)
-				$numMod = ( int ) get_transient( $this->strRealCacheModTimePrefix . md5( $strURL ) );
-				if ( $numMod + ( $this->cache_duration / $this->numCacheLifetimeExpand ) < time() ) {
-					$bHasExpired = true;
-					break;
-				}
-			}
-					
-			// If the current time exceeds the saved time + life time, it means expired.
-			// The event action must be loaded (added) when the plugin is loaded. We use a separate event object for that.
-			// wp_schedule_single_event() requires the argument to be enclosed in an array.
-			if ( $bHasExpired ) {
+				$intModTimestamp = isset( $GLOBALS['arrSimplePieCacheModTimestamps'][ md5( $strURL ) ] ) ? $GLOBALS['arrSimplePieCacheModTimestamps'][ md5( $strURL ) ] : 0;
+				if ( $intModTimestamp + $this->cache_duration < time() ) 	
+					$GLOBALS['arrSimplePieCacheExpiredItems'][] = $strURL;
 
-				// let the scheduling task at the end of the script.
-				add_action( 'shutdown', array( $this, 'ScheduleCacheRenewal' ) );
-				
 			}
-						
+											
 		}	
-
+		
+// if ( ! $this->fIsBackgroundProcess ) {
+	
+	// if ( ! empty( $GLOBALS['arrSimplePieCacheExpiredItems'] ) ) 
+		// ResponsiveColumnWidgets_Debug::DumpArray( $GLOBALS['arrSimplePieCacheExpiredItems'], dirname( __FILE__ ) . '/expired_urls.txt'  );
+	// ResponsiveColumnWidgets_Debug::DumpArray( $GLOBALS['arrSimplePieCacheModTimestamps'], dirname( __FILE__ ) . '/cache_mods.txt'  );
+	
+// } else {
+	// ResponsiveColumnWidgets_Debug::DumpArray( $this->vSetURL, dirname( __FILE__ ) . '/background_process.txt'  );
+// }
 		return parent::init();
 		
 	}
-	public function ScheduleCacheRenewal() {
-		// Giving a random delay prevents multiple tasks from running at the same time and causing the page load slow down.
-		// WP Cron runs in the background; however, if the registered tasks takes the server resources too much such as CPU usage, the loading page takes some time to complete.
-		// + rand( 5, 20 )
-		if ( wp_next_scheduled( 'RCWP_action_simplepie_renew_cache', array( $this->vSetURL ) ) ) 
-			return;
+	public function SetBackground( $fIsBackgroundProcess=false ) {
 		
-		// Delete the transient so that the event method can check whether it really needs to be renewed or not.
-		foreach( ( array ) $this->vSetURL as $strURL ) 
-			delete_transient( $this->strRealCacheModTimePrefix . md5( $strURL ) );
-		
-		wp_schedule_single_event( time() + 5, 'RCWP_action_simplepie_renew_cache', array( $this->vSetURL ) );
-	}
-	public function SetBackground( $bIsBackground=false ) {
-		
-		$this->bIsBackground = $bIsBackground;
+		$this->fIsBackgroundProcess = $fIsBackgroundProcess;
 		
 	}
 
@@ -187,6 +231,7 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 }
 
 class ResponsiveColumnWidgets_Cache extends SimplePie_Cache {
+	
 	/**
 	 * Create a new SimplePie_Cache object
 	 *
@@ -196,65 +241,69 @@ class ResponsiveColumnWidgets_Cache extends SimplePie_Cache {
 	function create( $location, $filename, $extension ) {
 		return new ResponsiveColumnWidgets_Feed_Cache_Transient( $location, $filename, $extension );
 	}
+	
 }
 class ResponsiveColumnWidgets_Feed_Cache_Transient {
-	var $name;
-	var $mod_name;
-	var $lifetime = 43200; //Default lifetime in cache of 12 hours
-	var $real_name;
-	var $real_mod_name;
+	
+	var $strTransientName;
+	var $lifetime = 43200; // Default cache lifetime of 12 hours. This should be overriden by the filter callback function. 
 	var $numExpand = 100;
 	var $strPrefixName = 'RCWFeed_';
-	var $strPrefixModName = 'RCWFeed_M_';
 	
-	function __construct( $location, $filename, $extension ) {
-		// $location : './cache'
-		// $filename : md5( $url )	e.g. b22d9dad80577a8e66a230777d91cc6e // <-- the hash type may be changed by the user.
-		// $extension: spc
+	protected $strFileID;	// stores the file name given to the constructor.
+	
+	public function __construct( $location, $strFileID, $extension ) {
 		
-		$this->name = $this->strPrefixName . $filename;
-		$this->mod_name = $this->strPrefixModName . $filename;
-		$this->real_mod_name = $this->strPrefixModName . '_' . $filename;	// save the real file modified date
+		/* 
+		 * Parameters:
+		 * - $location ( not used in this class ) : './cache'
+		 * - $strFileID : md5( $url )	e.g. b22d9dad80577a8e66a230777d91cc6e // <-- the hash type may be changed by the user.
+		 * - $extension ( not used in this class ) : spc
+		 */
+		
+		$this->strTransientName = $this->strPrefixName . $strFileID;
 		$this->lifetime = apply_filters( 
-			'wp_feed_cache_transient_lifetime', 
-			$this->lifetime, 	
-			$filename
+			'SimplePie_filter_cache_transient_lifetime_' . $strFileID, 
+			$this->lifetime, 	// it barely expires itself
+			$strFileID
 		);	
-		
+		$this->strFileID = $strFileID; // md5( $url )
 	}
 
-	function save( $data ) {
+	public function save( $data ) {
 		
 		if ( is_a( $data, 'SimplePie' ) )
 			$data = $data->data;
 
-		set_transient( $this->real_mod_name, time(), $this->lifetime );
-		
+		// $GLOBALS['arrSimplePieCacheModTimestamps'] should be already created by the caller (parent) custom SimplePie class.
+		$GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strFileID ] = time();	
+
+// ResponsiveColumnWidgets_Debug::DumpArray( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strFileID ] , dirname( __FILE__ ) . '/saved_cache.txt'  );		
+
 		// make it 100 times longer so that it barely gets expires by itself
-		set_transient( $this->name, $data, $this->lifetime * $this->numExpand );	
-		set_transient( $this->mod_name, time(), $this->lifetime * $this->numExpand );
-		
+		set_transient( $this->strTransientName, $data, $this->lifetime * $this->numExpand );
 		return true;
+	}
+	public function load() {		
+// ResponsiveColumnWidgets_Debug::DumpArray( $this->lifetime , dirname( __FILE__ ) . '/lifetime.txt'  );
+		// If this returns an empty value, SimplePie will fetch the feed.
+		if ( $this->lifetime == 0 ) return null;  
+		
+		return get_transient( $this->strTransientName );	// the stored cache data
 		
 	}
-	
-	function load() {
-		return get_transient( $this->name );
+	public function mtime() {		
+		return isset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strFileID ] ) 
+			? time()	// return the current time so that SimplePie believes it's not expired yet.
+			: 0;	// the array key is not set, So pass 0 to tell that the cache needs to be created. 
 	}
-
-	function mtime() {
-		return get_transient( $this->mod_name );
+	public function touch() {
+		$GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strFileID ] = time(); 
+		return true;
 	}
-
-	function touch() {
-		set_transient( $this->real_mod_name, time(), $this->lifetime );
-		return set_transient( $this->mod_name, time(), $this->lifetime * $this->numExpand );
-	}
-
-	function unlink() {
-		delete_transient( $this->real_mod_name );
-		delete_transient( $this->name );
-		delete_transient( $this->mod_name );
+	public function unlink() {
+		unset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strFileID ] );
+		delete_transient( $this->strTransientName );
 		return true;
 	}
 }
