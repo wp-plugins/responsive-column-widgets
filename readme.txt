@@ -144,7 +144,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.1.5.6 =
+= 1.1.5.6 - 06/27/2013 =
 * Tweaked: the code to reduce the number of database queries performed in the settings pages.
 * Tweaked: the code to reduce the used memory size in the settings pages.
 
