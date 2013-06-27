@@ -130,7 +130,7 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 				
 	}
 	
-	public function setCacheTransientLifetime( $intLifespan, $strFileID ) {	 // since 1.1.5.6
+	public function setCacheTransientLifetime( $intLifespan, $strFileID=null ) {	 // since 1.1.5.6
 		
 		// this is a call back for the filter that sets cache duration for the SimplePie cache object.
 		return isset( $this->cache_duration ) ? $this->cache_duration : 0;
@@ -265,7 +265,7 @@ class ResponsiveColumnWidgets_Feed_Cache_Transient {
 		$this->lifetime = apply_filters( 
 			'SimplePie_filter_cache_transient_lifetime_' . $strFileID, 
 			$this->lifetime, 	// it barely expires itself
-			$strFileID
+			empty( $strFileID ) ? 'a_file' : $strFileID		// it seems WordPress 3.4.x or below does not pass a value to $strFileID.
 		);	
 		$this->strFileID = $strFileID; // md5( $url )
 	}
