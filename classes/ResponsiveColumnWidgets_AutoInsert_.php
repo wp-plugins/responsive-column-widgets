@@ -42,6 +42,12 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		$this->oCore = $oCore;
 		$this->oOption = $oCore->oOption;
 		
+		// First check if there are widget boxes that enable auto-insert.
+		$this->SetupAutoInsertEnabledBoxes();
+		
+		// If no widget box enables the Auto-insert feature, do nothing. This saves one database query preformed by the wp_get_post_categories() function.
+		if ( count( $this->arrEnabledBoxIDs ) < 1 ) return;	
+
 		// Set up hooks - add hooks regardless whether the widget box is not for the displaying page or not
 		// in order to let custom hooks being added which are loaded earlier than the $wp_query object is established.
 		add_action( 'init', array( $this, 'SetupHooks' ) );
@@ -102,7 +108,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		echo $strStyles;
 		
 	}
-	
+		
 	/*
 	 *  Auto Insertions
 	 */
@@ -246,11 +252,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		
 	}
 	public function SetupHooks() {	// since 1.0.9, used by hooks
-		
-		// First check if there are widget boxes that enable auto-insert.
-		$this->SetupAutoInsertEnabledBoxes();
-		if ( count( $this->arrEnabledBoxIDs ) < 1 ) return;	// if there is no boxes enabled, there is nothing to do.
-		
+				
 		// Set up the filter container array, and the action container array.
 		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => &$arrBoxOptions ) {
 			

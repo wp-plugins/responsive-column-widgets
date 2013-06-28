@@ -16,6 +16,7 @@ class ResponsiveColumnWidgets_Core_ {
 	// Objects
 	public $oOption;		// deals with the plugin options. Made it public in 1.1.2 to allow the AutoInsert class access this object. In 1.1.2.1 the StyleLoader class also uses it.
 	public $oStyle;		// since 1.1.2 - manipulates CSS rules. It is public because the Auto-Insert class uses it. In 1.1.2.1 the StyleLoader class also uses it.
+	public $oDecode;	// since 1.1.6 - decodes encrypted html contents as cache saved in a transient.
 		
 	// Default properties
 	protected $strShortCode;
@@ -54,6 +55,7 @@ class ResponsiveColumnWidgets_Core_ {
 			$oOption, 
 			$this->arrClassSelectors
 		);
+		$this->oDecode = new ResponsiveColumnWidgets_Decoder;
 				
 		// Register this plugin sidebar; if already registered, it will do nothing
 		$this->RegisterSidebar();	// must be called after $this->oOption is set.
@@ -283,40 +285,53 @@ class ResponsiveColumnWidgets_Core_ {
 			$this->oOption->formatColSpanArray( $arrParams['colspans'] ),
 			$this->arrClassSelectors
 		);	
-				
-		// Next, store the output buffers into an array.
-		$arrWidgetBuffers = $oWidgetBox->GetWidgetsBufferAsArray( 
-			$strSidebarID, 
-			$arrSidebarsWidgets,
-			$this->oOption->ConvertStringToArray( $arrParams['showonly'], ',' ),
-			$this->oOption->ConvertStringToArray( $arrParams['omit'], ',' ),
-			$arrParams['remove_id_attributes']
-		);
+		
+		// Check if the cache duration is set and if the cache is stored.
+		$strCacheID = 'RCW_Cache_' . md5( $strCallID );	// since the passed call ID has the long prefix 'responsive_coluimn_widget', it needs to be shortened.
+		$strBuffer = $arrParams['cache_duration'] > 0 ? $this->oDecode->decodeBase64( get_transient( $strCacheID ) ) : '';
+// ResponsiveColumnWidgets_Debug::DumpArray( $arrParams, dirname( __FILE__ ) . '/parameter_arrays.txt'  );		
+// $strBuffer ='';
+		if ( empty( $strBuffer ) ) {
+			
+			// Store the output buffers into an array.
+			$arrWidgetBuffers = $oWidgetBox->GetWidgetsBufferAsArray( 
+				$strSidebarID, 
+				$arrSidebarsWidgets,
+				$this->oOption->ConvertStringToArray( $arrParams['showonly'], ',' ),
+				$this->oOption->ConvertStringToArray( $arrParams['omit'], ',' ),
+				$arrParams['remove_id_attributes']
+			);
 
-		// since 1.1.3 - Get the flag array indicating whether the widgets are the plugin's widget-box widget or not.
-		$arrFlagsWidgetBoxWidget = $oWidgetBox->GetWidgetBoxWidgetFlagArray();
-						
-		// Now, $arrWidgetBuffers contains the necessary data for the output. 
-		// Okay, go. Enclose the buffer output string with the tag having the class attribute of screen max-width.
-		$strBuffer = '';			// $strBuffer stores the string buffer output.		
-		foreach ( $arrWidgetBuffers as $intIndex => $strWidgetBuffer ) 	{
+			// since 1.1.3 - Get the flag array indicating whether the widgets are the plugin's widget-box widget or not.
+			$arrFlagsWidgetBoxWidget = $oWidgetBox->GetWidgetBoxWidgetFlagArray();
+							
+			// Now, $arrWidgetBuffers contains the necessary data for the output. 
+			// Okay, go. Enclose the buffer output string with the tag having the class attribute of screen max-width.
+			$strBuffer = '';			// $strBuffer stores the string buffer output.		
+			foreach ( $arrWidgetBuffers as $intIndex => $strWidgetBuffer ) 	{
+				
+				$oWidgetBox->setColSpans( $intIndex + 1 ); // the widget index is one-base while the array index is zero-base.
+				
+				$strBuffer .= '<div class="' 
+					. $oWidgetBox->GetClassAttribute() 	// returns the class attribute values calculated with the stored positions and parameters.
+					. ( isset( $arrFlagsWidgetBoxWidget[ $intIndex ] ) && $arrFlagsWidgetBoxWidget[ $intIndex ] ? ' widget_box_widget' : '' )	// add no margin and no padding class
+					. '">'
+					.  force_balance_tags( $strWidgetBuffer )
+					. '</div>';	
+					
+				// If the allowed number of widgets reaches the limit, escape the loop.
+				// For the max-rows, it depends on the screen max-widths, so it will be dealt with the style.
+				if (  $arrParams['maxwidgets'] != 0 &&  ( $intIndex + 1 ) >= $arrParams['maxwidgets'] ) break;
+					
+				$oWidgetBox->advancePositions();	// increments the position values stored in the object properties.
+					
+			}	
 			
-			$oWidgetBox->setColSpans( $intIndex + 1 ); // the widget index is one-base while the array index is zero-base.
+			if ( $arrParams['cache_duration'] > 0 ) 
+				set_transient( $strCacheID, base64_encode( $strBuffer ), $arrParams['cache_duration'] );
 			
-			$strBuffer .= '<div class="' 
-				. $oWidgetBox->GetClassAttribute() 	// returns the class attribute values calculated with the stored positions and parameters.
-				. ( isset( $arrFlagsWidgetBoxWidget[ $intIndex ] ) && $arrFlagsWidgetBoxWidget[ $intIndex ] ? ' widget_box_widget' : '' )	// add no margin and no padding class
-				. '">'
-				.  force_balance_tags( $strWidgetBuffer )
-				. '</div>';	
-				
-			// If the allowed number of widgets reaches the limit, escape the loop.
-			// For the max-rows, it depends on the screen max-widths, so it will be dealt with the style.
-			if (  $arrParams['maxwidgets'] != 0 &&  ( $intIndex + 1 ) >= $arrParams['maxwidgets'] ) break;
-				
-			$oWidgetBox->advancePositions();	// increments the position values stored in the object properties.
-				
-		}	
+			
+		}
 		
 		// the CSS rules
 		$strBuffer .= $this->oStyle->GetStyles( 

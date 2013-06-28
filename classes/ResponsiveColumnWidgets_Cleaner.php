@@ -14,13 +14,15 @@ class ResponsiveColumnWidgets_Cleaner {
 
 	// Just instantiate the class to perform a clean-up.
 	
-	public static function CleanTransients() {
-		
+	public static function CleanTransients( $arrPrefixes=array( 'RCWFeed', 'RCWUserAds_', 'RCW_IMG', 'RCW_Cache' ) ) {
+
 		// Delete transients
 		global $wpdb, $table_prefix;
-		$arrPrefixes = array( 'RCWFeed', 'RCWUserAds_', 'RCW_IMG', 'RCWCache' );
+		
+		// This method also serves for the deactivation callback and in that case, an empty value is passed to the first parameter.
+		$arrPrefixes = empty( $arrPrefixes ) ? array( 'RCWFeed', 'RCWUserAds_', 'RCW_IMG', 'RCW_Cache' ) : $arrPrefixes;	
+		
 		foreach( $arrPrefixes as $strPrefix ) {
-			
 			$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_%{$strPrefix}%' )" );
 			$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_timeout_%{$strPrefix}%' )" );
 		}

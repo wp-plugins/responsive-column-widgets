@@ -134,14 +134,14 @@ class ResponsiveColumnWidgets_UserAds_ {
 	}	
 	public function GetSkyscraper( $numItems=2 ) {
 		
-		return '<div style="float:right; padding: 0px 0 0 20px; width: 160px;">' 
+		return '<div style="float:right; padding: 0 0 0 20px; width: 160px;">' 
 			. $this->FetchItems( $this->arrURLFeed160x600, $numItems )
 			. "</div>";
 		
 	}		
 	public function GetTopBanner( $numItems=1 ) {
 		
-		return '<div style="float:right; margin:0; padding:0; width: 468px;">' 
+		return '<div style="float:right; margin:0 0 10px; padding:0; width: 468px;">' 
 			. $this->FetchItems( $this->arrURLFeed468x60, $numItems )
 			. "</div>";
 		
@@ -181,7 +181,7 @@ class ResponsiveColumnWidgets_UserAds_ {
 
 	function GetFeedObj( $arrUrls, $numItem=1, $numCacheDuration=1700 ) {	// 60 seconds * 60 = 1 hour, 1800 = 30 minutes
 		
-		// Reuse the object of already exists. This conserves the memory usage.
+		// Reuse the object that already exists. This conserves the memory usage.
 		$this->oFeed = isset( $this->oFeed ) ? $this->oFeed : new ResponsiveColumnWidgets_SimplePie();
 		$oFeed = $this->oFeed; // $oFeed = new ResponsiveColumnWidgets_SimplePie();
 		

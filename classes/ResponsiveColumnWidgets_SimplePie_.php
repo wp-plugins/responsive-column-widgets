@@ -16,15 +16,14 @@
  * Global Variables
  * - $arrSimplePieCacheModTimestamps : stores mod timestamps of cached data. This will be stored in a transient when WordPress exits, 
  *   which prevents multiple calls of get_transiet() that performs a database query ( slows down the page load ).
- * - $arrSimplePieCacheExpiredItems : stores expired cache items. This will be saved in the transient at the WordPress shutdown action event.
+ * - $arrSimplePieCacheExpiredItems : stores expired cache items' file IDs ( md5( $url ) ). This will be saved in the transient at the WordPress shutdown action event.
+ *   the separate cache renewal event with WP Cron will read it and renew the expired caches.
  * 
  * */
 
-// make sure that SimplePie has been already loaded
-// very importat. Without this line, the cache setting breaks. 
+// Make sure that SimplePie has been already loaded. This is very important. Without this line, the cache setting breaks. 
 // Do not include class-simplepie.php, which causes the unknown class warning.
-if ( ! class_exists( 'SimplePie' ) ) 
-	include_once( ABSPATH . WPINC . '/class-feed.php' );		
+if ( ! class_exists( 'SimplePie' ) ) include_once( ABSPATH . WPINC . '/class-feed.php' );		
 
 // If the WordPress version is below 3.5, which uses SimplePie below 1.3.
 if ( version_compare( get_bloginfo( 'version' ) , '3.5', "<" ) ) {	
@@ -84,21 +83,21 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 	var $vSetURL;	// stores the feed url(s) set by the user.
 	var $fIsBackgroundProcess = false;		// indicates whether it is from the event action ( background call )
 	var $numCacheLifetimeExpand = 100;
-	protected $strRealModTimestamps = 'RCWFeed_Ms';
+	protected $strPluginKey = 'RCWFeed_Ms';
 	
 	public function __construct() {
 	
 		// Set up the global arrays. Consider the cases that multiple instances of this object are created so the arrays may have been already created.
 		// - This stores real mod timestamps.
-		$GLOBALS['arrSimplePieCacheModTimestamps'] = isset( $GLOBALS['arrSimplePieCacheModTimestamps'] ) && is_array( $GLOBALS['arrSimplePieCacheModTimestamps'] ) 
-			? $GLOBALS['arrSimplePieCacheModTimestamps'] 
-			: ( array ) get_transient( $this->strRealModTimestamps ) ;
+		$GLOBALS['arrSimplePieCacheModTimestamps'] = isset( $GLOBALS['arrSimplePieCacheModTimestamps'] ) && is_array( $GLOBALS['arrSimplePieCacheModTimestamps'] ) ? $GLOBALS['arrSimplePieCacheModTimestamps'] : array();
+		$GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ] = isset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ] ) && is_array( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ] ) 
+			? $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]
+			: ( array ) get_transient( $this->strPluginKey ) ;
 // ResponsiveColumnWidgets_Debug::DumpArray( $GLOBALS['arrSimplePieCacheModTimestamps'], dirname( __FILE__ ) . '/mods.txt'  );
 			
 		// - this stores expired cache items.
-		$GLOBALS['arrSimplePieCacheExpiredItems'] = isset( $GLOBALS['arrSimplePieCacheExpiredItems'] ) && is_array( $GLOBALS['arrSimplePieCacheExpiredItems'] ) 
-			? $GLOBALS['arrSimplePieCacheExpiredItems']
-			: array();
+		$GLOBALS['arrSimplePieCacheExpiredItems'] = isset( $GLOBALS['arrSimplePieCacheExpiredItems'] ) && is_array( $GLOBALS['arrSimplePieCacheExpiredItems'] ) ? $GLOBALS['arrSimplePieCacheExpiredItems'] : array();
+		$GLOBALS['arrSimplePieCacheExpiredItems'][ $this->strPluginKey ] = isset( $GLOBALS['arrSimplePieCacheExpiredItems'][ $this->strPluginKey ] ) && is_array( $GLOBALS['arrSimplePieCacheExpiredItems'][ $this->strPluginKey ] ) ? $GLOBALS['arrSimplePieCacheExpiredItems'][ $this->strPluginKey ] : array();
 		
 		// Schedule the transient update task.
 		add_action( 'shutdown', array( $this, 'updateCacheItems' ) );
@@ -110,15 +109,15 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 	
 		// Saves the global array, $arrSimplePieCacheModTimestamps, into the transient of the option table.
 		// This is used to avoid multiple calls of set_transient() by the cache class.
-		if ( ! ( isset( $GLOBALS['arrSimplePieCacheModTimestamps']['bIsCacheTransientSet'] ) && $GLOBALS['arrSimplePieCacheModTimestamps']['bIsCacheTransientSet'] ) ) {
+		if ( ! ( isset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]['bIsCacheTransientSet'] ) && $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]['bIsCacheTransientSet'] ) ) {
 			unset( $GLOBALS['arrSimplePieCacheModTimestamps']['bIsCacheTransientSet'] ); // remove the unnecessary data.
-			set_transient( $this->strRealModTimestamps, $GLOBALS['arrSimplePieCacheModTimestamps'], $this->cache_duration * $this->numCacheLifetimeExpand );
-			$GLOBALS['arrSimplePieCacheModTimestamps']['bIsCacheTransientSet'] = true;
+			set_transient( $this->strPluginKey, $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ], $this->cache_duration * $this->numCacheLifetimeExpand );
+			$GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]['bIsCacheTransientSet'] = true;
 		}
 		
-		$GLOBALS['arrSimplePieCacheExpiredItems'] = array_unique( $GLOBALS['arrSimplePieCacheExpiredItems'] );
-		if ( count( $GLOBALS['arrSimplePieCacheExpiredItems'] ) > 0 )
-			$this->scheduleCacheRenewal( $GLOBALS['arrSimplePieCacheExpiredItems'] );
+		$GLOBALS['arrSimplePieCacheExpiredItems'][ $this->strPluginKey ] = array_unique( $GLOBALS['arrSimplePieCacheExpiredItems'][ $this->strPluginKey ] );
+		if ( count( $GLOBALS['arrSimplePieCacheExpiredItems'][ $this->strPluginKey ] ) > 0 )
+			$this->scheduleCacheRenewal( $GLOBALS['arrSimplePieCacheExpiredItems'][ $this->strPluginKey ] );
 		
 
 	}
@@ -132,7 +131,17 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 	
 	public function setCacheTransientLifetime( $intLifespan, $strFileID=null ) {	 // since 1.1.5.6
 		
-		// this is a call back for the filter that sets cache duration for the SimplePie cache object.
+		// This is a callback for the filter that sets cache duration for the SimplePie cache object.
+		return isset( $this->cache_duration ) ? $this->cache_duration : 0;
+		
+	}
+	public function setCacheTransientLifetimeByGlobalKey( $intLifespan, $strKey=null ) {	 // since 1.1.6
+		
+		// This is a callback for the filter that sets cache duration for the SimplePie cache object.
+		
+		// If the key is not the one set by this class, it could be some other script's ( plugin's ) filtering item.
+		if ( $strKey != $this->strPluginKey ) return $intLifespan;	
+		
 		return isset( $this->cache_duration ) ? $this->cache_duration : 0;
 		
 	}
@@ -147,6 +156,7 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 		// Hook the cache lifetime filter
 		foreach( ( array ) $vURL as $strURL ) 
 			add_filter( 'SimplePie_filter_cache_transient_lifetime_' . md5( $strURL ), array( $this, 'setCacheTransientLifetime' ) );
+		add_filter( 'SimplePie_filter_cache_transient_lifetime_' . $this->strPluginKey, array( $this, 'setCacheTransientLifetimeByGlobalKey' ) );
 		
 		return parent::set_feed_url( $vURL );
 		
@@ -159,17 +169,15 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 		// force the cache class to the custom plugin cache class
 		$this->set_cache_class( 'ResponsiveColumnWidgets_Cache' );
 		$this->set_file_class( 'WP_SimplePie_File' );
-					
-		// for the life time to be expanded so that the cache barely refreshes by itself.
-		// $this->cache_duration = $this->cache_duration * $this->numCacheLifetimeExpand;
-		
+						
 		if ( isset( $this->vSetURL ) && ! $this->fIsBackgroundProcess ) {
 			
 			foreach ( ( array) $this->vSetURL as $strURL ) {
-
-				$intModTimestamp = isset( $GLOBALS['arrSimplePieCacheModTimestamps'][ md5( $strURL ) ] ) ? $GLOBALS['arrSimplePieCacheModTimestamps'][ md5( $strURL ) ] : 0;
+				
+				$strFileID = md5( $strURL );
+				$intModTimestamp = isset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ][ $strFileID ] ) ? $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ][ $strFileID ] : 0;
 				if ( $intModTimestamp + $this->cache_duration < time() ) 	
-					$GLOBALS['arrSimplePieCacheExpiredItems'][] = $strURL;
+					$GLOBALS['arrSimplePieCacheExpiredItems'][ $this->strPluginKey ][] = $strURL;
 
 			}
 											
@@ -188,9 +196,7 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 		
 	}
 	public function SetBackground( $fIsBackgroundProcess=false ) {
-		
 		$this->fIsBackgroundProcess = $fIsBackgroundProcess;
-		
 	}
 
 	/*
@@ -246,9 +252,9 @@ class ResponsiveColumnWidgets_Cache extends SimplePie_Cache {
 class ResponsiveColumnWidgets_Feed_Cache_Transient {
 	
 	var $strTransientName;
-	var $lifetime = 43200; // Default cache lifetime of 12 hours. This should be overriden by the filter callback function. 
+	var $lifetime = 43200; // Default cache lifetime of 12 hours. This should be overridden by the filter callback function. 
 	var $numExpand = 100;
-	var $strPrefixName = 'RCWFeed_';
+	var $strPluginKey = 'RCWFeed_Ms';
 	
 	protected $strFileID;	// stores the file name given to the constructor.
 	
@@ -261,13 +267,16 @@ class ResponsiveColumnWidgets_Feed_Cache_Transient {
 		 * - $extension ( not used in this class ) : spc
 		 */
 		
-		$this->strTransientName = $this->strPrefixName . $strFileID;
+		// $strFileID should not be empty but I've seen a case that happened with v3.4.x or below.
+		$this->strFileID = empty( $strFileID ) ? $this->strPluginKey . '_a_file' : $strFileID;	
+		
+		$this->strTransientName = $this->strPluginKey . '_' . $this->strFileID;
 		$this->lifetime = apply_filters( 
-			'SimplePie_filter_cache_transient_lifetime_' . $strFileID, 
-			$this->lifetime, 	// it barely expires itself
-			empty( $strFileID ) ? 'a_file' : $strFileID		// it seems WordPress 3.4.x or below does not pass a value to $strFileID.
-		);	
-		$this->strFileID = $strFileID; // md5( $url )
+			'SimplePie_filter_cache_transient_lifetime_' . $this->strFileID, 
+			$this->lifetime, 	// it barely expires by itself
+			$this->strFileID
+		);
+		
 	}
 
 	public function save( $data ) {
@@ -276,7 +285,7 @@ class ResponsiveColumnWidgets_Feed_Cache_Transient {
 			$data = $data->data;
 
 		// $GLOBALS['arrSimplePieCacheModTimestamps'] should be already created by the caller (parent) custom SimplePie class.
-		$GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strFileID ] = time();	
+		$GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ][ $this->strFileID ] = time();	
 
 // ResponsiveColumnWidgets_Debug::DumpArray( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strFileID ] , dirname( __FILE__ ) . '/saved_cache.txt'  );		
 
@@ -293,16 +302,19 @@ class ResponsiveColumnWidgets_Feed_Cache_Transient {
 		
 	}
 	public function mtime() {		
-		return isset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strFileID ] ) 
+	
+		// Here we are going to deceive SimplePie in order to force it to use the remaining cache and renew the cache in the background, not doing it right away.
+		return isset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ][ $this->strFileID ] ) 
 			? time()	// return the current time so that SimplePie believes it's not expired yet.
-			: 0;	// the array key is not set, So pass 0 to tell that the cache needs to be created. 
+			: 0;	// if the array key is not set, So pass 0 to tell that the cache needs to be created. 
+			
 	}
 	public function touch() {
-		$GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strFileID ] = time(); 
+		$GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ][ $this->strFileID ] = time(); 
 		return true;
 	}
 	public function unlink() {
-		unset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strFileID ] );
+		unset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ][ $this->strFileID ] );
 		delete_transient( $this->strTransientName );
 		return true;
 	}

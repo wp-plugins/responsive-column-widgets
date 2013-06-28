@@ -1,7 +1,7 @@
 ﻿=== Responsive Column Widgets ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
-Tags: column, columns, content, css, css3, grid, grid layout, grid system, layout, html5, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
+Tags: cache, column, columns, content, css, css3, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
 Requires at least: 3.2
 Tested up to: 3.5.1
 Stable tag: 1.1.5.6
@@ -26,6 +26,7 @@ Creates a custom responsive column widget box.
 * **Auto Insert** - The widget box can be embedded automatically without the shortcode.
 * **Sidebar Encapsulation** - With the widget that the plugin provides, the whole sidebar contents can be embedded as a widget item into another sidebar.
 * **Column Span** - column spans are configurable so that you can set wider widget areas.
+* **Cache** - the output can be cached and the cache lifetime is configurable.
 * and [more](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/).
  
 == Installation ==
@@ -108,6 +109,8 @@ To set them by screen max-width, like the *columns* parameter, use the colon(:) 
 
 If the column span exceeds the set number of max column, the column span will follow the max column. Note that the widget index of omitted widgets will not be considered(counted) in the widget index of this parameter.
 
+* **cache_duration** - the cache lifespan in seconds which determines how long the cache remains. Default: 0. e.g. `3600`
+
 = Video Tutorials =
 http://en.michaeluno.jp/responsive-column-widgets/tutorials/
 
@@ -143,6 +146,12 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 7. ***Sidebar Encapsulation***
 
 == Changelog ==
+
+= 1.1.6 - 06/29/2013 =
+* Added: the *Clear Caches* option in the *General Options* setting page.
+* Added: the *cache_duration* parameter, which sets the cache for the widget box's output.
+* Fixed: a bug that caused importing widget boxes to fail.
+* Tweaked: the code to reduce one database query performed with the Auto-insert feature when no widget box item enables it.
 
 = 1.1.5.6 - 06/27/2013 =
 * Tweaked: the code to reduce the number of database queries performed in the settings pages.

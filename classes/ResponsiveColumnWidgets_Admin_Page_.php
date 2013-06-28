@@ -28,6 +28,11 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		'default_media_only_screen_max_width',
 		// since 1.1.1.2
 		'remove_id_attributes',
+		// since 1.1.5
+		'colspans',
+		// sicne 1.1.6
+		'cache_duration',
+		'offsets',	// a deprecated key
 	);
 	// since 1.1.1.2
 	protected $intIntervalToShowPleaseRate = 1209600;	// seconds * minutes * hours * days; 1209600 is 2 weeks.
@@ -280,7 +285,19 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 								. ' e.g. <code>1-3, 4-2, 7-4 | 600: 1-2, 3-2, 7-3 | 480: 1-2</code>',
 							'type' => 'text',
 							'value' => $bIsNew ? $this->getColSpanValueForInput( $arrWidgetBoxOptions['colspans'] ) : $this->getColSpanValueForInput( $this->oOption->arrOptions['boxes'][ $strSidebarID ]['colspans'] ),
-						),						
+						),		
+						array(  
+							'id' => 'cache_duration',
+							'title' => __( 'Cache Duration', 'responsive-column-widgets' ),
+							'type' => 'number',
+							'min' => 0,
+							'size' => 10,
+							'pre_field' => '',
+							'post_field' => ' ' . __( 'seconds', 'responsive-column-widgets' ),
+							'description' => __( 'This sets how long the cache for the widget box\'s output remains. Set 0 to disable this feature.', 'responsive-column-widgets' ) . '&nbsp;' . __( 'Default', 'responsive-column-widgets' ) . ': ' . 0 . '<br />'
+								. 'e.g. 3600',
+							'value' => $arrWidgetBoxOptions['cache_duration'],
+						),							
 						array(  // single button
 							'pre_html' => '<div class="text-info">' . ( isset( $this->oUserAds ) ? $this->oUserAds->GetTextAd() : '' ) . '</div>',
 							'id' => 'submit_save_neworedit_middle',
@@ -293,6 +310,26 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						),							
 					),					
 				),
+				// array(	// since 1.1.6
+					// 'pageslug' => $this->strPluginSlug,
+					// 'tabslug' => 'neworedit',
+					// 'id' => 'section_cache', 
+					// 'title' => __( 'Cache', 'responsive-column-widgets' ), 
+					// 'fields' => array(		
+						// array(  
+							// 'id' => 'cache_duration',
+							// 'title' => __( 'Cache Duration', 'responsive-column-widgets' ),
+							// 'type' => 'number',
+							// 'min' => 0,
+							// 'size' => 10,
+							// 'pre_field' => '',
+							// 'post_field' => ' ' . __( 'seconds', 'responsive-column-widgets' ),
+							// 'description' => __( 'This sets how long the cache for the widget box\'s output remains. Set 0 to disable this feature.', 'responsive-column-widgets' ) . '&nbsp;' . __( 'Default', 'responsive-column-widgets' ) . ': ' . 0 . '<br />'
+								// . 'e.g. 3600',
+							// 'value' => $arrWidgetBoxOptions['cache_duration'],
+						// ),								
+					// ),
+				// ),				
 				array(
 					'pageslug' => $this->strPluginSlug,
 					'tabslug' => 'neworedit',
@@ -640,7 +677,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							),
 							'type' => 'radio',
 							'value' => $this->oOption->arrOptions['general']['execute_shortcode_in_widgets'],
-						),						
+						),	
 						array(	// since 1.1.1.2
 							'if' => isset( $this->oOption->arrOptions['general']['time_first_option_update'] ) && ( time() > $this->oOption->arrOptions['general']['time_first_option_update'] + $this->intIntervalToShowPleaseRate ),
 							'id' => 'has_reviewed',
@@ -698,6 +735,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'default' => 0,
 							'label' => __( 'Initialize', 'responsive-column-widgets' ),
 						),
+						array(  // since 1.1.6
+							'id' => 'clear_widget_box_caches',
+							'title' => __( 'Clear Caches', 'responsive-column-widgets' ),
+							'label' => __( 'Delete widget boxes\' caches.', 'responsive-column-widgets' ),	//'
+							'type' => 'checkbox',
+							'value' => 0,	// this should be always unchecked.
+						),								
 						// Submit Button
 						array(  // single button
 							'id' => 'submit_perform',
@@ -1578,6 +1622,12 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			return null;
 			
 		}	
+		
+		/*
+		 * Cache clear checkbox
+		 */		 
+		if ( isset( $arrValidate['clear_widget_box_caches'] ) && $arrValidate['clear_widget_box_caches'] )
+			ResponsiveColumnWidgets_Cleaner::CleanTransients( array( 'RCW_Cache' ) );
 		
 		// Format and sanitize the values
 		if ( ! isset( $arrValidate['general_css_class_attributes'] ) || empty( $arrValidate['general_css_class_attributes'] ) ) 
