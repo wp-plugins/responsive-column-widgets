@@ -289,8 +289,7 @@ class ResponsiveColumnWidgets_Core_ {
 		// Check if the cache duration is set and if the cache is stored.
 		$strCacheID = 'RCW_Cache_' . md5( $strCallID );	// since the passed call ID has the long prefix 'responsive_coluimn_widget', it needs to be shortened.
 		$strBuffer = $arrParams['cache_duration'] > 0 ? $this->oDecode->decodeBase64( get_transient( $strCacheID ) ) : '';
-// ResponsiveColumnWidgets_Debug::DumpArray( $arrParams, dirname( __FILE__ ) . '/parameter_arrays.txt'  );		
-// $strBuffer ='';
+
 		if ( empty( $strBuffer ) ) {
 			
 			// Store the output buffers into an array.

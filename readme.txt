@@ -148,6 +148,8 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 == Changelog ==
 
 = 1.1.6 - 06/29/2013 =
+* Updated: the Japanese translation.
+* Updated: the POT file.
 * Added: the *Clear Caches* option in the *General Options* setting page.
 * Added: the *cache_duration* parameter, which sets the cache for the widget box's output.
 * Fixed: a bug that caused importing widget boxes to fail.
