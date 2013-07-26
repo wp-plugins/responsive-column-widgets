@@ -220,9 +220,14 @@ class ResponsiveColumnWidgets_Core_ {
 		unset( $oID );	// release the object for below PHP 5.3 
 		
 		// Retrieve the widget output buffer.
-		$strOut = '<div id="' . $strIDSelector . '" class="' . $this->arrClassSelectors['box'] . ' ' . $this->strClassSelectorBox2 . ' ' . $arrParams['sidebar'] . '">' 
-			. $this->GetOutputWidgetBuffer( $arrParams['sidebar'], $arrParams, $strCallID, $bIsStyleScoped ) 
-			. '</div>';
+		// $strOut = '<div id="' . $strIDSelector . '" class="' . $this->arrClassSelectors['box'] . ' ' . $this->strClassSelectorBox2 . ' ' . $arrParams['sidebar'] . '">' 
+		$strOut = "<div class='{$arrParams['sidebar']}'>"
+				. $arrParams['before_widget_box']
+				. "<div id='{$strIDSelector}' class='{$this->arrClassSelectors['box']} {$this->strClassSelectorBox2}'>"
+					. $this->GetOutputWidgetBuffer( $arrParams['sidebar'], $arrParams, $strCallID, $bIsStyleScoped ) 
+				. "</div>"
+			. $arrParams['after_widget_box']
+			. "</div>";
 			
 		// Done!
 		$strOut = apply_filters( 'RCW_filter_widgetbox_output', $strOut );

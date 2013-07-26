@@ -30,9 +30,15 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		'remove_id_attributes',
 		// since 1.1.5
 		'colspans',
-		// sicne 1.1.6
+		// since 1.1.6
 		'cache_duration',
 		'offsets',	// a deprecated key
+		// since 1.1.7
+		'before_widget_box',
+		'after_widget_box',
+		'widget_box_container_background_color',
+		'widget_box_container_paddings',
+		'widget_box_max_width',
 	);
 	// since 1.1.1.2
 	protected $intIntervalToShowPleaseRate = 1209600;	// seconds * minutes * hours * days; 1209600 is 2 weeks.
@@ -55,8 +61,44 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 		$this->strGetPro = __( 'Get Pro to enable this feature!', 'responsive-column-widgets' );
 		$this->strGetProNow = __( 'Get Pro Now!', 'responsive-column-widgets' );
+			
+			
+		// Add color picker script. Since 1.1.7
+		add_action( 'admin_init', array( $this, 'addColorPickerScript' ) );
+		add_action( "admin_footer", array( $this, 'addColorPickerSupportImageScript' ) );
+	}
+	public function addColorPickerSupportImageScript() {	// since 1.1.7	
+	
+		if ( isset( $_GET['page'] ) && $_GET['page'] != 'responsive_column_widgets' ) return;
+		
+		// echo "<script type='text/javascript'>
+			// function setColorPickerTextInput( myValue ) {
+				 // jQuery( '#section_custom_style_widget_box_container_background_color' ).val( myValue )
+							 // .trigger( 'change' );
+			// }		
+			// jQuery( '#section_custom_style_widget_box_container_background_color' ).change(function() {
+				// alert( 'Handler for .change() called.' );
+		// });	</script>";		
 		
 	}
+	public function addColorPickerScript(){	// since 1.1.7
+			 
+		// Reference: http://www.sitepoint.com/upgrading-to-the-new-wordpress-color-picker/
+		//If the WordPress version is greater than or equal to 3.5, then load the new WordPress color picker.
+		if ( 3.5 <= $GLOBALS['wp_version'] ){
+			//Both the necessary css and javascript have been registered already by WordPress, so all we have to do is load them with their handle.
+			wp_enqueue_style( 'wp-color-picker' );
+			wp_enqueue_script( 'wp-color-picker' );
+		}
+		//If the WordPress version is less than 3.5 load the older farbtasic color picker.
+		else {
+			//As with wp-color-picker the necessary css and javascript have been registered already by WordPress, so all we have to do is load them with their handle.
+			wp_enqueue_style( 'farbtastic' );
+			wp_enqueue_script( 'farbtastic' );
+		}
+		
+	}	
+	
 	function Localize() {
 		
 		$this->bLoadedTextDomain = load_plugin_textdomain( 
@@ -173,11 +215,29 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'type' => 'text',
 							'size' => 100,
 							'value' => $arrWidgetBoxOptions['description'],
-						),		
+						),	
+						array(
+							'id' => 'before_widget_box',
+							'title' => __( 'Widget Box Beginning Tag', 'responsive-column-widgets' ),
+							'description' => __( 'Set the html opening tag that will be inserted before the widget box output.', 'responsive-column-widgets' ) 
+								. ' e.g. <code>&lt;div class="my-custom-class-selector"&gt;</code>',
+							'type' => 'text',
+							'size' => 100,
+							'value' => $arrWidgetBoxOptions['before_widget_box'],
+						),
+						array(
+							'id' => 'after_widget_box',
+							'title' => __( 'Widget Box Ending Tag', 'responsive-column-widgets' ),
+							'description' => __( 'Set the html closing tag that will be inserted after the widget box output.', 'responsive-column-widgets' )
+								. ' e.g. <code>&lt;/div&gt;</code>',
+							'type' => 'text',
+							'size' => 100,
+							'value' => $arrWidgetBoxOptions['after_widget_box'],
+						),						
 						array(
 							'id' => 'before_widget',
 							'title' => __( 'Widget Beginning Tag', 'responsive-column-widgets' ),
-							'description' => __( 'Set the before_widget html opening tag.', 'responsive-column-widgets' ),
+							'description' => __( 'Set the html opening tag that will be inserted before each widget output.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'size' => 100,
 							'value' => $arrWidgetBoxOptions['before_widget'],
@@ -185,7 +245,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(
 							'id' => 'after_widget',
 							'title' => __( 'Widget Ending Tag', 'responsive-column-widgets' ),
-							'description' => __( 'Set the after_widget html closing tag.', 'responsive-column-widgets' ),
+							'description' => __( 'Set the html closing tag that will be inserted after each widget output.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'size' => 100,
 							'value' => $arrWidgetBoxOptions['after_widget'],
@@ -306,7 +366,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'class' => 'neworedit-button submit-buttons button button-primary',
 							'pre_field' => '<div class="neworedit-button">',
 							'post_field' => '</div>',							
-							'redirect' => admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ),
+							'redirect' => $this->numPluginType == 0 || ( isset( $_GET['mode'] ) && $_GET['mode'] == 'edit' ) ? null : admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ),
 						),							
 					),					
 				),
@@ -499,6 +559,52 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 					'title' => __( 'Custom Style', 'responsive-column-widgets' ), 
 					'fields' => array(
 						array(
+							'id' => 'widget_box_container_background_color',
+							'title' => __( 'Container Background Color', 'responsive-column-widgets' ),
+							'description' => __( 'Set the background color for the widget box container. Leave it empty for no color.', 'responsive-column-widgets' ),
+							'type' => 'text',
+							'size' => 20,
+							'class' => 'color',
+							'value' => $arrWidgetBoxOptions['widget_box_container_background_color'],
+							'post_field' => "<div class='colorpicker'></div>",
+							'pre_html' => "<div id='widget_box_container_bgcolor' style='background-color:{$arrWidgetBoxOptions['widget_box_container_background_color']};'>"
+								."<img id='widget_box_container_background_color_image' src='"
+								. RESPONSIVECOLUMNWIDGETSURL . "/img/settings-container-bgcolor.gif"
+								. "' /></div>",
+						),
+						array(
+							'id' => 'widget_box_container_paddings',
+							'title' => __( 'Container Paddings', 'responsive-column-widgets' ),
+							'description' => __( 'Set the paddings for the widget box container. Leave them empty for no padding.', 'responsive-column-widgets' ),
+							'type' => 'text',
+							'size' => 10,
+							'label' => array(
+								'top' => __( 'Top', 'responsive-column-widgets' ), 
+								'right' => __( 'Right', 'responsive-column-widgets' ), 
+								'bottom' => __( 'Bottom', 'responsive-column-widgets' ), 
+								'left' => __( 'Left', 'responsive-column-widgets' ), 
+							),
+							'post_field' => array(
+								'top' => '&nbsp;&nbsp;px',
+								'right' => '&nbsp;&nbsp;px',
+								'bottom' => '&nbsp;&nbsp;px',
+								'left' => '&nbsp;&nbsp;px',							
+							),
+							'pre_html' => '<div id="widget_box_container_paddings_image"></div>',
+							'value' => $arrWidgetBoxOptions['widget_box_container_paddings'],
+						),						
+						array(
+							'id' => 'widget_box_max_width',
+							'title' => __( 'Widget Box Maximum Width', 'responsive-column-widgets' ),
+							'description' => __( 'Set the maximum width of the widget box. Leave it empty or 0 for no maximum width.', 'responsive-column-widgets' ),
+							'min' => 0,
+							'type' => 'number',
+							'size' => 10,
+							'post_field' => '&nbsp;&nbsp;px',
+							'pre_html' => '<div id="widget_box_max_width_image"></div>',
+							'value' => $arrWidgetBoxOptions['widget_box_max_width'],
+						),						
+						array(
 							'id' => 'custom_style',
 							'title' => __( 'CSS Rule', 'responsive-column-widgets' ),
 							'description' => __( 'Define your custom CSS rules here.', 'responsive-column-widgets' ) . '<br />'
@@ -516,7 +622,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'class' => 'submit-buttons button button-primary',
 							'pre_field' => '<div class="neworedit-button">',
 							'post_field' => '</div>',
-							'redirect' => admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ),
+							'redirect' => $this->numPluginType == 0 || ( isset( $_GET['mode'] ) && $_GET['mode'] == 'edit' ) ? null : admin_url( "admin.php?page={$this->strPluginSlug}&tab=manage&updated=true" ),
 						),							
 					),
 				),		
@@ -1068,7 +1174,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		if ( isset( $_GET['tab'] ) ) {
 			switch ( $_GET['tab'] ) {
 				case 'neworedit':
-					$numItems = defined( 'WPLANG' ) && WPLANG == 'ja' ? 12 : 16;
+					$numItems = defined( 'WPLANG' ) && WPLANG == 'ja' ? 14 : 18;
 					break;
 				case 'manage':
 				case 'information':
@@ -1769,6 +1875,27 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	function GetWidgetBoexTableRows() {}
 	 
 	/*
+	 * Modify Script
+	 * */
+	public function script_responsive_column_widgets_neworedit( $strScript ) {
+		//Setup the color pickers to work with our text input field
+		return $strScript . " jQuery(document).ready(function(){
+		  'use strict';
+		  
+		  //This if statement checks if the color picker widget exists within jQuery UI
+		  //If it does exist then we initialize the WordPress color picker on our text input field
+		  if( typeof jQuery.wp === 'object' && typeof jQuery.wp.wpColorPicker === 'function' ){
+			jQuery( '.color' ).wpColorPicker();
+		  }
+		  else {
+			//We use farbtastic if the WordPress color picker widget doesn't exist
+			jQuery( '.colorpicker' ).farbtastic( '.color' );
+		  }
+		});		
+		";
+	}
+	
+	/*
 	 * Modify Style
 	 * */
 	function style_ResponsiveColumnWidgets_Admin_Page( $strStyle ) {
@@ -1832,7 +1959,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		"; 
 	}
 	function style_responsive_column_widgets_neworedit( $strStyle ) {
-		return $strStyle . '
+		$strWidgetBoxMaxWidthImageURL = RESPONSIVECOLUMNWIDGETSURL . '/img/settings-widget-box-max-width.jpg';
+		$strWidgetBoxContainerPaddingsImageURL = RESPONSIVECOLUMNWIDGETSURL . '/img/settings-container-box-paddings.jpg';
+		return $strStyle . "
 			.neworedit-button {
 				margin-top: 12px;
 				margin-bottom: 12px;
@@ -1859,7 +1988,23 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			th.number-of-columns {
 				width: 70%;		
 			}
-		';
+			#widget_box_container_bgcolor {
+				float: right;
+				border: 1px solid #D6D6D6;
+			}
+			#widget_box_container_paddings_image {
+				float: right;
+				width: 258px;
+				height: 134px;
+				background-image: url( '{$strWidgetBoxContainerPaddingsImageURL}' )				
+			}
+			#widget_box_max_width_image {
+				float: right;
+				width: 258px;
+				height: 134px;
+				background-image: url( '{$strWidgetBoxMaxWidthImageURL}' )
+			}
+		";
 	}
 	function style_responsive_column_widgets_manage( $strStyle ) {
 		$strInputFileFontColor = defined( 'RESPONSIVECOLUMNWIDGETSPROFILE' ) ? '#555' : '#DDD';

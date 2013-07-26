@@ -198,16 +198,41 @@ class ResponsiveColumnWidgets_Styles_ {
 		
 		// Store the widget box's sidebar ID into the global flag array.
 		$arrResponsiveColumnWidgets_Flags['arrUserCustomStyles'][] = $strSidebarID;
+				
+		// For the max-width, paddings, and the background color.
+		$strBGColor = $this->oOption->arrOptions['boxes'][ $strSidebarID ][ 'widget_box_container_background_color' ];
+		if ( $strBGColor )
+			$strCustomCSSRules .= " .{$strSidebarID} { background-color: {$strBGColor} }" . PHP_EOL;
+		$strMaxWidth = $this->oOption->arrOptions['boxes'][ $strSidebarID ][ 'widget_box_max_width' ];
+		if ( $strMaxWidth )
+			$strCustomCSSRules .= " .{$strSidebarID} .{$this->strClassSelectorBox} { max-width: {$strMaxWidth}px }" . PHP_EOL;
+		$arrContainerPaddings = $this->oOption->arrOptions['boxes'][ $strSidebarID ][ 'widget_box_container_paddings' ];
+		if ( array_filter( $arrContainerPaddings ) ) {
+			$strPadding = $this->getPaddingPropertyFromArray( $arrContainerPaddings );
+			$strCustomCSSRules .= " .{$strSidebarID} { padding: {$strPadding} }" . PHP_EOL;
+		}
 		
+// ResponsiveColumnWidgets_Debug::DumpArray( array( $strCustomCSSRules ), dirname( __FILE__ ) . '/custom_style.txt' );		
+
 		$strCustomCSSRules = trim( $strCustomCSSRules );
 		if ( empty( $strCustomCSSRules ) ) return '';
-		
+
 		// Okay, return the custom CSS rules.
 		$strIDAttribute = 'style_custom_' . $strIDSelector;
 		$strScoped = $bIsScoped ? ' scoped' : '';
 		return '<style type="text/css" id="' . $strIDAttribute . '"' . $strScoped . '>'
 			. ( $this->oOption->arrOptions['general']['general_css_minify'] ? $this->minifyCSS( $strCustomCSSRules ) : $strCustomCSSRules )
 			. '</style>' . PHP_EOL;		
+		
+	}
+	protected function getPaddingPropertyFromArray( $arrPaddings ) {	// since 1.1.7
+	
+		$strPadding = '';
+		$arrPositions = array( 'top' => '', 'right' => '', 'bottom' => '', 'left' => '' );
+		$arrPaddings = $arrPaddings + $arrPositions;
+		foreach( $arrPositions as $strPosition => $v ) 
+			$strPadding .= $arrPaddings[ $strPosition ] ? $arrPaddings[ $strPosition ] . "px " : 0;
+		return trim( $strPadding );
 		
 	}
 	
@@ -221,6 +246,9 @@ class ResponsiveColumnWidgets_Styles_ {
 		// This general option stores parameters in each element.
 		$strStyles = $this->GetStyleDefaultShortCode();	// the default style for an empty parameter.
 		foreach( $this->oOption->arrOptions['general']['general_css_load_in_head'] as $strParams ) {	
+		
+			if ( trim( $strParams ) == '' ) continue;
+// ResponsiveColumnWidgets_Debug::DumpArray( shortcode_parse_atts( $strParams ), dirname( __FILE__ ) . '/GetUserDefinedEnqueuedStyles.txt' );		
 			
 			$oStyleLoader = new ResponsiveColumnWidgets_StyleLoader( 
 				shortcode_parse_atts( $strParams ), 
@@ -235,6 +263,8 @@ class ResponsiveColumnWidgets_Styles_ {
 		global $arrResponsiveColumnWidgets_Flags;	
 		foreach( $arrResponsiveColumnWidgets_Flags['arrEnqueueStyleParams'] as $arrParams ) {
 			
+			if ( empty( $arrParams ) ) continue;
+// ResponsiveColumnWidgets_Debug::DumpArray( $strParams, dirname( __FILE__ ) . '/GetUserDefinedEnqueuedStyles.txt' );					
 			$oStyleLoader = new ResponsiveColumnWidgets_StyleLoader( 
 				$arrParams, 
 				array() 		// pass empty arrays to disable hooks.
@@ -313,6 +343,8 @@ class ResponsiveColumnWidgets_Styles_ {
 			.{$this->strClassSelectorBox} {
 				float: none;
 				width: 100%;		
+				margin-left: auto;
+				margin-right: auto;
 				zoom:1; /* For IE 6/7 (trigger hasLayout) */
 			}
 

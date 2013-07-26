@@ -147,6 +147,12 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.1.7 =
+* Added: the *Container Background Color*, *Container Paddings*, and *Widget Box Maximum Width* options.
+* Changed: not to go to the Manage tab page when editing a widget box setting.
+* Changed: the sidebar class selector to have own *div* element enclosing the widget box output. Accordingly the users who were using the CSS rule with the class selector such as <code>.responsive_column_widgets_box.responsive_column_widgets { ... }</code> shuold change it to <code>.responsive_column_widgets .responsive_column_widgets_box</code>.
+* Added: the Widget Box Beginning Tag and Widget Box Ending Tag options.
+
 = 1.1.6 - 06/29/2013 =
 * Updated: the Japanese translation.
 * Updated: the POT file.

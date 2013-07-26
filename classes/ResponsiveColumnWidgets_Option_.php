@@ -23,6 +23,8 @@ class ResponsiveColumnWidgets_Option_ {
 	);
 	public $arrDefaultSidebarArgs = array(	// must be public; accessed in the core object for register_sidebar()
 		'description' 						=> '',
+		'before_widget_box'					=> '',	// since 1.1.7
+		'after_widget_box'					=> '',	// since 1.1.7
 		'before_widget'						=> '<aside class="%2$s"><div class="widget">',
 		'after_widget'						=> '</div></aside>',
 		'before_title'						=> '<h3 class="widget-title">',
@@ -59,6 +61,15 @@ class ResponsiveColumnWidgets_Option_ {
 		'autoinsert_disable_post_ids'	=> array(),	
 		// since 1.1.1.2
 		'remove_id_attributes' => false,	
+		// since 1.1.7
+		'widget_box_container_background_color' => '',
+		'widget_box_container_paddings' => array(
+			'top' => '',
+			'right' => '',
+			'bottom' => '',
+			'left' => '',
+		),
+		'widget_box_max_width' => '',
 	);	
 	public $arrCapabilities = array(	// used in the drop-down list of the General Options page.
 		0 => 'manage_options',
@@ -112,10 +123,16 @@ class ResponsiveColumnWidgets_Option_ {
 		$this->arrOptions = $this->UniteArraysRecursive( $this->arrOptions, $this->arrDefaultOptionStructure );	// $this->arrOptions = $this->array_replace_recursive( $this->arrDefaultOptionStructure, $this->arrOptions );
 			
 		$this->arrDefaultParams = $this->arrDefaultSidebarArgs + $this->arrDefaultParams;
-		$this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] = $this->UniteArraysRecursive( 
-			isset( $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] ) ? $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] : array(), 
-			$this->arrDefaultParams 
-		);
+		foreach( $this->arrOptions['boxes'] as $strSidebarID => &$arrOptions ) {
+			$arrOptions = $this->UniteArraysRecursive( 
+				$arrOptions, 
+				$this->arrDefaultParams
+			);
+		}
+		// $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] = $this->UniteArraysRecursive( 
+			// isset( $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] ) ? $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] : array(), 
+			// $this->arrDefaultParams 
+		// );
 	
 		// store plugin data
 		$this->oInfo = new ResponsiveColumnWidgets_PluginInfo( $strFilePath );		

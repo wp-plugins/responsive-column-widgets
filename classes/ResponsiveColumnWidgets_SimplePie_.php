@@ -110,7 +110,7 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 		// Saves the global array, $arrSimplePieCacheModTimestamps, into the transient of the option table.
 		// This is used to avoid multiple calls of set_transient() by the cache class.
 		if ( ! ( isset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]['bIsCacheTransientSet'] ) && $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]['bIsCacheTransientSet'] ) ) {
-			unset( $GLOBALS['arrSimplePieCacheModTimestamps']['bIsCacheTransientSet'] ); // remove the unnecessary data.
+			unset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]['bIsCacheTransientSet'] ); // remove the unnecessary data.
 			set_transient( $this->strPluginKey, $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ], $this->cache_duration * $this->numCacheLifetimeExpand );
 			$GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]['bIsCacheTransientSet'] = true;
 		}
