@@ -65,22 +65,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			
 		// Add color picker script. Since 1.1.7
 		add_action( 'admin_init', array( $this, 'addColorPickerScript' ) );
-		add_action( "admin_footer", array( $this, 'addColorPickerSupportImageScript' ) );
-	}
-	public function addColorPickerSupportImageScript() {	// since 1.1.7	
-	
-		if ( isset( $_GET['page'] ) && $_GET['page'] != 'responsive_column_widgets' ) return;
-		
-		// echo "<script type='text/javascript'>
-			// function setColorPickerTextInput( myValue ) {
-				 // jQuery( '#section_custom_style_widget_box_container_background_color' ).val( myValue )
-							 // .trigger( 'change' );
-			// }		
-			// jQuery( '#section_custom_style_widget_box_container_background_color' ).change(function() {
-				// alert( 'Handler for .change() called.' );
-		// });	</script>";		
 		
 	}
+
 	public function addColorPickerScript(){	// since 1.1.7
 			 
 		// Reference: http://www.sitepoint.com/upgrading-to-the-new-wordpress-color-picker/
@@ -565,11 +552,11 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 								. ' ' . __( 'Default', 'responsive-column-widgets' ) . ': <code>transparent</code>.',
 							'type' => 'text',
 							'size' => 20,
-							'class' => 'color',
-							'value' => empty( $arrWidgetBoxOptions['widget_box_container_background_color'] ) ? 'transparent' : $arrWidgetBoxOptions['widget_box_container_background_color'],
+							'class' => 'input_color color_change',
+							'value' => $strBGColor = empty( $arrWidgetBoxOptions['widget_box_container_background_color'] ) ? 'transparent' : $arrWidgetBoxOptions['widget_box_container_background_color'],
 							'post_field' => "<div class='colorpicker' rel='section_custom_style_widget_box_container_background_color'></div>",
-							'pre_html' => "<div id='widget_box_container_bgcolor' style='background-color:{$arrWidgetBoxOptions['widget_box_container_background_color']};'>"
-								."<img id='widget_box_container_background_color_image' src='"
+							'pre_html' => "<div id='widget_box_container_bgcolor' >"
+								."<img id='widget_box_container_background_color_image' class='color_change' style='background-color:{$strBGColor};' color='{$strBGColor}' src='"
 								. RESPONSIVECOLUMNWIDGETSURL . "/img/settings-container-bgcolor.gif"
 								. "' /></div>",
 						),
@@ -1886,11 +1873,11 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		  //This if statement checks if the color picker widget exists within jQuery UI
 		  //If it does exist then we initialize the WordPress color picker on our text input field
 		  if( typeof jQuery.wp === 'object' && typeof jQuery.wp.wpColorPicker === 'function' ){
-			jQuery( '.color' ).wpColorPicker();
+			jQuery( '.input_color' ).wpColorPicker();
 		  }
 		  else {
 			//We use farbtastic if the WordPress color picker widget doesn't exist
-			jQuery( '.colorpicker' ).farbtastic( '.color' );
+			jQuery( '.colorpicker' ).farbtastic( '.color_change' );
 		  }
 		});		
 		";
@@ -1991,6 +1978,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			}
 			#widget_box_container_bgcolor {
 				float: right;
+			}
+			#widget_box_container_bgcolor img {
 				border: 1px solid #D6D6D6;
 			}
 			#widget_box_container_paddings_image {
