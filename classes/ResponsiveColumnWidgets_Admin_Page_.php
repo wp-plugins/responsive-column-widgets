@@ -561,12 +561,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(
 							'id' => 'widget_box_container_background_color',
 							'title' => __( 'Container Background Color', 'responsive-column-widgets' ),
-							'description' => __( 'Set the background color for the widget box container. Leave it empty for no color.', 'responsive-column-widgets' ),
+							'description' => __( 'Set the background color for the widget box container. Set <code>transparent</code> for no color.', 'responsive-column-widgets' )
+								. ' ' . __( 'Default', 'responsive-column-widgets' ) . ': <code>transparent</code>.',
 							'type' => 'text',
 							'size' => 20,
 							'class' => 'color',
-							'value' => $arrWidgetBoxOptions['widget_box_container_background_color'],
-							'post_field' => "<div class='colorpicker'></div>",
+							'value' => empty( $arrWidgetBoxOptions['widget_box_container_background_color'] ) ? 'transparent' : $arrWidgetBoxOptions['widget_box_container_background_color'],
+							'post_field' => "<div class='colorpicker' rel='section_custom_style_widget_box_container_background_color'></div>",
 							'pre_html' => "<div id='widget_box_container_bgcolor' style='background-color:{$arrWidgetBoxOptions['widget_box_container_background_color']};'>"
 								."<img id='widget_box_container_background_color_image' src='"
 								. RESPONSIVECOLUMNWIDGETSURL . "/img/settings-container-bgcolor.gif"
