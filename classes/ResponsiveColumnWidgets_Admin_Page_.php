@@ -1873,8 +1873,36 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		  //This if statement checks if the color picker widget exists within jQuery UI
 		  //If it does exist then we initialize the WordPress color picker on our text input field
 		  if( typeof jQuery.wp === 'object' && typeof jQuery.wp.wpColorPicker === 'function' ){
-			jQuery( '.input_color' ).wpColorPicker();
+			
+			var myOptions = {
+				// you can declare a default color here,
+				// or in the data-default-color attribute on the input
+				defaultColor: false,
+				// a callback to fire whenever the color changes to a valid color
+				change: function(event, ui){
+					// reference : http://automattic.github.io/Iris/
+					// update the image element as well
+					// event = standard jQuery event, produced by whichever control was changed.
+					// ui = standard jQuery UI object, with a color member containing a Color.js object
+
+					// change the headline color
+					jQuery( '#widget_box_container_background_color_image' ).css( 'background-color', ui.color.toString());	
+					
+				},
+				// a callback to fire when the input is emptied or an invalid color
+				clear: function() {
+					jQuery( '#widget_box_container_background_color_image' ).css( 'background-color', 'transparent' );	
+					
+				},
+				// hide the color picker controls on load
+				hide: true,
+				// show a group of common colors beneath the square
+				// or, supply an array of colors to customize further
+				palettes: true
+			};			
+			jQuery( '.input_color' ).wpColorPicker( myOptions );
 		  }
+		  
 		  else {
 			//We use farbtastic if the WordPress color picker widget doesn't exist
 			jQuery( '.colorpicker' ).farbtastic( '.color_change' );
