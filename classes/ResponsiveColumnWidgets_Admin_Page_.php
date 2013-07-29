@@ -1541,12 +1541,14 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		if ( isset( $arrSection['widget_box_container_background_color'] ) && trim( strtolower( $arrSection['widget_box_container_background_color'] ) ) == 'transparent' )
 			$arrSection['widget_box_container_background_color'] = '';
 		
-		if ( isset( $arrSection['widget_box_container_paddings'] ) )
-			$arrSection['widget_box_container_paddings'] = $this->FixNumbers( $arrSection['widget_box_container_paddings'], '' );
+		if ( isset( $arrSection['widget_box_container_paddings'] ) && array_filter( $arrSection['widget_box_container_paddings'] ) )
+			$arrSection['widget_box_container_paddings'] = $this->oUtil->FixNumbers( $arrSection['widget_box_container_paddings'], '' );
 			
-		if ( isset( $arrSection['widget_box_max_width'] ) )
-			$arrSection['widget_box_max_width'] = $this->FixNumber( $arrSection['widget_box_max_width'], '' );
+		if ( isset( $arrSection['widget_box_max_width'] ) && $arrSection['widget_box_max_width'] ) 
+			$arrSection['widget_box_max_width'] = $this->oUtil->FixNumber( $arrSection['widget_box_max_width'], '' );
+			
 // $this->DumpArray( $arrSection, dirname( __FILE__ )	. '/input.txt' );		
+
 		return $arrSection;
 	}
 	protected function PleaseReview() {	// since 1.1.1.2

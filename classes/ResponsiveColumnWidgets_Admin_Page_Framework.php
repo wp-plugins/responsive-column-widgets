@@ -1850,9 +1850,9 @@ class ResponsiveColumnWidgets_Admin_Page_Framework_Utilities {	// since 1.0.4
 		if ( !is_numeric( trim( $numToFix ) ) ) return $numDefault;
 			
 		if ( $numMin !== "" && $numToFix < $numMin) return $numMin;
-			
-		if ( $numMax !== "" && $numToFix > $numMax ) return $numMax;
 
+		if ( $numMax !== "" && $numToFix > $numMax ) return $numMax;
+		
 		return $numToFix;
 		
 	}	
