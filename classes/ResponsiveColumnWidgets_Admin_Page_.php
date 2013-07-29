@@ -1477,7 +1477,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		if ( isset( $arrInput['responsive_column_widgets']['section_custom_style'] ) )
 			$arrInput['responsive_column_widgets']['section_custom_style'] = $this->sanitizeSectionCustomStyle( $arrInput['responsive_column_widgets']['section_custom_style'] );
 	
-$this->DumpArray( $arrInput, dirname( __FILE__ )	. '/input.txt' );
+// $this->DumpArray( $arrInput, dirname( __FILE__ )	. '/input.txt' );
 		
 		// Set the variables.
 		$bIsValid = True;
@@ -1546,7 +1546,7 @@ $this->DumpArray( $arrInput, dirname( __FILE__ )	. '/input.txt' );
 			
 		if ( isset( $arrSection['widget_box_max_width'] ) )
 			$arrSection['widget_box_max_width'] = $this->FixNumber( $arrSection['widget_box_max_width'], '' );
-$this->DumpArray( $arrSection, dirname( __FILE__ )	. '/input.txt' );		
+// $this->DumpArray( $arrSection, dirname( __FILE__ )	. '/input.txt' );		
 		return $arrSection;
 	}
 	protected function PleaseReview() {	// since 1.1.1.2
