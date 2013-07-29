@@ -1162,7 +1162,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		if ( isset( $_GET['tab'] ) ) {
 			switch ( $_GET['tab'] ) {
 				case 'neworedit':
-					$numItems = defined( 'WPLANG' ) && WPLANG == 'ja' ? 14 : 18;
+					$numItems = defined( 'WPLANG' ) && WPLANG == 'ja' ? 15 : 20;
 					break;
 				case 'manage':
 				case 'information':
