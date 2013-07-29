@@ -62,7 +62,7 @@ class ResponsiveColumnWidgets_Option_ {
 		// since 1.1.1.2
 		'remove_id_attributes' => false,	
 		// since 1.1.7
-		'widget_box_container_background_color' => 'transparent',
+		'widget_box_container_background_color' => '',	// blank means 'transparent'
 		'widget_box_container_paddings' => array(
 			'top' => '',
 			'right' => '',

@@ -548,12 +548,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(
 							'id' => 'widget_box_container_background_color',
 							'title' => __( 'Container Background Color', 'responsive-column-widgets' ),
+							'value' => $strBGColor = empty( $arrWidgetBoxOptions['widget_box_container_background_color'] ) ? 'transparent' : $arrWidgetBoxOptions['widget_box_container_background_color'],
 							'description' => __( 'Set the background color for the widget box container. Set <code>transparent</code> for no color.', 'responsive-column-widgets' )
-								. ' ' . __( 'Default', 'responsive-column-widgets' ) . ': <code>transparent</code>.',
+								. ' ' . __( 'Default', 'responsive-column-widgets' ) . ': <code>transparent</code>.' . '<br />'
+								. ( ! empty( $strSidebarID ) ? __( 'This sets the CSS rule with the following class selector and the property:', 'responsive-column-widgets' ) . " <code>.{$strSidebarID} { background-color: [" . __( 'the set value comes here', 'responsive-column-widgets' ) . "] }</code>"  : '' ),
 							'type' => 'text',
 							'size' => 20,
 							'class' => 'input_color color_change',
-							'value' => $strBGColor = empty( $arrWidgetBoxOptions['widget_box_container_background_color'] ) ? 'transparent' : $arrWidgetBoxOptions['widget_box_container_background_color'],
 							'post_field' => "<div class='colorpicker' rel='section_custom_style_widget_box_container_background_color'></div>",
 							'pre_html' => "<div id='widget_box_container_bgcolor' >"
 								."<img id='widget_box_container_background_color_image' class='color_change' style='background-color:{$strBGColor};' color='{$strBGColor}' src='"
@@ -563,7 +564,6 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(
 							'id' => 'widget_box_container_paddings',
 							'title' => __( 'Container Paddings', 'responsive-column-widgets' ),
-							'description' => __( 'Set the paddings for the widget box container. Leave them empty for no padding.', 'responsive-column-widgets' ),
 							'type' => 'text',
 							'size' => 10,
 							'label' => array(
@@ -580,17 +580,23 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							),
 							'pre_html' => '<div id="widget_box_container_paddings_image"></div>',
 							'value' => $arrWidgetBoxOptions['widget_box_container_paddings'],
+							'description' => __( 'Set the paddings for the widget box container. Leave them empty for no padding.', 'responsive-column-widgets' ) . '<br />'
+								. ( ! empty( $strSidebarID ) ? __( 'This sets the CSS rule with the following class selector and the property:', 'responsive-column-widgets' ) . " <code>.{$strSidebarID} { padding: [" . __( 'the set values come here', 'responsive-column-widgets' ) . "] }</code>"  : '' ),
 						),						
 						array(
 							'id' => 'widget_box_max_width',
 							'title' => __( 'Widget Box Maximum Width', 'responsive-column-widgets' ),
-							'description' => __( 'Set the maximum width of the widget box. Leave it empty or 0 for no maximum width.', 'responsive-column-widgets' ),
-							'min' => 0,
+							// 'min' => 0,	// it's okay to be minus 
 							'type' => 'number',
 							'size' => 10,
 							'post_field' => '&nbsp;&nbsp;px',
 							'pre_html' => '<div id="widget_box_max_width_image"></div>',
 							'value' => $arrWidgetBoxOptions['widget_box_max_width'],
+							'description' => __( 'Set the maximum width of the widget box. Leave it empty or 0 for no maximum width.', 'responsive-column-widgets' ) . '<br />'
+								. ( ! empty( $strSidebarID ) 
+									? __( 'This sets the CSS rule with the following class selectors and the property:', 'responsive-column-widgets' ) . " <code>.{$strSidebarID} .{$this->oOption->arrOptions['general']['general_css_class_attributes']} { max-width: [" . __( 'the set value comes here', 'responsive-column-widgets' ) . "]px }</code> " . __( 'So if you need to use the unit other than px, leave this empty and use the CSS Rule box below.', 'responsive-column-widgets' )
+									: '' 
+								),
 						),						
 						array(
 							'id' => 'custom_style',
@@ -1458,20 +1464,27 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	/*
 	 * Validate Post Data
 	 * */
-	function validation_responsive_column_widgets_neworedit( $arrInput ) {
+	public function validation_responsive_column_widgets_neworedit( $arrInput ) {
 
-		// Sanitize HTML Post Data
+		// Sanitize the values
+		// - section_sidebar (HTML Post Data)
 		$arr = array();
 		foreach( $arrInput[ $this->strPluginSlug ]['section_sidebar'] as $strField => $strHTML ) 
-			$arr[$strField] = $this->FilterPostHTMLCode( $arrInput[ $this->strPluginSlug ]['section_sidebar'][ $strField ] );
+			$arr[ $strField ] = $this->FilterPostHTMLCode( $arrInput[ $this->strPluginSlug ]['section_sidebar'][ $strField ] );
 		$arrInput[ $this->strPluginSlug ]['section_sidebar'] = $arr;
 
+		// - section_custom_style
+		if ( isset( $arrInput['responsive_column_widgets']['section_custom_style'] ) )
+			$arrInput['responsive_column_widgets']['section_custom_style'] = $this->sanitizeSectionCustomStyle( $arrInput['responsive_column_widgets']['section_custom_style'] );
+	
+$this->DumpArray( $arrInput, dirname( __FILE__ )	. '/input.txt' );
+		
 		// Set the variables.
 		$bIsValid = True;
 		$arrErrors = array();
 		$strErrors = '';
 		
-		// Check if the label is not empty - if the "field_label" key is not set, it means it's disabled, which occures to the default widget box.
+		// Check if the label is not empty - if the "field_label" key is not set, it means it's disabled and this occurs to the default widget box.
 		if ( isset( $arrInput[ $this->strPluginSlug ]['section_sidebar']['label'] ) ) {
 			
 			$arrInput[ $this->strPluginSlug ]['section_sidebar']['label'] = trim( $arrInput['responsive_column_widgets']['section_sidebar']['label'] );
@@ -1523,6 +1536,19 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		return $arrInput;
 			
 	} 
+	protected function sanitizeSectionCustomStyle( $arrSection ) {	// since 1.1.7
+
+		if ( isset( $arrSection['widget_box_container_background_color'] ) && trim( strtolower( $arrSection['widget_box_container_background_color'] ) ) == 'transparent' )
+			$arrSection['widget_box_container_background_color'] = '';
+		
+		if ( isset( $arrSection['widget_box_container_paddings'] ) )
+			$arrSection['widget_box_container_paddings'] = $this->FixNumbers( $arrSection['widget_box_container_paddings'], '' );
+			
+		if ( isset( $arrSection['widget_box_max_width'] ) )
+			$arrSection['widget_box_max_width'] = $this->FixNumber( $arrSection['widget_box_max_width'], '' );
+$this->DumpArray( $arrSection, dirname( __FILE__ )	. '/input.txt' );		
+		return $arrSection;
+	}
 	protected function PleaseReview() {	// since 1.1.1.2
 		
 		// Stores the current time. The option array will be updated by the following UpdateBoxOptions() method.
@@ -2006,6 +2032,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			}
 			#widget_box_container_bgcolor {
 				float: right;
+				margin-left: 20px;
 			}
 			#widget_box_container_bgcolor img {
 				border: 1px solid #D6D6D6;
@@ -2014,13 +2041,15 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				float: right;
 				width: 258px;
 				height: 134px;
-				background-image: url( '{$strWidgetBoxContainerPaddingsImageURL}' )				
+				background-image: url( '{$strWidgetBoxContainerPaddingsImageURL}' );
+				margin-left: 20px;
 			}
 			#widget_box_max_width_image {
 				float: right;
 				width: 258px;
 				height: 134px;
-				background-image: url( '{$strWidgetBoxMaxWidthImageURL}' )
+				background-image: url( '{$strWidgetBoxMaxWidthImageURL}' );
+				margin-left: 20px;
 			}
 		";
 	}
