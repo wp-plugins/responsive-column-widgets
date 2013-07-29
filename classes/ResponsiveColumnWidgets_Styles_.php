@@ -231,7 +231,7 @@ class ResponsiveColumnWidgets_Styles_ {
 		$arrPositions = array( 'top' => '', 'right' => '', 'bottom' => '', 'left' => '' );
 		$arrPaddings = $arrPaddings + $arrPositions;
 		foreach( $arrPositions as $strPosition => $v ) 
-			$strPadding .= $arrPaddings[ $strPosition ] ? $arrPaddings[ $strPosition ] . "px " : 0;
+			$strPadding .= $arrPaddings[ $strPosition ] ? $arrPaddings[ $strPosition ] . "px " : "0 ";
 		return trim( $strPadding );
 		
 	}
