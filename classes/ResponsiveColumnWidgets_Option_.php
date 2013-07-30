@@ -114,21 +114,29 @@ class ResponsiveColumnWidgets_Option_ {
 	
 		$this->strOptionKey = $strOptionKey;
 		$this->arrOptions = ( array ) get_option( $strOptionKey );
+		unset( $this->arrOptions[0] );	// casting array cause the 0 key which we don't need.
 		
 		// Merge with the default values.
 		$this->arrDefaultSidebarArgs['description'] = __( 'The default widget box of Responsive Column Widgets.', 'responsive-column-widgets' );	// cannot be declared as the default property because it needs to use a custom function.
 				
 		// wp_parse_args(), array() + array(), array_merge() - do not work with multi-dimensional arrays
 		// array_replace_recursive() - does not support PHP below 5.3.0
+		
+		// Set up the default option array.
+		$this->arrDefaultParams = $this->arrDefaultSidebarArgs + $this->arrDefaultParams;
+		$this->arrDefaultOptionStructure['boxes'][ $this->arrDefaultParams['sidebar'] ] = $this->arrDefaultParams;
+		
+		// Merge the default option array with the existing option array.
 		$this->arrOptions = $this->UniteArraysRecursive( $this->arrOptions, $this->arrDefaultOptionStructure );	// $this->arrOptions = $this->array_replace_recursive( $this->arrDefaultOptionStructure, $this->arrOptions );
 			
-		$this->arrDefaultParams = $this->arrDefaultSidebarArgs + $this->arrDefaultParams;
+		// Merge the each box element with the default paramter array.
 		foreach( $this->arrOptions['boxes'] as $strSidebarID => &$arrOptions ) {
 			$arrOptions = $this->UniteArraysRecursive( 
 				$arrOptions, 
 				$this->arrDefaultParams
 			);
 		}
+		
 		// $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] = $this->UniteArraysRecursive( 
 			// isset( $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] ) ? $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] : array(), 
 			// $this->arrDefaultParams 

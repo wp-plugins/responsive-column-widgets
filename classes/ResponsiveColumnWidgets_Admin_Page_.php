@@ -1214,6 +1214,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		) ) return;
 		
 		$this->PrintDebugInfo();
+		echo ResponsiveColumnWidgets_Debug::DumpArray( $this->oOption->arrOptions );
 		
 	}	
 	public function do_after_responsive_column_widgets_general() {
@@ -1237,7 +1238,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 	}	
 	public function PrintDebugInfo() {	// also used by hooks
-		
+
 		if ( ! (
 			isset( $this->oOption->arrOptions['general']['debug_mode'] ) && $this->oOption->arrOptions['general']['debug_mode'] 
 			&& defined( 'WP_DEBUG' ) && WP_DEBUG == true 

@@ -95,12 +95,13 @@ class ResponsiveColumnWidgets_Core_ {
 	function RegisterSidebar() {
 		
 		global $wp_registered_sidebars;
-	
-		if ( array_key_exists( 'Responsive_Column_Widgets', $wp_registered_sidebars ) ) return;
 
 		if ( ! function_exists( 'register_sidebar' ) ) return;
 		
-		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => $arrBoxOptions ) 			
+		foreach ( $this->oOption->arrOptions['boxes'] as $strSidebarID => $arrBoxOptions ) 	{
+			
+			if ( array_key_exists( 'Responsive_Column_Widgets', $GLOBALS['wp_registered_sidebars'] ) ) continue;
+			
 			register_sidebar( 
 				array(
 					'name' => $arrBoxOptions['label'],
@@ -111,8 +112,9 @@ class ResponsiveColumnWidgets_Core_ {
 					'before_title' => $arrBoxOptions['before_title'],
 					'after_title' => $arrBoxOptions['after_title'],
 				) 
-			);		
-			
+			);	
+		}
+
 	}
 	
 	/*
