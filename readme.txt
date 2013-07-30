@@ -4,13 +4,13 @@ Donate link: http://en.michaeluno.jp/donate
 Tags: cache, column, columns, content, css, css3, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
 Requires at least: 3.2
 Tested up to: 3.5.1
-Stable tag: 1.1.6
+Stable tag: 1.1.7.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Creates a custom responsive column widget box.
 
 == Description ==
-Do you want to arrange widgets horizontally? This plugin is the solution for you.
+Do you want to arrange widgets horizontally? This plugin may be the solution for you.
 
 <h4>How It Works</h4>
 [youtube http://www.youtube.com/watch?v=vo36sW7W35Y]
