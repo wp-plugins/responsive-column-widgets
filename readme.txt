@@ -10,6 +10,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Creates a custom responsive column widget box.
 
 == Description ==
+Do you want to arrange widgets horizontally? This plugin is the solution for you.
 
 <h4>How It Works</h4>
 [youtube http://www.youtube.com/watch?v=vo36sW7W35Y]
