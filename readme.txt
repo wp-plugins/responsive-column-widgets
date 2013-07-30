@@ -148,6 +148,9 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.1.7.1 - 07/30/2013 =
+* Fixed: a bug that options were not loaded properly after updating to 1.1.7.
+
 = 1.1.7 - 07/30/2013 =
 * Added: the *Container Background Color*, *Container Paddings*, and *Widget Box Maximum Width* options.
 * Changed: not to go to the Manage tab page when editing a widget box setting.
