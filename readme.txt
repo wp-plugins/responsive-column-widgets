@@ -4,7 +4,7 @@ Donate link: http://en.michaeluno.jp/donate
 Tags: cache, column, columns, content, css, css3, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
 Requires at least: 3.2
 Tested up to: 3.5.1
-Stable tag: 1.1.6
+Stable tag: 1.1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Creates a custom responsive column widget box.
@@ -147,7 +147,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.1.7 =
+= 1.1.7 - 07/30/2013 =
 * Added: the *Container Background Color*, *Container Paddings*, and *Widget Box Maximum Width* options.
 * Changed: not to go to the Manage tab page when editing a widget box setting.
 * Changed: the sidebar class selector to have own *div* element enclosing the widget box output. Accordingly the users who were using the CSS rule with the class selector such as <code>.responsive_column_widgets_box.responsive_column_widgets { ... }</code> shuold change it to <code>.responsive_column_widgets .responsive_column_widgets_box</code>.
