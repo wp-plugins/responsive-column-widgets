@@ -10,7 +10,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Creates a custom responsive column widget box.
 
 == Description ==
-Do you want to arrange widgets horizontally? This plugin may be the solution for you.
+Do you want to arrange widgets horizontally? If so, this plugin may be the solution for you.
 
 <h4>How It Works</h4>
 [youtube http://www.youtube.com/watch?v=vo36sW7W35Y]
@@ -147,6 +147,9 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 7. ***Sidebar Encapsulation***
 
 == Changelog ==
+
+= 1.1.7.2 - 07/30/2013 =
+* Fixed: a typo of the newly added option description in v1.1.7 in the New/Edit settings page.
 
 = 1.1.7.1 - 07/30/2013 =
 * Fixed: a bug that options were not loaded properly after updating to 1.1.7.

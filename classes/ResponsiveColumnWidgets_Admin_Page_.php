@@ -594,7 +594,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'value' => $arrWidgetBoxOptions['widget_box_max_width'],
 							'description' => __( 'Set the maximum width of the widget box. Leave it empty or 0 for no maximum width.', 'responsive-column-widgets' ) . '<br />'
 								. ( ! empty( $strSidebarID ) 
-									? __( 'This sets the CSS rule with the following class selectors and the property:', 'responsive-column-widgets' ) . " <code>.{$strSidebarID} .{$this->oOption->arrOptions['general']['general_css_class_attributes']} { max-width: [" . __( 'the set value comes here', 'responsive-column-widgets' ) . "]px }</code> " . __( 'So if you need to use the unit other than px, leave this empty and use the CSS Rule box below.', 'responsive-column-widgets' )
+									? __( 'This sets the CSS rule with the following class selectors and the property:', 'responsive-column-widgets' ) . " <code>.{$strSidebarID} .{$this->oOption->arrOptions['general']['general_css_class_attributes']['box']} { max-width: [" . __( 'the set value comes here', 'responsive-column-widgets' ) . "]px }</code> " . __( 'So if you need to use the unit other than px, leave this empty and use the CSS Rule box below.', 'responsive-column-widgets' )
 									: '' 
 								),
 						),						
