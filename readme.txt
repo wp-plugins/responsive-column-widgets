@@ -148,7 +148,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.1.7.2 - 07/30/2013 =
+= 1.1.7.2 - 08/01/2013 =
 * Fixed: a typo of the newly added option description in v1.1.7 in the New/Edit settings page.
 
 = 1.1.7.1 - 07/30/2013 =
