@@ -200,16 +200,18 @@ class ResponsiveColumnWidgets_Styles_ {
 		$arrResponsiveColumnWidgets_Flags['arrUserCustomStyles'][] = $strSidebarID;
 				
 		// For the max-width, paddings, and the background color.
-		$strBGColor = $this->oOption->arrOptions['boxes'][ $strSidebarID ][ 'widget_box_container_background_color' ];
-		if ( $strBGColor )
-			$strCustomCSSRules .= " .{$strSidebarID} { background-color: {$strBGColor} }" . PHP_EOL;
-		$strMaxWidth = $this->oOption->arrOptions['boxes'][ $strSidebarID ][ 'widget_box_max_width' ];
-		if ( $strMaxWidth )
-			$strCustomCSSRules .= " .{$strSidebarID} .{$this->strClassSelectorBox} { max-width: {$strMaxWidth}px }" . PHP_EOL;
-		$arrContainerPaddings = $this->oOption->arrOptions['boxes'][ $strSidebarID ][ 'widget_box_container_paddings' ];
-		if ( array_filter( $arrContainerPaddings ) ) {
-			$strPadding = $this->getPaddingPropertyFromArray( $arrContainerPaddings );
-			$strCustomCSSRules .= " .{$strSidebarID} { padding: {$strPadding} }" . PHP_EOL;
+		if ( isset( $this->oOption->arrOptions['boxes'][ $strSidebarID ] ) ) {	// the sidebar ID can be the one that the theme provides, not the plugin. In that case, the options are not associated.
+			$strBGColor = $this->oOption->arrOptions['boxes'][ $strSidebarID ][ 'widget_box_container_background_color' ];
+			if ( $strBGColor )
+				$strCustomCSSRules .= " .{$strSidebarID} { background-color: {$strBGColor} }" . PHP_EOL;
+			$strMaxWidth = $this->oOption->arrOptions['boxes'][ $strSidebarID ][ 'widget_box_max_width' ];
+			if ( $strMaxWidth )
+				$strCustomCSSRules .= " .{$strSidebarID} .{$this->strClassSelectorBox} { max-width: {$strMaxWidth}px }" . PHP_EOL;
+			$arrContainerPaddings = $this->oOption->arrOptions['boxes'][ $strSidebarID ][ 'widget_box_container_paddings' ];
+			if ( array_filter( $arrContainerPaddings ) ) {
+				$strPadding = $this->getPaddingPropertyFromArray( $arrContainerPaddings );
+				$strCustomCSSRules .= " .{$strSidebarID} { padding: {$strPadding} }" . PHP_EOL;
+			}
 		}
 		
 // ResponsiveColumnWidgets_Debug::DumpArray( array( $strCustomCSSRules ), dirname( __FILE__ ) . '/custom_style.txt' );		

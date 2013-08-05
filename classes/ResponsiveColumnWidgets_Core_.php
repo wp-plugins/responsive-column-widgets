@@ -20,7 +20,7 @@ class ResponsiveColumnWidgets_Core_ {
 		
 	// Default properties
 	protected $strShortCode;
-	// protected $strCSSDirURL;
+
 	protected $strPluginName = 'responsive-column-widgets';		// used to the name attribute of the script
 	protected $arrDefaultParams = array();	// will be overridden by the option object's array in the constructor.
 			
@@ -31,7 +31,8 @@ class ResponsiveColumnWidgets_Core_ {
 		'row' => 'responsive_column_widgets_row',
 	);
 
-
+	protected $arrSidebarHierarchies;	// stores the array containing hierarchy information of the sidebars selected in the plugin widget.
+	
 	// Flags
 	protected $bIsFormInDynamicSidebarRendered = false;
 
@@ -74,19 +75,7 @@ class ResponsiveColumnWidgets_Core_ {
 		
 		// Add the shortcode.
 		add_shortcode( $this->strShortCode, array( $this, 'GetWidgetBoxOutput' ) );
-		
-		// parse the $post object to check shortcode in the the_posts function.
-		// add_action( 'the_posts', array( $this, 'ParsePostObject' ) );
-		
-		// hook the dynamic sidebar output ( widget container )
-		// add_filter( 'dynamic_sidebar_params', array( $this, 'CheckSidebarLoad' ) );
-		// add_action( 'dynamic_sidebar', array( $this, 'AddFormInDynamicSidebar' ) );
-			
-		// Debug
-		// if ( defined( 'WP_DEBUG' ) )
-			// add_action( 'wp_footer', array( $this->oOption, 'EchoMemoryLimit' ) );
-			// add_action( 'wp_footer', array( $this, 'EchoMemoryUsage' ) );
-			
+					
 	}
 	
 	/*
@@ -116,83 +105,7 @@ class ResponsiveColumnWidgets_Core_ {
 		}
 
 	}
-	
-	/*
-	 * Rendering form elements in dynamic sidebars in the Widgets setting page. - currently not used 
-	 * */
-	function CheckSidebarLoad( $arrSidebarParams ) {	// since 1.0.4	
-		
-		global $pagenow;
-		
-		if ( ! isset( $arrSidebarParams[0]['id'] ) ) return $arrSidebarParams;
-		
-		if (  $pagenow != 'widgets.php' ) return $arrSidebarParams;
-		
-		if ( $arrSidebarParams[0]['id'] != $this->arrDefaultParams['sidebar'] ) return $arrSidebarParams;
-			
-		if ( $this->bIsFormInDynamicSidebarRendered ) return $arrSidebarParams;
-		
-		echo '<div class="sidebar-description">';
-		echo '<p class="description">' .  __( 'Example Shortcode', 'responsive-column-widgets' ) . ':<br />' 
-			. '[ ' . $this->arrDefaultParams['sidebar'] . ' columns="4" ]' . '</p>';
-		echo '<p class="description">' .  __( 'Example PHP Code', 'responsive-column-widgets' ) . ':<br />' 
-			. '&lt;?php ResponsiveColumnWidgets( array( \'columns\' => 4 ) ); ?&gt;' . '</p>';
-		echo '</div>';
-		
-		// echo '<p>' . print_r( $arrSidebarParams, true ) . '</p>';
-		
-		$this->bIsFormInDynamicSidebarRendered = True;
-		
-		return $arrSidebarParams;
-		
-	}
-	function AddFormInDynamicSidebar( $arrSidebarArgs ) {	// since 1.0.4 - currently not used	
-		
-		if ( !isset( $arrSidebarArgs['callback'] ) || !is_string( $arrSidebarArgs['callback'] ) ) return;
-		
-		if ( $arrSidebarArgs['callback'] != 'wp_widget_control' ) return;
-		
-		// echo '<pre>' . print_r( $arrSidebarArgs, true ) . '</pre>';
-	}
-	
-	/*
-	 *  Checks whether the displaying post contains the shortcode for this plugin. 
-	 *  It's not currently used.	
-	 */
-	function ParsePostObject( $posts ) {		// $posts is passed automatically
 
-		if ( empty( $posts ) ) return $posts;
-		$bFound = false;
-
-		foreach ( $posts as &$post ) {
-		
-			if ( stripos( $post->post_content, '[' . $this->strShortCode ) !== false ) {
-						
-				add_shortcode( $this->strShortCode, array( $this, 'GetWidgetBoxOutput' ) );
-				$bFound = true;
-				break;
-				
-			}
-		}
-
-		if ( $bFound ) // $this->AddStyleSheetInHeader(); //add_action('wp_head', array( $this, 'metashortcode_setmeta' ) );
-			add_action( 'wp_enqueue_scripts', array( $this, 'AddStyleSheetInHeader' ), 100 );	// set the order number to 100 which is quite low to load it after others have loaded
-		
-		// always return $posts; otherwise, "the page not found" will be displayed
-		return $posts;		
-		
-	}
-	public function AddStyleSheetInHeader() {	// methods used by hooks must be public.
-		
-		wp_enqueue_style( 
-			'responsive_column_widgets',  
-			$this->strCSSDirURL 
-			. 'responsive_column_widgets.css?'
-			. 'rcw_version=' . $this->oOption->oInfo->Version 
-			. '&type=' . $this->oOption->oInfo->Type 
-		);
-	
-	}
 	
 	/*
 	 * The core methods to render widget boxes. RenderWidgetBox() and GetWidgetBoxOutput().
@@ -214,6 +127,10 @@ class ResponsiveColumnWidgets_Core_ {
 		// If nothing is registered in the given name of sidebar, return
 		if ( ! is_active_sidebar( $arrParams['sidebar'] ) ) 
 			return '<p>' . $arrParams['message_no_widget'] . '</p>';	
+
+		// Check sidebar dependency conflicts
+		if ( $this->isDependencyConflict( $arrParams['sidebar'] ) )
+			return '<p class="error"><strong>Responsive Column Widget</strong>: ' . __( 'A dependency conflict occurred. Please reselect a child widget in the Widgets page of the administration area.', 'responsive-column-widgets' ) . '</p>';
 				
 		// Generate the ID - Get a unique ID selector based on the combination of the sidebar ID and the parameters.
 		$oID = new ResponsiveColumnWidgets_IDHandler;
@@ -235,8 +152,26 @@ class ResponsiveColumnWidgets_Core_ {
 		$strOut = apply_filters( 'RCW_filter_widgetbox_output', $strOut );
 		return $strOut . $this->GetCredit();
 		
-	}
+	}	
+	protected function isDependencyConflict( $strSidebarID ) {	// since 1.1.7.3
 		
+		if ( ! isset( $this->arrSidebarHierarchies ) ) {
+			// Store the sidebar hierarchy array in a property - since 1.1.7.3
+			$oWO = new ResponsiveColumnWidgets_WidgetOptions;
+			$this->arrSidebarHierarchies = $oWO->GetHierarchyBase();
+			unset( $oWO );	// for PHP below 5.3
+		}
+ResponsiveColumnWidgets_Debug::DumpArray( $this->arrSidebarHierarchies, dirname( __FILE__ ) . '/sidebar_hierarchies.txt' );						
+		
+		$oSH = new ResponsiveColumnWidgets_SidebarHierarchy();
+		$arrDependencies = $oSH->getDependenciesOf( $strSidebarID, $this->arrSidebarHierarchies );		
+		unset( $oSH );	// for PHP below 5.3.
+		if ( isset( $this->arrSidebarHierarchies[''] ) || in_array( $strSidebarID, $arrDependencies ) ) 
+			return true;
+		
+		return false;
+		
+	}
 	protected function GetCredit() {
 		
 		$strCredit = defined( 'RESPONSIVECOLUMNWIDGETSPROFILE' ) ? 'Responsive Column Widgets Pro' : 'Responsive Column Widgets';

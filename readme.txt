@@ -148,6 +148,14 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.1.7.3 - 08/06/2013 =
+* Fixed: an issue that the page in widgets.php freezes in IE in WordPress 3.6.
+* Tweaked: the plugin's JacaScript script loaded in the widgets.php page.
+* Changed: the Responsive Column Widget Box widget form selector option to have the first item with the empty value which prevents unwanted sidebar dependency conflicts.
+* Fixed: a bug that orphaned sidebars named **Inactive Sidebar (not used)** appeared in the select option items of the plugin's Responsive Column Widget Box widget's form after switching the theme.
+* Fixed: a bug that the error "FATAL ERROR: MAXIMUM FUNCTION NESTING LEVEL OF '100' REACHED, ABORTING!" occurs when a sidebar dependency conflict occur with the sidebar encapsulation functionality and added an plugin error message instead.
+* Fixed: a bug introduced in 1.1.7 that undefined index warnings and errors with array_filter() occur when a theme's sidebar is used instead of the plugin's widget box.
+
 = 1.1.7.2 - 08/01/2013 =
 * Fixed: a typo of the newly added option description in v1.1.7 in the New/Edit settings page.
 

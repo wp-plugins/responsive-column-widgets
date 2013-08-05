@@ -3,7 +3,7 @@
 	Plugin Name: Responsive Column Widgets
 	Plugin URI: http://en.michaeluno.jp/responsive-column-widgets
 	Description: Creates a widget box which displays widgets in columns with a responsive design.
-	Version: 1.1.7.2
+	Version: 1.1.7.3
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Requirements: This plugin requires WordPress >= 3.2 and PHP >= 5.2.4
@@ -117,7 +117,7 @@ function ResponsiveColumnWidgets_Startup() {
 	$oResponsiveColumnWidgets = new ResponsiveColumnWidgets_Core( RESPONSIVECOLUMNWIDGETSKEY, $oResponsiveColumnWidgets_Options );
 
 	// Admin Page - $oAdmin is local 
-	if( is_admin() ) {
+	if ( is_admin() ) {
 		$oAdmin = new ResponsiveColumnWidgets_Admin_Page( 
 			RESPONSIVECOLUMNWIDGETSKEYADMIN,
 			RESPONSIVECOLUMNWIDGETSFILE
@@ -133,6 +133,10 @@ function ResponsiveColumnWidgets_Startup() {
 
 	// Register the widget.
 	add_action( 'widgets_init', 'ResponsiveColumnWidgets_Widget::RegisterWidget' );
+
+	add_action( 'sidebar_admin_setup', 'ResponsiveColumnWidgets_Widget::fixAsyncSaveBug' );	// for ajax async calls
+	
+	
 }
 
 /*

@@ -16,7 +16,7 @@ class ResponsiveColumnWidgets_SidebarHierarchy_ {
 
 	public function DumpSidebarHierarchyAsJSON() {	// since 1.1.3
 		
-		// Outputs the hierarchial relationship of the given sidebar and its children as JSON.
+		// Outputs the hierarchical relationship of the given sidebar and its children as JSON.
 		$arrHierarchy = $this->GetDependencies();
 		$vOut = json_encode( $arrHierarchy );
 		die( is_array( $vOut ) ? print_r( $vOut, true ) : $vOut );
@@ -32,28 +32,49 @@ class ResponsiveColumnWidgets_SidebarHierarchy_ {
 	
 	public function GetDependencies( $bIncludeSelfID=true ) {	// since 1.1.3, public as called from an instantiated object.
 		
-		// Generate the base hierarchy array from the widet options.
+		// Generate the base hierarchy array from the widget options.
 		$oWO = new ResponsiveColumnWidgets_WidgetOptions;
 		$arrHierarchyBase = $oWO->GetHierarchyBase();		
 		
 		$arrSidebarHierarchy = array();			
 		foreach ( $GLOBALS['wp_registered_sidebars'] as $arrSidebar ) {
 			
-			// cast array because it can be null indicating an error.
+			// it can be null indicating an error.
 			$arrDependencies = $this->GetFlatternChildWidgetBoxes( $arrSidebar['id'], $arrHierarchyBase );
 			if ( is_null( $arrDependencies ) )	// If null, a dependency conflict occurred. So add the parsing sidebar ID to the parent sidebar.
 				$arrDependencies = array( $arrSidebar['id'] );
 			$arrDependencies = $bIncludeSelfID ? array_merge( array( $arrSidebar['id'] ), $arrDependencies ) : $arrDependencies;
+			$arrDependencies = array_unique( $arrDependencies );
 			$arrSidebarHierarchy[ $arrSidebar['id'] ] = $arrDependencies; 
 
 		}
+		unset( $oWO );	// for PHP below 5.3
 		return $arrSidebarHierarchy;
+		
+	}
+	public function getDependenciesOf( $strSidebarID, $arrHierarchyBase=null ) {	// since 1.1.7.2
+		
+		// Similar to the above GetDependencies() method but this one only checks the dependencies of the given sidebar. 
+		// This is used by the core class before it renders the widget box output in case a dependency conflict is happening.
+		
+		// Generate the base hierarchy array from the widget options.
+		if ( is_null( $arrHierarchyBase ) ) {
+			$oWO = new ResponsiveColumnWidgets_WidgetOptions;
+			$arrHierarchyBase = $oWO->GetHierarchyBase();	
+			unset( $oWO );	// for PHP below 5.3
+		}
+		
+		$arrDependencies = $this->GetFlatternChildWidgetBoxes( $strSidebarID, $arrHierarchyBase );
+		if ( is_null( $arrDependencies ) )	// If null, a dependency conflict occurred. So add the parsing sidebar ID to the parent sidebar.
+			$arrDependencies = array( $strSidebarID );
+		
+		return $arrDependencies;
 		
 	}
 	protected function GetFlatternChildWidgetBoxes( $strSidebarID, &$arrHierarchyBase, $intDepth=0 ) {	// since 1.1.3
 		
 		// Returns an array consisting of values of all sidebar IDs that belongs to the given sidebar.
-		// This is used to check if a selected sidebar contains a particular sidebar in the children in the hierarchial relationships.
+		// This is used to check if a selected sidebar contains a particular sidebar in the children in the hierarchical relationships.
 		// Called from the above form() method.
 		$arrChildSidebarIDs = array();
 		$intDepth++;
