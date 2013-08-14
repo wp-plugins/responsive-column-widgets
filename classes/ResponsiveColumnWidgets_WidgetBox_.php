@@ -18,7 +18,7 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 	 * This class must be instantiated per widget box as it stores the iterating positions in the properties.
 	*/
 	
-	function __construct( &$arrParams, &$arrMaxCols, &$arrColSpans, &$arrClassAttributes ) {
+	function __construct( $arrParams, $arrMaxCols, $arrColSpans, $arrClassAttributes ) {
 		
 		$this->arrParams = $arrParams;
 		$this->arrPositions = $this->formatPositionsArray( $arrMaxCols, $arrColSpans, $arrClassAttributes );

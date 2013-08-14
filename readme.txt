@@ -148,6 +148,12 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
+= 1.1.7.4 =
+* Fixed: the warning, Strict standards: Only variables should be passed by reference in ...\wp-content\plugins\responsive-column-widgets\classes\ResponsiveColumnWidgets_Option_.php on line 367.
+* Fixed: the warning, Strict standards: Only variables should be passed by reference in ...\wp-content\plugins\responsive-column-widgets\classes\ResponsiveColumnWidgets_StyleLoader.php on line 55.
+* Fixed: the warning, Strict standards: Declaration of ResponsiveColumnWidgets_Admin_Page_Framework_Walker_Category_Checklist::start_el() should be compatible with Walker::start_el(&$output, $object, $depth = 0, $args = Array, $current_object_id = 0) in ...\wp-content\plugins\responsive-column-widgets\classes\ResponsiveColumnWidgets_Admin_Page_Framework.php on line 2593.
+* Fixed: a bug that a log file was created when WP_DEBUG is true.
+
 = 1.1.7.3 - 08/06/2013 =
 * Fixed: an issue that the page in widgets.php freezes in IE in WordPress 3.6.
 * Tweaked: the plugin's JacaScript script loaded in the widgets.php page.

@@ -362,8 +362,9 @@ class ResponsiveColumnWidgets_Option_ {
 		// apply the default max width ( 600 pixels to one column by default set in the $intDefaultScreenMaxWidth variable ).
 		// Note that at this point, the array is not formatted yet but only adding necessary elements to create necessary keys in the next steps.
 		if ( count( $arrParse ) == 1 ) {	// the number of elements is one 
-						
-			$arrFirstElement = array_shift( array_values( $arrParse ) );
+			
+			$arrValues = array_values( $arrParse );
+			$arrFirstElement = array_shift( $arrValues );	// array_shift( array_values( $arrParse ) ) causes a strict standard warning.
 			$intCount = count( $arrFirstElement );
 			
 			if ( $intCount == 1 )	// this means the width is not set.

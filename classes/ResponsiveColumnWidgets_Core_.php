@@ -161,7 +161,7 @@ class ResponsiveColumnWidgets_Core_ {
 			$this->arrSidebarHierarchies = $oWO->GetHierarchyBase();
 			unset( $oWO );	// for PHP below 5.3
 		}
-ResponsiveColumnWidgets_Debug::DumpArray( $this->arrSidebarHierarchies, dirname( __FILE__ ) . '/sidebar_hierarchies.txt' );						
+// ResponsiveColumnWidgets_Debug::DumpArray( $this->arrSidebarHierarchies, dirname( __FILE__ ) . '/sidebar_hierarchies.txt' );						
 		
 		$oSH = new ResponsiveColumnWidgets_SidebarHierarchy();
 		$arrDependencies = $oSH->getDependenciesOf( $strSidebarID, $this->arrSidebarHierarchies );		

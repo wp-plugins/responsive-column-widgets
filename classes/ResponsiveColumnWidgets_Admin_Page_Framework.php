@@ -2598,8 +2598,8 @@ class ResponsiveColumnWidgets_Admin_Page_Framework_Walker_Category_Checklist ext
 		Walker_Category : wp-includes/category-template.php
 	 * */
 	
-	function start_el( &$strOutput, $oCategory, $intDepth, $arrArgs ) {
-		
+	function start_el( &$strOutput, $oCategory, $intDepth=0, $arrArgs=array(), $intCurrentObjectID=0 ) {
+			
 		/*	
 		 	$arrArgs keys:
 			'show_option_all' => '', 
