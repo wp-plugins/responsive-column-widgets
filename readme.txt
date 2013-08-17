@@ -4,7 +4,7 @@ Donate link: http://en.michaeluno.jp/donate
 Tags: cache, column, columns, content, css, css3, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
 Requires at least: 3.2
 Tested up to: 3.5.2
-Stable tag: 1.1.7.3
+Stable tag: 1.1.7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Creates a custom responsive column widget box.
@@ -148,7 +148,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.1.7.4 =
+= 1.1.7.4 08/18/2013 =
 * Fixed: the warning, Strict standards: Only variables should be passed by reference in ...\wp-content\plugins\responsive-column-widgets\classes\ResponsiveColumnWidgets_Option_.php on line 367.
 * Fixed: the warning, Strict standards: Only variables should be passed by reference in ...\wp-content\plugins\responsive-column-widgets\classes\ResponsiveColumnWidgets_StyleLoader.php on line 55.
 * Fixed: the warning, Strict standards: Declaration of ResponsiveColumnWidgets_Admin_Page_Framework_Walker_Category_Checklist::start_el() should be compatible with Walker::start_el(&$output, $object, $depth = 0, $args = Array, $current_object_id = 0) in ...\wp-content\plugins\responsive-column-widgets\classes\ResponsiveColumnWidgets_Admin_Page_Framework.php on line 2593.
