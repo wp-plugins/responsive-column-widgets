@@ -148,7 +148,10 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.1.7.4 08/18/2013 =
+= 1.1.7.5 - 08/18/2013 =
+* Fixed: the warning, Notice: Undefined property: ResponsiveColumnWidgets_AutoInsert::$arrClassSelectors...
+
+= 1.1.7.4 - 08/17/2013 =
 * Fixed: the warning, Strict standards: Only variables should be passed by reference in ...\wp-content\plugins\responsive-column-widgets\classes\ResponsiveColumnWidgets_Option_.php on line 367.
 * Fixed: the warning, Strict standards: Only variables should be passed by reference in ...\wp-content\plugins\responsive-column-widgets\classes\ResponsiveColumnWidgets_StyleLoader.php on line 55.
 * Fixed: the warning, Strict standards: Declaration of ResponsiveColumnWidgets_Admin_Page_Framework_Walker_Category_Checklist::start_el() should be compatible with Walker::start_el(&$output, $object, $depth = 0, $args = Array, $current_object_id = 0) in ...\wp-content\plugins\responsive-column-widgets\classes\ResponsiveColumnWidgets_Admin_Page_Framework.php on line 2593.

@@ -76,6 +76,12 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 		
 		$oStyle = $this->oCore->oStyle;
 		$strStyles = '';
+
+		$this->arrClassSelectors = array( 
+			'box'		=> $this->oOption->SanitizeAttribute( $this->oOption->arrOptions['general']['general_css_class_attributes']['box'] ),
+			'column'	=> $this->oOption->SanitizeAttribute( $this->oOption->arrOptions['general']['general_css_class_attributes']['column'] ),
+			'row'		=> $this->oOption->SanitizeAttribute( $this->oOption->arrOptions['general']['general_css_class_attributes']['row'] ),
+		);
 		
 		foreach ( $this->arrEnabledBoxIDs as $strSidebarID ) {
 
