@@ -1,7 +1,7 @@
 ﻿=== Responsive Column Widgets ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
-Tags: cache, column, columns, content, css, css3, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
+Tags: array, cache, column, columns, content, css, css3, filter, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
 Requires at least: 3.2
 Tested up to: 3.6
 Stable tag: 1.1.7.5
@@ -11,6 +11,8 @@ Creates a custom responsive column widget box.
 
 == Description ==
 Do you want to arrange widgets horizontally? If so, this plugin may be the solution for you.
+
+Or if you a developer and looking for an easy way to render some outputs in responsive columns, this plugin will be handy. Pass your arrays to the plugin filter. Then the plugin will take care of it for you. 
 
 <h4>How It Works</h4>
 [youtube http://www.youtube.com/watch?v=vo36sW7W35Y]
