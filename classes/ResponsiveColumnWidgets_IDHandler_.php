@@ -15,7 +15,8 @@ class ResponsiveColumnWidgets_IDHandler_ {
 		
 	public function GetCallID( $strPrefix, $arr=array() ) {	// used from an instantiated object so it must be public.
 		
-		// Use a md5 hash with the given prefix and the parameter as the identifieer.
+		// Use a md5 hash with the given prefix and the parameter as the identifier.
+		krsort( $arr );	// for style id which should match the serialized parameter structure.
 		return $strPrefix . '_' . md5( serialize( $arr ) );		
 		
 	}

@@ -1,19 +1,19 @@
 <?php
 /**
-	Manages formatting widget box outputs.
-	
+ * Manages formatting widget box outputs.
+ * 
  * @package     Responsive Column Widgets
  * @copyright   Copyright (c) 2013, Michael Uno
  * @authorurl	http://michaeluno.jp
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		1.1.2
- * 
- * used classes: ResponsiveColumnWidgets_HTMLElementReplacer
-
+ * @uses		ResponsiveColumnWidgets_HTMLElementReplacer
 */
 
 class ResponsiveColumnWidgets_WidgetBox_ { 
-
+	
+	public $arrIsPluginWidgetBoxWidget = array();
+	
 	/*
 	 * This class must be instantiated per widget box as it stores the iterating positions in the properties.
 	*/
@@ -148,13 +148,13 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 		
 	}
 	
-	public function GetWidgetsBufferAsArray( $strSidebarID, $arrSidebarsWidgets, $arrShowOnlys, $arrOmits, $bRemoveIDAttributes ) {	// since 1.1.1, moved from the core class in 1.1.2		
+	public function getWidgetsBufferAsArray( $strSidebarID, $arrSidebarsWidgets, $arrShowOnlys, $arrOmits, $bRemoveIDAttributes ) {	// since 1.1.1, moved from the core class in 1.1.2		
 	
 		global $wp_registered_sidebars, $wp_registered_widgets;
 		
 		// Variables
 		$arrWidgetBuffer = array();	// stores the returning widget buffer outputs, one key for one widget.
-		$arrSidebarInfo = $wp_registered_sidebars[ $strSidebarID ];	
+		$arrSidebarInfo = isset( $wp_registered_sidebars[ $strSidebarID ] ) ? $wp_registered_sidebars[ $strSidebarID ] : array();	
 		/*
 			$arrSidebarInfo contains the following keys ( the values are as an example ):
 			[name] => Responsive Column Widgets
@@ -212,7 +212,7 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 			do_action( 'dynamic_sidebar', $wp_registered_widgets[ $strWidgetID ] );
 			
 			// since 1.1.3 - stores an array to check if the widget is the plugin widget-box widget that is added in v1.1.3.
-			// This will store true/false ( boolean ) in the array with the index that is same as the array sroing the buffer.
+			// This will store true/false ( boolean ) in the array with the index that is same as the array storing the buffer.
 			// This flag array will be passed to a filter so that it can be captured from other places.
 			$this->arrIsPluginWidgetBoxWidget[] = ( isset( $arrParams[0]['widget_id'] ) && preg_match( '/^responsive_column_widget_box-\d+/', $arrParams[0]['widget_id'] ) );
 				
@@ -230,6 +230,28 @@ class ResponsiveColumnWidgets_WidgetBox_ {
 		return $arrWidgetBuffer;
 		
 	}	
+	
+	// public function getFilteredBufferArray( $arrParams, $arrShowOnlys, $arrOmits, $fRemoveIDAttributes ) {	// since 1.1.8
+		
+		// $arrArray = apply_filters( $arrParams['filter'], $arrParams['array'], $arrParams );
+		
+		// $oReplace = new ResponsiveColumnWidgets_HTMLElementReplacer();
+		
+		// $numWidgetOrder = 0;
+		// $bShowOnly = ( count( $arrShowOnlys ) > 0 ) ? True : False;	// if showonly is set, render only the specified widget id.
+		// $arrWidgetBuffer = array();
+		// foreach( $arrArray as $vElem ) {
+			
+			// if ( in_array( ++$numWidgetOrder, $arrOmits ) ) continue;					// if the omit ids match, skip
+			// if ( $bShowOnly && !in_array( $numWidgetOrder, $arrShowOnlys ) ) continue;	// if the show-only orders match, skip,
+	
+			// $arrWidgetBuffer[] = $fRemoveIDAttributes ? $oReplace->RemoveIDAttributes( $vElem ) : $vElem;
+		
+		// }
+		// $this->arrIsPluginWidgetBoxWidget = array();
+		// return $arrWidgetBuffer;
+		
+	// }
 	
 	public function GetScreenMaxWidths() {	// since 1.1.2
 		

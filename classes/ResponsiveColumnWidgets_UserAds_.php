@@ -1,10 +1,12 @@
 <?php
 /**
+ * Creates links for the user.
+ * 
  * @package     Responsive Column Widgets
  * @copyright   Copyright (c) 2013, Michael Uno
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		1.0.4
- * @description	Creates links for the user.
+ * 
 */
 class ResponsiveColumnWidgets_UserAds_ {
 
@@ -57,6 +59,7 @@ class ResponsiveColumnWidgets_UserAds_ {
 		$this->oOption = isset( $oOption ) ? $oOption : $oResponsiveColumnWidgets_Options;
 		
 		$strLangKey = defined( 'WPLANG' ) ? WPLANG : 'en';
+		$this->strCharSet = get_bloginfo( 'charset' );
 		$this->arrURLFeedText = isset( $this->arrURLFeedText[ $strLangKey ] ) ? $this->arrURLFeedText[ $strLangKey ] : $this->arrURLFeedText['en'];
 		$this->arrURLFeed160xNTopRight = isset( $this->arrURLFeed160xNTopRight[ $strLangKey ] ) ? $this->arrURLFeed160xNTopRight[ $strLangKey ] : $this->arrURLFeed160xNTopRight['en'];
 		$this->arrURLFeed160xN = isset( $this->arrURLFeed160xN[ $strLangKey ] ) ? $this->arrURLFeed160xN[ $strLangKey ] : $this->arrURLFeed160xN['en'];
@@ -81,13 +84,13 @@ class ResponsiveColumnWidgets_UserAds_ {
 		// If it's out of stock, fill the array by fetching the feed.
 		if ( count( $this->arrFeedItems[ $strURLID ] ) < $numItems ) {	
 			
-			$oReplace = new ResponsiveColumnWidgets_HTMLElementReplacer( get_bloginfo( 'charset' ) );
+			$oReplace = new ResponsiveColumnWidgets_HTMLElementReplacer( $this->strCharSet );
 			
 			// When an array of urls is passed to the Simple Pie's set_feed_url() method, the memory usage increases largely.
 			// So fetch the feeds one by one per url and store the output into an array.
 			foreach( $arrURLs as $strURL ) {
 								
-				$oFeed = $this->GetFeedObj( $strURL, $numItems * 3 );	// multiplied by three to store items more than enough for next calls.
+				$oFeed = $this->GetFeedObj( $strURL, $numItems * 20 );	// multiplied by X to store items more than enough for next calls.
 				foreach ( $oFeed->get_items() as $item ) 	// foreach ( $oFeed->get_items( 0, $numItems * 3 ) as $item ) does not change the memory usage
 					$this->arrFeedItems[ $strURLID ][] = $oReplace->Perform( $item->get_content() );
 				
@@ -196,6 +199,7 @@ class ResponsiveColumnWidgets_UserAds_ {
 		$oFeed->set_cache_duration( $numCacheDuration );	
 		
 		$oFeed->set_stupidly_fast( true );
+		$oFeed->set_timeout( 5 );	// 5 seconds
 		
 		// If the cache lifetime is explicitly set to 0, do not trigger the background renewal cache event
 		if ( $numCacheDuration == 0 )

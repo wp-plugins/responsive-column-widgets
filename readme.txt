@@ -28,6 +28,7 @@ Do you want to arrange widgets horizontally? If so, this plugin may be the solut
 * **Sidebar Encapsulation** - With the widget that the plugin provides, the whole sidebar contents can be embedded as a widget item into another sidebar.
 * **Column Span** - column spans are configurable so that you can set wider widget areas.
 * **Cache** - the output can be cached and the cache lifetime is configurable.
+* **Custom Array** - if you can code PHP, you can pass an array to the plugin's filter so that your array contents can be rendered in multiple columns instead of widgets.
 * and [more](http://wordpress.org/extend/plugins/responsive-column-widgets/other_notes/).
  
 == Installation ==
@@ -112,6 +113,42 @@ If the column span exceeds the set number of max column, the column span will fo
 
 * **cache_duration** - the cache lifespan in seconds which determines how long the cache remains. Default: 0. e.g. `3600`
 
+= Render Custom Array in Multiple Columns =
+If you are a developer, you can render array contents in multiple columns with responsive design. 
+
+Let's take a look at an example. First, insert this shortcode in a post.
+
+`[responsive_column_widgets passphrase="days" columns="7"]`
+
+I know you are not familiar with the *passphrase* parameter. This key(parameter) name can be any string that identify the call.
+
+Now we need to hook into the *RCW_filter_widget_output_array* filter so that we can intervene the process of plugin's rendering widgets. It accepts two parameters. The first one will be the output array and the second one is the parameter array. 
+
+In the callback function for the filter, we check if the parameter array holds the key named "passphrase". You shuold change the key name and its value to suite your needs.
+
+`add_filter( 'RCW_filter_widget_output_array', 'RCW_CustomArrayOutput', 10, 2 );
+function RCW_CustomArrayOutput( $arrOutput, $arrParams ) {
+	
+	if ( ! isset( $arrParams['passphrase'] ) )
+		return $arrOutput;
+	
+	if ( $arrParams['passphrase'] == 'days' ) 
+		return array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
+	
+	return $arrOutput;
+}`
+
+This will display the days in 7 columns. The plugin will generate the CSS rules based on the parameter values. And the rules will be inserted inside the body tag. 
+
+If you like to insert the style in the head tag, use the *ResponsiveColumnWidgets_EnqueueStyle* function. Tell the function that which parameters are going to be used.
+
+'add_filter( 'wp_loaded', 'RCW_CustomArrayAddStyle' );
+function RCW_CustomArrayAddStyle() {
+	if ( function_exists( 'ResponsiveColumnWidgets_EnqueueStyle' ) ) {
+		ResponsiveColumnWidgets_EnqueueStyle( array( 'passphrase' => 'days', 'columns' => "7" ) );
+	}
+}'
+
 = Video Tutorials =
 http://en.michaeluno.jp/responsive-column-widgets/tutorials/
 
@@ -147,6 +184,10 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 7. ***Sidebar Encapsulation***
 
 == Changelog ==
+
+= 1.1.8 =
+* Added: the *RCW_filter_widget_output_array* filter that enables to render custom PHP array in responsive columns. 
+* Fixed: an issue that the page load gets too slow in the plugin's setting pages.
 
 = 1.1.7.5 - 08/18/2013 =
 * Fixed: the warning, Notice: Undefined property: ResponsiveColumnWidgets_AutoInsert::$arrClassSelectors...

@@ -93,7 +93,7 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 		$GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ] = isset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ] ) && is_array( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ] ) 
 			? $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]
 			: ( array ) get_transient( $this->strPluginKey ) ;
-// ResponsiveColumnWidgets_Debug::DumpArray( $GLOBALS['arrSimplePieCacheModTimestamps'], dirname( __FILE__ ) . '/mods.txt'  );
+
 			
 		// - this stores expired cache items.
 		$GLOBALS['arrSimplePieCacheExpiredItems'] = isset( $GLOBALS['arrSimplePieCacheExpiredItems'] ) && is_array( $GLOBALS['arrSimplePieCacheExpiredItems'] ) ? $GLOBALS['arrSimplePieCacheExpiredItems'] : array();
@@ -125,7 +125,7 @@ class ResponsiveColumnWidgets_SimplePie_ extends ResponsiveColumnWidgets_SimpleP
 		
 		// Schedules the action to run in the background with WP Cron.
 		if ( wp_next_scheduled( 'RCWP_action_simplepie_renew_cache', array( $arrURLs ) ) ) return;		
-		wp_schedule_single_event( time() , 'RCWP_action_simplepie_renew_cache', array( $arrURLs ) );
+		wp_schedule_single_event( time() + 10 , 'RCWP_action_simplepie_renew_cache', array( $arrURLs ) );
 				
 	}
 	

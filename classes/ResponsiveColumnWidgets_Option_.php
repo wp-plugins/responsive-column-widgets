@@ -13,9 +13,6 @@ class ResponsiveColumnWidgets_Option_ {
 		'maxrows' => 0,
 		'omit' => array(),				// the type changed to array from string since 1.0.6.1
 		'showonly' => array(),			// the type changed to array from string since 1.0.6.1
-		// 'offsets' => array( 			// the type changed to array from string since 1.0.6.1
-			// array( 600, 12 ),
-		// ),	//'600: 12', // e.g. '800: 1, 600: 2, 480: 3, 320: 4, 240: 5',	// added since 1.0.3
 		'default_media_only_screen_max_width' => 600,	// since 1.1.1 - it means when the browser widths gets 600px or below, the media only rules will be applied
 		'colspans' => array( array() ),	// since 1.1.5 - two-dimensional array.
 		// since 1.1.6
@@ -203,11 +200,14 @@ class ResponsiveColumnWidgets_Option_ {
 		$arrDefaultParams = isset( $this->arrOptions['boxes'][ $arrParams['sidebar'] ] ) 
 			? $this->arrOptions['boxes'][ $arrParams['sidebar'] ] + $this->arrDefaultParams 
 			: $this->arrDefaultParams;
-		
+
 		// In case it's a call from the shortcode
-		$arrParams = shortcode_atts( $arrDefaultParams, $arrParams );		
-		
+		$arrParams = $this->UniteArraysRecursive( $arrParams, $arrDefaultParams );
+		krsort( $arrParams );
 		return $arrParams;
+			
+		// $arrParams = shortcode_atts( $arrDefaultParams, $arrParams );	// depricated as of 1.1.8
+		
 		
 	}
 	protected function FindWidgetBoxSidebarIDFromParams( $arrParams ) {	// since 1.0.4, moved from the core class in 1.1.2.1

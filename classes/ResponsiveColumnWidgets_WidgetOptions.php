@@ -20,7 +20,7 @@ class ResponsiveColumnWidgets_WidgetOptions {
 		
 		// Retrieve the plugin widgets' options set via the form of the widget in widgets.php.
 		$arrWidgetOptions = $this->GetRegisteredWidgetOptionsByBaseID();
-ResponsiveColumnWidgets_Debug::DumpArray( $arrWidgetOptions, dirname( __FILE__ ) . '/widget_options.txt' );										
+// ResponsiveColumnWidgets_Debug::DumpArray( $arrWidgetOptions, dirname( __FILE__ ) . '/widget_options.txt' );										
 		// Save the hierarchical relationship into an array. Each key has the name of sidebar ID and the element holds the values of the sidebar IDs that is embedded in.
 		$arrHierarchy = array();
 		foreach( $arrWidgetOptions as $arrWidgetOption ) {
