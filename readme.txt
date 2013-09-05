@@ -114,7 +114,7 @@ To set them by screen max-width, like the *columns* parameter, use the colon(:) 
 If the column span exceeds the set number of max column, the column span will follow the max column. Note that the widget index of omitted widgets will not be considered(counted) in the widget index of this parameter.
 
 * **cache_duration** - the cache lifespan in seconds which determines how long the cache remains. Default: 0. e.g. `3600`
-* **call_id** - this is for developers. This is used to identify the callback when a plugin hook is used so that the callback method assigned to the hook can know if it is theirs or not. This parameter does not affect when enqueuing a style based on the parameter values.
+* **call_id** - this is for developers. This is used to identify the callback when a plugin hook is used so that the callback method assigned to the hook can know if it is theirs or not. This parameter does not affect the style based on the parameter values.
 
 = Render Custom Array in Multiple Columns =
 If you are a developer, you can render array contents that hold string values in multiple columns with responsive design. 
@@ -145,14 +145,14 @@ This will display the days in 7 columns. The plugin will generate the CSS rules 
 
 If you like to insert the style in the head tag, use the *ResponsiveColumnWidgets_EnqueueStyle* function. Tell the function that which parameters are going to be used.
 
-'add_filter( 'wp_loaded', 'RCW_CustomArrayAddStyle' );
+`add_filter( 'wp_loaded', 'RCW_CustomArrayAddStyle' );
 function RCW_CustomArrayAddStyle() {
 	if ( function_exists( 'ResponsiveColumnWidgets_EnqueueStyle' ) ) {
 		ResponsiveColumnWidgets_EnqueueStyle( array( 'columns' => "7" ) );
 	}
-}'
+}`
 
-Note that you can omit <code>'call_id' => 'days'</code>. Other parameters should not be omitted.
+Note that <code>'call_id' => 'days'</code> can be omitted. The other parameters should not be omitted.
 
 = Video Tutorials =
 http://en.michaeluno.jp/responsive-column-widgets/tutorials/
@@ -191,7 +191,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 == Changelog ==
 
 = 1.1.8 =
-* Added: the *call_id* parameter that does not affect when the plugin generates the CSS rules based on parameter values.
+* Added: the *call_id* parameter that does not affect the CSS rules based on parameter values.
 * Added: the *RCW_filter_widget_output_array* filter that enables to render custom PHP array in responsive columns. 
 * Fixed: an issue that the page load gets too slow in the plugin's setting pages.
 
