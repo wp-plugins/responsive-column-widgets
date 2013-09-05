@@ -190,7 +190,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 
 == Changelog ==
 
-= 1.1.8 =
+= 1.1.8 - 09/05/2013 =
 * Added: the *call_id* parameter that does not affect the CSS rules based on parameter values.
 * Added: the *RCW_filter_widget_output_array* filter that enables to render custom PHP array in responsive columns. 
 * Fixed: an issue that the page load gets too slow in the plugin's setting pages.
