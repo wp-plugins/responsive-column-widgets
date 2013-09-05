@@ -12,10 +12,16 @@
 */
 class ResponsiveColumnWidgets_IDHandler_ {
 
+	/**
+	 * Generates ID based on the passed prefix and the array.
+	 * 
+	 * @remark			Used from an instantiated object so it must be public.
+	 * @remark			Uses a md5 hash with the given prefix and the parameter as the identifier.
+	 * @remark			'call_id' parameter key will be omitted. This helps for third party scripts to identify the callbacks and helps to enqueue own styles in the head tag.
+	 */ 
+	public function GetCallID( $strPrefix, $arr=array() ) {
 		
-	public function GetCallID( $strPrefix, $arr=array() ) {	// used from an instantiated object so it must be public.
-		
-		// Use a md5 hash with the given prefix and the parameter as the identifier.
+		unset( $arr[ 'call_id' ] );	
 		krsort( $arr );	// for style id which should match the serialized parameter structure.
 		return $strPrefix . '_' . md5( serialize( $arr ) );		
 		

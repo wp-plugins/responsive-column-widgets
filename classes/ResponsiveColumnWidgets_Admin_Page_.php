@@ -39,6 +39,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		'widget_box_container_background_color',
 		'widget_box_container_paddings',
 		'widget_box_max_width',
+		// since 1.1.7
+		'call_id',
 	);
 	// since 1.1.1.2
 	protected $intIntervalToShowPleaseRate = 1209600;	// seconds * minutes * hours * days; 1209600 is 2 weeks.

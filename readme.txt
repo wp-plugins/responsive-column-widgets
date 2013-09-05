@@ -114,27 +114,28 @@ To set them by screen max-width, like the *columns* parameter, use the colon(:) 
 If the column span exceeds the set number of max column, the column span will follow the max column. Note that the widget index of omitted widgets will not be considered(counted) in the widget index of this parameter.
 
 * **cache_duration** - the cache lifespan in seconds which determines how long the cache remains. Default: 0. e.g. `3600`
+* **call_id** - this is for developers. This is used to identify the callback when a plugin hook is used so that the callback method assigned to the hook can know if it is theirs or not. This parameter does not affect when enqueuing a style based on the parameter values.
 
 = Render Custom Array in Multiple Columns =
-If you are a developer, you can render array contents in multiple columns with responsive design. 
+If you are a developer, you can render array contents that hold string values in multiple columns with responsive design. 
 
-Let's take a look at an example. First, insert this shortcode in a post.
+Let's take a look at an example. First, insert this shortcode in a post or a page.
 
-`[responsive_column_widgets passphrase="days" columns="7"]`
+`[responsive_column_widgets call_id="days" columns="7"]`
 
-I know you are not familiar with the *passphrase* parameter. This key(parameter) name can be any string that identify the call.
+The value for the *call_id* parameter can be any string that identifies the call.
 
-Now we need to hook into the *RCW_filter_widget_output_array* filter so that we can intervene the process of plugin's rendering widgets. It accepts two parameters. The first one will be the output array and the second one is the parameter array. 
+Now we need to hook into the ***RCW_filter_widget_output_array*** filter so that we can intervene the process of plugin's rendering widgets. It accepts two parameters. The first one will be the output array and the second one is the parameter array. 
 
-In the callback function for the filter, we check if the parameter array holds the key named "passphrase". You shuold change the key name and its value to suite your needs.
+In the callback function for the filter, we check if the parameter *call_id* holds the correct value. You should change the value to suite your needs, which should be unique and not conflict with others.
 
 `add_filter( 'RCW_filter_widget_output_array', 'RCW_CustomArrayOutput', 10, 2 );
 function RCW_CustomArrayOutput( $arrOutput, $arrParams ) {
 	
-	if ( ! isset( $arrParams['passphrase'] ) )
+	if ( ! isset( $arrParams['call_id'] ) )
 		return $arrOutput;
 	
-	if ( $arrParams['passphrase'] == 'days' ) 
+	if ( $arrParams['call_id'] == 'days' ) 
 		return array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
 	
 	return $arrOutput;
@@ -147,9 +148,11 @@ If you like to insert the style in the head tag, use the *ResponsiveColumnWidget
 'add_filter( 'wp_loaded', 'RCW_CustomArrayAddStyle' );
 function RCW_CustomArrayAddStyle() {
 	if ( function_exists( 'ResponsiveColumnWidgets_EnqueueStyle' ) ) {
-		ResponsiveColumnWidgets_EnqueueStyle( array( 'passphrase' => 'days', 'columns' => "7" ) );
+		ResponsiveColumnWidgets_EnqueueStyle( array( 'columns' => "7" ) );
 	}
 }'
+
+Note that you can omit <code>'call_id' => 'days'</code>. Other parameters should not be omitted.
 
 = Video Tutorials =
 http://en.michaeluno.jp/responsive-column-widgets/tutorials/
@@ -188,6 +191,7 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 == Changelog ==
 
 = 1.1.8 =
+* Added: the *call_id* parameter that does not affect when the plugin generates the CSS rules based on parameter values.
 * Added: the *RCW_filter_widget_output_array* filter that enables to render custom PHP array in responsive columns. 
 * Fixed: an issue that the page load gets too slow in the plugin's setting pages.
 

@@ -15,8 +15,8 @@ class ResponsiveColumnWidgets_Option_ {
 		'showonly' => array(),			// the type changed to array from string since 1.0.6.1
 		'default_media_only_screen_max_width' => 600,	// since 1.1.1 - it means when the browser widths gets 600px or below, the media only rules will be applied
 		'colspans' => array( array() ),	// since 1.1.5 - two-dimensional array.
-		// since 1.1.6
-		'cache_duration' => 0,
+		'cache_duration' => 0,			// since 1.1.6
+		'call_id'	=> null,			// since 1.1.8
 	);
 	public $arrDefaultSidebarArgs = array(	// must be public; accessed in the core object for register_sidebar()
 		'description' 						=> '',
