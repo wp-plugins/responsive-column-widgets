@@ -217,7 +217,7 @@ class ResponsiveColumnWidgets_Core_ {
 			$arrParams, 
 			$this->oOption->SetMinimiumScreenMaxWidth(	// the max-columns array
 				$this->oOption->FormatColumnArray( 
-					( string ) $arrParams['columns'], 	
+					$arrParams['columns'], 	
 					$arrParams['default_media_only_screen_max_width'] 
 				)		
 			),

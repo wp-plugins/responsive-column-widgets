@@ -206,7 +206,7 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 == Changelog ==
 
 = 1.1.8.1 =
-* Fixed: an issue that when an integer is passed to the *columns* parameter with the the *ResponsiveColumnWidgets()* function, the parameter value did not get recognized.
+* Fixed: an issue that when an integer is passed to the *columns* or *colspans* parameter with the the *ResponsiveColumnWidgets()* function, the parameter value did not get recognized.
 * Added: the second parameter to the *ResponsiveColumnWidgets()* function that enables to render custom array in responsive columns.
 * Fixed: a bug undefined object error occurred when a cache is expired.
 

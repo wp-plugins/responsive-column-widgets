@@ -339,6 +339,7 @@ class ResponsiveColumnWidgets_Option_ {
 		 * 1. a new type two-dimensional array which has the | and : separators and its dimension.
 		 * 2. an old type one-dimensional array which does not have the | and : separators and its dimension.
 		 * 3. a string passed from the shortcode
+		 * 4. an integer passed from the PHP function
 		 */
 		
 		// Case 1: return the sanitized column array.
@@ -347,6 +348,10 @@ class ResponsiveColumnWidgets_Option_ {
 		// Case 2: array( 2, 5, 3 ) -> 2, 5, 3
 		if ( is_array( $vInput ) )
 			$vInput = $this->ConvertOptionArrayValueToString( $vInput );	// now $vInput becomes a string
+		
+		// Case 4: e.g. 4 -> "4"
+		if ( is_integer( $vInput ) )
+			$vInput = ( string ) $vInput;
 		
 		// Need to ensure it's a string because $vInput can be an already correctly formatted array, passed from the options.
 		//	'4, 5, 1 | 480: 3, 4, 1' -> array( 0 => array( 0 => '4, 5, 1' ), 1 => array( 0 => 480, 1 => '3, 4, 1' ) )
@@ -514,6 +519,7 @@ class ResponsiveColumnWidgets_Option_ {
 			)
 		 * */
 		
+		$vInput = is_integer( $vInput ) ? ( string ) $vInput : $vInput;	// if it's passed from a PHP function, it can be an integer.
 		$arrColSpanArray = is_string( $vInput ) ? $this->ConvertStringToArray( $vInput, '|', ':', ',', '-' ) : array();
 
 		$arrFormat = array();
