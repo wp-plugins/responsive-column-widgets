@@ -150,9 +150,9 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 			// 'autoinsert_position'  0: above, 1: below, 2: both			
 			$intPositionType = $this->oOption->arrOptions['boxes'][ $strSidebarID ]['autoinsert_position'];
 			if ( $intPositionType == 0 || $intPositionType == 2 )
-				$strPre .= $this->oCore->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ), false );
+				$strPre .= $this->oCore->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ), array(), false );
 			if ( $intPositionType == 1 || $intPositionType == 2 )
-				$strPost .= $this->oCore->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ), false );
+				$strPost .= $this->oCore->GetWidgetBoxOutput( array( 'sidebar' => $strSidebarID ), array(), false );
 			
 		}
 		
@@ -168,7 +168,7 @@ class ResponsiveColumnWidgets_AutoInsert_ {
 			if ( ! $this->IsAutoInsertEnabledPage( $this->oOption->arrOptions['boxes'][ $strSidebarID ] ) )
 				continue;	
 		
-			$this->oCore->RenderWidgetBox( array( 'sidebar' => $strSidebarID ), false );	// the second parameter indicates to use the scoped attribute for additional style tags.
+			$this->oCore->RenderWidgetBox( array( 'sidebar' => $strSidebarID ), array(), false );	// the third parameter indicates to use the scoped attribute for additional style tags.
 			
 		}
 		

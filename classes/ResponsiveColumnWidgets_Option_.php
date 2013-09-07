@@ -200,7 +200,7 @@ class ResponsiveColumnWidgets_Option_ {
 		$arrDefaultParams = isset( $this->arrOptions['boxes'][ $arrParams['sidebar'] ] ) 
 			? $this->arrOptions['boxes'][ $arrParams['sidebar'] ] + $this->arrDefaultParams 
 			: $this->arrDefaultParams;
-
+			
 		// In case it's a call from the shortcode
 		$arrParams = $this->UniteArraysRecursive( $arrParams, $arrDefaultParams );
 		krsort( $arrParams );

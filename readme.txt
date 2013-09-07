@@ -27,7 +27,7 @@ Or if you a developer and looking for an easy way to render some outputs in resp
 * **PHP code and Shortcode** - use them to display the widgets in theme template or in posts/pages.
 * **Default Sidebars Integration** - The sidebars defined by your theme also can be displayed in columns.
 * **Auto Insert** - The widget box can be embedded automatically without the shortcode.
-* **Sidebar Encapsulation** - With the widget that the plugin provides, the whole sidebar contents can be embedded as a widget item into another sidebar.
+* **Sidebar Encapsulation** - This is *widgets in widget* functionality. With the widget that the plugin provides, the whole sidebar contents can be embedded as a widget item into another sidebar.
 * **Column Span** - column spans are configurable so that you can set wider widget areas.
 * **Cache** - the output can be cached and the cache lifetime is configurable.
 * **Custom Array** - if you can code PHP, you can pass an array to the plugin's filter so that your array contents can be rendered in multiple columns instead of widgets.
@@ -154,6 +154,15 @@ function RCW_CustomArrayAddStyle() {
 
 Note that <code>'call_id' => 'days'</code> can be omitted. The other parameters should not be omitted.
 
+For cases that the shortcode is not used, you can use the *ResponsiveColumnWidets()* function.
+
+`$arrYourArray = array( 'a', 'b', 'c', 'd' );
+if ( function_exists( 'ResponsiveColumnWidets' ) )
+	ResponsiveColumnWidets( array( 'columns' => 4  ), $arrYourArray );
+`
+
+This will output <code>a, b, c, d</code> in four columns.
+
 = Video Tutorials =
 http://en.michaeluno.jp/responsive-column-widgets/tutorials/
 
@@ -173,10 +182,16 @@ e.g.
 }`
 
 = I have trouble reading things. Are there video instructions? = 
-Yes. Hope this helps. http://en.michaeluno.jp/responsive-column-widgets/tutorials/
+Yes. Hope [this](http://en.michaeluno.jp/responsive-column-widgets/tutorials/) helps. 
 
 = Is it possible to create multiple widget boxes? =
 Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-column-widgets-pro/).
+
+= It seems the plugin conflicts with my theme. Can you help? =
+It happens occasionally. Please ask for [support](http://wordpress.org/support/plugin/responsive-column-widgets) with a link to your live site and the screenshots. In most cases, it can be solved by adjusting CSS rules causing the conflicts.
+
+= I have a feature request. Would you listen? =
+Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsive-column-widgets) or the comment section of the [plugin page](http://en.michaeluno.jp/responsive-column-widgets/).
 
 == Screenshots ==
 
@@ -189,6 +204,11 @@ Yes, with [Pro](http://en.michaeluno.jp/responsive-column-widgets/responsive-col
 7. ***Sidebar Encapsulation***
 
 == Changelog ==
+
+= 1.1.8.1 =
+* Fixed: an issue that when an integer is passed to the *columns* parameter with the the *ResponsiveColumnWidgets()* function, the parameter value did not get recognized.
+* Added: the second parameter to the *ResponsiveColumnWidgets()* function that enables to render custom array in responsive columns.
+* Fixed: a bug undefined object error occurred when a cache is expired.
 
 = 1.1.8 - 09/05/2013 =
 * Added: the *call_id* parameter that does not affect the CSS rules based on parameter values.

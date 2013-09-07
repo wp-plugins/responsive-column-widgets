@@ -113,17 +113,18 @@ class ResponsiveColumnWidgets_Core_ {
 	/*
 	 * The core methods to render widget boxes. RenderWidgetBox() and GetWidgetBoxOutput().
 	*/
-	public function RenderWidgetBox( $arrParams, $bIsStyleNotScoped=false ) {	// must be public as this is called from instantiated objects.
+	public function RenderWidgetBox( $arrParams, $arrOutput=array(), $bIsStyleNotScoped=false ) {	// must be public as this is called from instantiated objects.
 		
-		echo $this->GetWidgetBoxOutput( $arrParams, $bIsStyleNotScoped );	// do echo, not return.
+		echo $this->GetWidgetBoxOutput( $arrParams, $arrOutput, $bIsStyleNotScoped );	// do echo, not return.
 		
 	}	
-	public function GetWidgetBoxOutput( $arrParams, $bIsStyleNotScoped=false ) {	// since 1.0.4
-		
+	public function GetWidgetBoxOutput( $arrParams, $arrOutput=array(), $bIsStyleNotScoped=false ) {	// since 1.0.4
+
 		// This method can be the callback for shortcode or manually called by the front-end function.
 		// Notice that the last part is returning the output.
 		$arrParams = $this->oOption->FormatParameterArray( $arrParams );
-
+		$arrOutput = empty( $arrOutput ) ? array() : $arrOutput;	// for shortcode callbacks , it needs to be converted to array. Note that array( '' ) is evaluated not true so if this is an empty string, '', this line helps to make it empty array.
+		
 		// If this is a callback for the shortcode, the second parameter will be false. Reverse the value.
 		$bIsStyleScoped = $bIsStyleNotScoped ? false : true;
 
@@ -141,7 +142,7 @@ class ResponsiveColumnWidgets_Core_ {
 		$strOut = "<div class='{$arrParams['sidebar']}'>"
 				. $arrParams['before_widget_box']
 				. "<div id='{$strIDSelector}' class='{$this->arrClassSelectors['box']} {$this->strClassSelectorBox2}'>"
-					. $this->getOutputWidgetBuffer( $arrParams['sidebar'], $arrParams, $strCallID, $bIsStyleScoped ) 
+					. $this->getOutputWidgetBuffer( $arrOutput, $arrParams, $strCallID, $bIsStyleScoped ) 
 				. "</div>"
 			. $arrParams['after_widget_box']
 			. "</div>";
@@ -205,23 +206,35 @@ class ResponsiveColumnWidgets_Core_ {
 		return true;
 		
 	}	
-	protected function getOutputWidgetBuffer( $vIndex=1, &$arrParams, $strCallID, $bIsStyleScoped ) {
-		
+	protected function getOutputWidgetBuffer( $arrOutput, &$arrParams, $strCallID, $bIsStyleScoped ) {
 		
 		// Check if the cache duration is set and if the cache is stored.
 		$strCacheID = 'RCW_Cache_' . md5( $strCallID );	// since the passed call ID has the long prefix 'responsive_coluimn_widget', it needs to be shortened.
 		$strBuffer = $arrParams['cache_duration'] > 0 ? $this->oDecode->decodeBase64( get_transient( $strCacheID ) ) : '';
 
+		// Instantiate the object to generate widget box outputs.
+		$oWidgetBox = new ResponsiveColumnWidgets_WidgetBox( // this object must be instantiated every time rendering a widget box.
+			$arrParams, 
+			$this->oOption->SetMinimiumScreenMaxWidth(	// the max-columns array
+				$this->oOption->FormatColumnArray( 
+					( string ) $arrParams['columns'], 	
+					$arrParams['default_media_only_screen_max_width'] 
+				)		
+			),
+			$this->oOption->formatColSpanArray( $arrParams['colspans'] ),
+			$this->arrClassSelectors
+		);	
+		$strSidebarID = $this->getCorrectSidebarID( $arrParams['sidebar'] );
+
 		if ( empty( $strBuffer ) ) {
 			
-			// First, retrieve an filtered output array.
-			$arrOutputBuffer = ( array ) apply_filters( 'RCW_filter_widget_output_array', array(), $arrParams );
+			// First, retrieve the filtered output array.
+			$arrOutputBuffer = ( array ) apply_filters( 'RCW_filter_widget_output_array', $arrOutput, $arrParams );
+			$fIsEmpty = empty( $arrOutputBuffer );
 			
-			// check if the sidebar is renderable.
-			$strSidebarID = $this->getCorrectSidebarID( $vIndex );
-			
+			// check if the sidebar is renderable.			
 			$arrSidebarsWidgets = wp_get_sidebars_widgets();
-			if ( empty( $arrOutputBuffer ) ) {
+			if ( $fIsEmpty ) {
 				
 				// If nothing is registered in the given name of sidebar, return
 				if ( ! is_active_sidebar( $strSidebarID ) )
@@ -230,25 +243,10 @@ class ResponsiveColumnWidgets_Core_ {
 				if ( ! $this->isRenderable( $strSidebarID, $arrSidebarsWidgets ) ) 
 					return '<p>' . __( 'The responsive box is not renderable.', 'responsive-column-widgets' ) . '</p>';
 					
-			}
-			
-			// Instantiate the object to generate widget box outputs.
-			$oWidgetBox = new ResponsiveColumnWidgets_WidgetBox( // this object must be instantiated every time rendering a widget box.
-				$arrParams, 
-				$this->oOption->SetMinimiumScreenMaxWidth(	// the max-columns array
-					$this->oOption->FormatColumnArray( 
-						$arrParams['columns'], 	
-						$arrParams['default_media_only_screen_max_width'] 
-					)		
-				),
-				$this->oOption->formatColSpanArray( $arrParams['colspans'] ),
-				$this->arrClassSelectors
-			);	
-			
-			
+			}		
 			
 			// Store the output buffers into an array.
-			$arrWidgetBuffers = empty( $arrOutputBuffer )
+			$arrWidgetBuffers = $fIsEmpty
 				? $oWidgetBox->getWidgetsBufferAsArray( 
 					$strSidebarID, 
 					$arrSidebarsWidgets,
@@ -259,7 +257,7 @@ class ResponsiveColumnWidgets_Core_ {
 				: $arrOutputBuffer;
 
 			// since 1.1.3 - Get the flag array indicating whether the widgets are the plugin's widget-box widget or not.
-			$arrFlagsWidgetBoxWidget = empty( $arrOutputBuffer )
+			$arrFlagsWidgetBoxWidget = $fIsEmpty
 				? $oWidgetBox->GetWidgetBoxWidgetFlagArray()
 				: array();
 							
@@ -286,13 +284,12 @@ class ResponsiveColumnWidgets_Core_ {
 			
 			if ( $arrParams['cache_duration'] > 0 ) 
 				set_transient( $strCacheID, base64_encode( $strBuffer ), $arrParams['cache_duration'] );
-			
-			
+				
 		}
-		
+			
 		// the CSS rules
 		$strBuffer .= $this->oStyle->GetStyles( 
-			$arrParams['sidebar'], 
+			$strSidebarID, 
 			$strCallID, 
 			$arrParams['custom_style'], 
 			$oWidgetBox->GetScreenMaxWidths(), 
