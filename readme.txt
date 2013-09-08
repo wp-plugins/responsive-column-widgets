@@ -12,7 +12,7 @@ Creates a custom responsive column widget box.
 == Description ==
 Do you want to arrange widgets horizontally? If so, this plugin may be the solution for you.
 
-Or if you a developer and looking for an easy way to render some outputs in responsive columns, this plugin will be handy. Pass your arrays to the plugin filter. Then the plugin will take care of it for you. 
+Or if you are a developer and looking for an easy way to render some outputs in responsive columns, this plugin will be handy. Pass your arrays to the plugin filter. Then the plugin will take care of it for you.
 
 <h4>How It Works</h4>
 [youtube http://www.youtube.com/watch?v=vo36sW7W35Y]
