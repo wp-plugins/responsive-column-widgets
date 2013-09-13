@@ -1480,7 +1480,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		if ( isset( $arrInput['responsive_column_widgets']['section_custom_style'] ) )
 			$arrInput['responsive_column_widgets']['section_custom_style'] = $this->sanitizeSectionCustomStyle( $arrInput['responsive_column_widgets']['section_custom_style'] );
 	
-// $this->DumpArray( $arrInput, dirname( __FILE__ )	. '/input.txt' );
+// $this->DumpArray( $arrInput, dirname( __FILE__ ) . '/input.txt' );
 		
 		// Set the variables.
 		$bIsValid = True;
@@ -1532,6 +1532,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		// Please review.
 		$this->PleaseReview();
 		
+// $this->DumpArray( $arrBoxOptions, dirname( __FILE__ ) . '/input.txt' );		
+
 		// The data are valid. Update the box options.
 		$this->UpdateBoxOptions( $arrBoxOptions, $_POST['isnew'] );
 		$this->SetSettingsNotice( __( 'The widget box options have been saved.', 'responsive-column-widgets' ), 'updated' );
@@ -1570,6 +1572,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	}
 	function UpdateBoxOptions( $arrInput, $bIsNew ) {
 		
+// $this->DumpArray( $arrInput, dirname( __FILE__ )	. '/input.txt' );				
+
 		// Sanitisation for the first two sections.
 		$arrInput['maxwidgets'] = $this->oUtil->FixNumber( $arrInput['maxwidgets'], 0, 0 );
 		$arrInput['maxrows'] = $this->oUtil->FixNumber( $arrInput['maxrows'], 0, 0 );
@@ -1589,6 +1593,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$arrInput['autoinsert_enable_actions'] = $this->SanitizeStringToArray( $arrInput['autoinsert_enable_actions'] );
 		$arrInput['autoinsert_enable_post_ids'] = $this->SanitizeNumericSequenceToArray( $arrInput['autoinsert_enable_post_ids'] );
 		$arrInput['autoinsert_disable_post_ids'] = $this->SanitizeNumericSequenceToArray( $arrInput['autoinsert_disable_post_ids'] );
+
+// $this->DumpArray( $arrInput, dirname( __FILE__ )	. '/input.txt' );		
 		
 		// Update
 		$this->oOption->InsertBox( $arrInput['sidebar'], $arrInput );
@@ -1622,12 +1628,18 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		return $arr;
 		
 	}
-	function SanitizeNumericSequenceToArray( $str, $intDefault=null, $intMin=1, $intMax=null, $bValueUnique=true ) {	// since 1.0.9
-		
-		// Converts the given string into array and performs sanitization to be a numeric sequence.
-		// e.g. 3, 4, 63  --> array( 3, 4, 63 )
-		// e.g. ada, 9,, 4 --> array( 9, 4 ) 
-		
+	
+	/**
+	 * Converts the given string into array and performs sanitization to be a numeric sequence.
+	 * 
+	 * Fole Example,
+	 * 3, 4, 63  --> array( 3, 4, 63 )
+	 * ada, 9,, 4 --> array( 9, 4 ) 
+	 * 
+	 * @since			1.0.9
+	 */ 
+	function SanitizeNumericSequenceToArray( $str, $intDefault=null, $intMin=1, $intMax='', $bValueUnique=true ) {
+				
 		$arr = $this->oOption->ConvertStringToArray( $str, ',' );	// comma delimited
 		$arr = $this->oUtil->FixNumbers( $arr, $intDefault, $intMin, $intMax );
 		$arr = $this->oUtil->UnsetEmptyArrayElements( $arr );

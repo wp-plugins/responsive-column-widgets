@@ -2,7 +2,7 @@
 Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
 Tags: array, cache, column, columns, content, css, css3, filter, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
-Requires at least: 3.2
+Requires at least: 3.3
 Tested up to: 3.6
 Stable tag: 1.1.8.1
 License: GPLv2 or later
@@ -204,6 +204,9 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 7. ***Sidebar Encapsulation***
 
 == Changelog ==
+
+= 1.1.8.2 =
+* Fixed: a bug that comma delimited option values could not be saved as of 1.1.7.
 
 = 1.1.8.1 =
 * Fixed: an issue that when an integer is passed to the *columns* or *colspans* parameter with the the *ResponsiveColumnWidgets()* function, the parameter value did not get recognized.

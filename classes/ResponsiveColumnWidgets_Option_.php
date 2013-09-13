@@ -673,14 +673,19 @@ class ResponsiveColumnWidgets_Option_ {
 		return implode( $arrGlues[0], $arrInput );
 
 	}	
-	public function ConvertStringToArray() {	// since 1.1.5
+	
+	/**
+	 * Converts the given string with delimiters to a multi-dimensional array.
+	 * 
+	 * Parameters: 
+	 * 1: haystack string
+	 * 2, 3, 4...: delimiter
+	 * e.g. $arr = ConvertStringToArray( 'a-1,b-2,c,d|e,f,g', "|", ',', '-' );
+	 * 
+	 * @since			1.1.5
+	 */
+	public function ConvertStringToArray() {
 		
-		// Converts string with delimiters to multi-dimensional array.
-		// Parameters: 
-		// 1: haystack string
-		// 2, 3, 4...: delimiter
-		// e.g. $arr = ConvertStringToArray( 'a-1,b-2,c,d|e,f,g', "|", ',', '-' );
-
 		$intArgs = func_num_args();
 		$arrArgs = func_get_args();
 		$strInput = $arrArgs[ 0 ];			

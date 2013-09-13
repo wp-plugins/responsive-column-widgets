@@ -1830,29 +1830,28 @@ class ResponsiveColumnWidgets_Admin_Page_Framework_Utilities {	// since 1.0.4
 		
 	}
 	public function FixNumbers( $arrNumbers, $numDefault, $numMin="", $numMax="" ) {	// since 1.0.4
-		
+
 		// An array version of FixNumber(). The array must be numerically indexed.
-		
-		foreach( $arrNumbers as &$intNumber )
-			$intNumber = $this->FixNumber( $intNumber, $numDefault, $numMin, $numMax );
-		
+		foreach( $arrNumbers as &$intNumber ) 
+			$intNumber = $this->FixNumber( $intNumber, $intNumber, $numMin, $numMax );
+
 		return $arrNumbers;
 		
 	}		
 	public function FixNumber( $numToFix, $numDefault, $numMin="", $numMax="" ) {
-	
+		
 		// Checks if the passed value is a number and set it to the default if not.
 		// if it is a number and exceeds the set maximum number, it sets it to the max value.
 		// if it is a number and is below the minimum number, it sets to the minimium value.
 		// set a blank value for no limit.
 		// This is useful for form data validation.
 		
-		if ( !is_numeric( trim( $numToFix ) ) ) return $numDefault;
+		if ( ! is_numeric( trim( $numToFix ) ) ) return $numDefault;
 			
 		if ( $numMin !== "" && $numToFix < $numMin) return $numMin;
 
 		if ( $numMax !== "" && $numToFix > $numMax ) return $numMax;
-		
+
 		return $numToFix;
 		
 	}	
