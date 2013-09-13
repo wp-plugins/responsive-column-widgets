@@ -83,7 +83,7 @@ register_activation_hook(
 					'error' => 'The plugin requires the PHP version %1$s or higher.',
 				),
 				'wordpress' => array(
-					'version' => '3.2',
+					'version' => '3.3',
 					'error' => 'The plugin requires the WordPress version %1$s or higher.',
 				),
 				'functions' => array(
