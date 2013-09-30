@@ -205,6 +205,9 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 
 == Changelog ==
 
+= 1.1.8.3 =
+* Fixed: a compatibility issue with Twenty Thirteen.
+
 = 1.1.8.2 =
 * Fixed: the minimum required WordPress version number to 3.3.
 * Fixed: a bug that comma delimited option values could not be saved as of 1.1.7.

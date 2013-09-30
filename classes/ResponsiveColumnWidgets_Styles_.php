@@ -201,6 +201,7 @@ class ResponsiveColumnWidgets_Styles_ {
 				
 		// For the max-width, paddings, and the background color.
 		if ( isset( $this->oOption->arrOptions['boxes'][ $strSidebarID ] ) ) {	// the sidebar ID can be the one that the theme provides, not the plugin. In that case, the options are not associated.
+			$strCustomCSSRules .= " .{$strSidebarID} { display: inline-block; width: 100%; }" . PHP_EOL;
 			$strBGColor = $this->oOption->arrOptions['boxes'][ $strSidebarID ][ 'widget_box_container_background_color' ];
 			if ( $strBGColor )
 				$strCustomCSSRules .= " .{$strSidebarID} { background-color: {$strBGColor} }" . PHP_EOL;
@@ -388,10 +389,11 @@ class ResponsiveColumnWidgets_Styles_ {
 			.site-main .{$this->strClassSelectorBox}.widget-area {
 				width: 100%;
 				margin-right: auto;
+				float: none;
 			}
 			.widget_box_widget div.widget {
 				background:none;
-			}
+			}			
 		";
 		
 		/*
