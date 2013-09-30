@@ -205,14 +205,14 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 
 == Changelog ==
 
-= 1.1.8.3 =
+= 1.1.8.3 - 10/01/2013 =
 * Fixed: a compatibility issue with Twenty Thirteen.
 
-= 1.1.8.2 =
+= 1.1.8.2 - 09/14/2013 =
 * Fixed: the minimum required WordPress version number to 3.3.
 * Fixed: a bug that comma delimited option values could not be saved as of 1.1.7.
 
-= 1.1.8.1 =
+= 1.1.8.1 - 09/09/2013 =
 * Fixed: an issue that when an integer is passed to the *columns* or *colspans* parameter with the the *ResponsiveColumnWidgets()* function, the parameter value did not get recognized.
 * Added: the second parameter to the *ResponsiveColumnWidgets()* function that enables to render custom array in responsive columns.
 * Fixed: a bug undefined object error occurred when a cache is expired.
