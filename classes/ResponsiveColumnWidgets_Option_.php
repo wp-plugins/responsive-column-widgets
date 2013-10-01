@@ -67,6 +67,8 @@ class ResponsiveColumnWidgets_Option_ {
 			'left' => '',
 		),
 		'widget_box_max_width' => '',
+		// since 1.1.8.4
+		'widget_box_column_text_alignment' => 'left',
 	);	
 	public $arrCapabilities = array(	// used in the drop-down list of the General Options page.
 		0 => 'manage_options',

@@ -213,6 +213,10 @@ class ResponsiveColumnWidgets_Styles_ {
 				$strPadding = $this->getPaddingPropertyFromArray( $arrContainerPaddings );
 				$strCustomCSSRules .= " .{$strSidebarID} { padding: {$strPadding} }" . PHP_EOL;
 			}
+			$strColumnAlignment = $this->oOption->arrOptions['boxes'][ $strSidebarID ][ 'widget_box_column_text_alignment' ];			
+			if ( $strColumnAlignment != 'left' ) 
+				$strCustomCSSRules .= " .{$strSidebarID} .{$this->strClassSelectorColumn} { text-align: {$strColumnAlignment}; } ";
+			
 		}
 		
 // ResponsiveColumnWidgets_Debug::DumpArray( array( $strCustomCSSRules ), dirname( __FILE__ ) . '/custom_style.txt' );		

@@ -205,6 +205,9 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 
 == Changelog ==
 
+= 1.1.8.4 =
+* Added: the Widget Box Column Text Alignment option.
+
 = 1.1.8.3 - 10/01/2013 =
 * Fixed: a compatibility issue with Twenty Thirteen.
 

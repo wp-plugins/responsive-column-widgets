@@ -41,6 +41,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		'widget_box_max_width',
 		// since 1.1.7
 		'call_id',
+		// 1.1.8.4
+		'widget_box_column_text_alignment',
 	);
 	// since 1.1.1.2
 	protected $intIntervalToShowPleaseRate = 1209600;	// seconds * minutes * hours * days; 1209600 is 2 weeks.
@@ -599,7 +601,20 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 									? __( 'This sets the CSS rule with the following class selectors and the property:', 'responsive-column-widgets' ) . " <code>.{$strSidebarID} .{$this->oOption->arrOptions['general']['general_css_class_attributes']['box']} { max-width: [" . __( 'the set value comes here', 'responsive-column-widgets' ) . "]px }</code> " . __( 'So if you need to use the unit other than px, leave this empty and use the CSS Rule box below.', 'responsive-column-widgets' )
 									: '' 
 								),
-						),						
+						),		
+						array(
+							'id' => 'widget_box_column_text_alignment',
+							'title' => __( 'Widget Box Column Text Alignment', 'responsive-column-widgets' ),
+							'type' => 'radio',
+							'label' => array(
+								'left' => __( 'Left', 'responsive-column-widgets' ) . "<div class='widget_box_column_text_alignment widget_box_column_text_alignment_left'><img src='" . RESPONSIVECOLUMNWIDGETSURL . '/img/setting-column-text-align-left.jpg' . "' /></div>", 
+								'center' => __( 'Center', 'responsive-column-widgets' ) . "<div class='widget_box_column_text_alignment widget_box_column_text_alignment_center'><img src='" . RESPONSIVECOLUMNWIDGETSURL . '/img/setting-column-text-align-center.jpg' . "' /></div>",
+								'right' => __( 'Right', 'responsive-column-widgets' ) . "<div class='widget_box_column_text_alignment widget_box_column_text_alignment_right'><img src='" . RESPONSIVECOLUMNWIDGETSURL . '/img/setting-column-text-align-right.jpg' . "' /></div>",
+							),
+							'delimiter' => PHP_EOL,
+							'value' => $arrWidgetBoxOptions['widget_box_column_text_alignment'],
+							
+						),							
 						array(
 							'id' => 'custom_style',
 							'title' => __( 'CSS Rule', 'responsive-column-widgets' ),
@@ -2067,6 +2082,36 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				height: 134px;
 				background-image: url( '{$strWidgetBoxMaxWidthImageURL}' );
 				margin-left: 20px;
+			}
+			#section_custom_style_widget_box_column_text_alignment span {
+				width: 33.3%;
+				float: left;
+				display: inline-block;
+			}
+			.widget_box_column_text_alignment {
+				margin-top: 4px;
+				margin-bottom: 4px;
+			}
+			.widget_box_column_text_alignment_left, 
+			.widget_box_column_text_alignment_center, 
+			.widget_box_column_text_alignment_right {
+				margin-left: 4%;
+			}
+			.widget_box_column_text_alignment img {
+				float: left;
+				width: 100%;
+				max-width: 258px;
+			}
+			@media only screen and (max-width: 600px) {
+				#section_custom_style_widget_box_column_text_alignment span {
+					width: 100%;
+					margin-bottom: 4px;
+				}		
+				.widget_box_column_text_alignment_left, 
+				.widget_box_column_text_alignment_center, 
+				.widget_box_column_text_alignment_right {
+					margin-left: 0%;
+				}
 			}
 		";
 	}
