@@ -204,7 +204,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'title' => __( 'Widget Box Description', 'responsive-column-widgets' ),
 							'description' => __( 'Additional notes for this box.', 'responsive-column-widgets' ),
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'value' => $arrWidgetBoxOptions['description'],
 						),	
 						array(
@@ -213,7 +213,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'description' => __( 'Set the html opening tag that will be inserted before the widget box output.', 'responsive-column-widgets' ) 
 								. ' e.g. <code>&lt;div class="my-custom-class-selector"&gt;</code>',
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'value' => $arrWidgetBoxOptions['before_widget_box'],
 						),
 						array(
@@ -222,7 +222,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'description' => __( 'Set the html closing tag that will be inserted after the widget box output.', 'responsive-column-widgets' )
 								. ' e.g. <code>&lt;/div&gt;</code>',
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'value' => $arrWidgetBoxOptions['after_widget_box'],
 						),						
 						array(
@@ -230,7 +230,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'title' => __( 'Widget Beginning Tag', 'responsive-column-widgets' ),
 							'description' => __( 'Set the html opening tag that will be inserted before each widget output.', 'responsive-column-widgets' ),
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'value' => $arrWidgetBoxOptions['before_widget'],
 						),
 						array(
@@ -238,7 +238,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'title' => __( 'Widget Ending Tag', 'responsive-column-widgets' ),
 							'description' => __( 'Set the html closing tag that will be inserted after each widget output.', 'responsive-column-widgets' ),
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'value' => $arrWidgetBoxOptions['after_widget'],
 						),
 						array(
@@ -246,7 +246,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'title' => __( 'Starting Tag for Box Title', 'responsive-column-widgets' ),
 							'description' => __( 'Set the before_title html opening tag.', 'responsive-column-widgets' ),
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'value' => $arrWidgetBoxOptions['before_title'],
 						),
 						array(
@@ -254,7 +254,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'title' => __( 'Ending Tag for Box Title', 'responsive-column-widgets' ),
 							'description' => __( 'Set the after_title html closing tag.', 'responsive-column-widgets' ),
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'value' => $arrWidgetBoxOptions['after_title'],
 						),
 						array(
@@ -262,7 +262,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'title' => __( 'Message for No Widget', 'responsive-column-widgets' ),
 							'description' => __( 'Set the message which appears when no widget is added; thus, nothing can be rendered.', 'responsive-column-widgets' ),
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'value' => $arrWidgetBoxOptions['message_no_widget'], 
 						),						
 					),
@@ -310,7 +310,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(
 							'id' => 'omit',
 							'title' => __( 'Omitting Widgets', 'responsive-column-widgets' ),
-							'size' => 100,
+							'size' => 70,
 							'description' => __( 'Set the numbers of omitting widgets separated by commas.', 'responsive-column-widgets' ) 
 								. ' e.g. "2, 5, 8" ' . __( 'where the second, the fifth, and the eighth ones will be skipped.', 'responsive-column-widgets' ),
 							'type' => 'text',
@@ -319,7 +319,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(
 							'id' => 'showonly',
 							'title' => __( 'Show-only Widgets', 'responsive-column-widgets' ),
-							'size' => 100,
+							'size' => 70,
 							'description' => __( 'Set the numbers of show-only widgets separated by commas.', 'responsive-column-widgets' ) 
 								. ' e.g. "1, 3" ' . __( 'where only the first and the third ones will be shown.', 'responsive-column-widgets' ),
 							'type' => 'text',
@@ -328,7 +328,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(
 							'id' => 'colspans',
 							'title' => __( 'Column Spans', 'responsive-column-widgets' ),
-							'size' => 100,
+							'size' => 70,
 							'description' => __( 'Set the column spans separated by comma and dash.', 'responsive-column-widgets' ) . '<br />'
 								. __( 'Format', 'responsive-column-widgets' ) . ': <code>widget index - column span, widget index - column span, widget index - column span, ...</code><br />' 
 								. 'e.g. "<code>1-3, 4-2, 7-4</code>", ' . __( 'where the first widget takes 3 columns and the fourth widget takes two and the seventh takes four. Unspecified widget items will have one column span.', 'responsive-column-widgets' ) . '<br />'
@@ -415,7 +415,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(	
 							'id' => 'autoinsert_enable_filters',
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'title' => __( 'Filters', 'responsive-column-widgets' ),
 							'description' => sprintf( __( 'Enter the WordPress <a href="%1$s">filters</a> with which the auto-insertion is performed, separated by commas.', 'responsive-column-widgets' ), 'http://codex.wordpress.org/Plugin_API/Filter_Reference' )
 								. '<br />e.g. the_excerpt, my_custom_filter, other_plugin_filter',
@@ -437,7 +437,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(	
 							'id' => 'autoinsert_enable_actions',
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'title' => __( 'Actions', 'responsive-column-widgets' ),
 							'description' => sprintf( __( 'Enter the WordPress <a href="%1$s">actions</a> with which the auto-insertion is performed, separated by commas.', 'responsive-column-widgets' ), 'http://codex.wordpress.org/Plugin_API/Action_Reference' )
 								. '<br />e.g. login_footer, comment_form_before, comment_form_after, my_custom_action, other_plugin_action',
@@ -476,7 +476,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(	
 							'id' => 'autoinsert_enable_post_ids',
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'title' => __( 'Limit Auto-Insert to Certain Post / Page IDs', 'responsive-column-widgets' ),
 							'description' => __( 'Enter the post IDs where the auto-insertion should be performed, separated by commas. Set empty to apply the auto-insertion to all posts.', 'responsive-column-widgets' )
 								. '<br />e.g. 98, 76, 5',
@@ -514,7 +514,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 						array(	
 							'id' => 'autoinsert_disable_post_ids',
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'title' => __( 'Post / Page ID to Disable Auto-Insert', 'responsive-column-widgets' ),
 							'description' => __( 'Enter the post IDs where the auto-insertion should be disabled, separated by commas. Set empty not to disable the auto-insertion in any post.', 'responsive-column-widgets' )
 								. '<br />e.g. 98, 76, 5',
@@ -602,26 +602,26 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 									: '' 
 								),
 						),		
-						array(
-							'id' => 'widget_box_column_text_alignment',
-							'title' => __( 'Widget Box Column Text Alignment', 'responsive-column-widgets' ),
-							'type' => 'radio',
-							'label' => array(
-								'left' => __( 'Left', 'responsive-column-widgets' ) . "<div class='widget_box_column_text_alignment widget_box_column_text_alignment_left'><img src='" . RESPONSIVECOLUMNWIDGETSURL . '/img/setting-column-text-align-left.jpg' . "' /></div>", 
-								'center' => __( 'Center', 'responsive-column-widgets' ) . "<div class='widget_box_column_text_alignment widget_box_column_text_alignment_center'><img src='" . RESPONSIVECOLUMNWIDGETSURL . '/img/setting-column-text-align-center.jpg' . "' /></div>",
-								'right' => __( 'Right', 'responsive-column-widgets' ) . "<div class='widget_box_column_text_alignment widget_box_column_text_alignment_right'><img src='" . RESPONSIVECOLUMNWIDGETSURL . '/img/setting-column-text-align-right.jpg' . "' /></div>",
-							),
-							'delimiter' => PHP_EOL,
-							'value' => $arrWidgetBoxOptions['widget_box_column_text_alignment'],
+						// array(
+							// 'id' => 'widget_box_column_text_alignment',
+							// 'title' => __( 'Widget Box Column Text Alignment', 'responsive-column-widgets' ),
+							// 'type' => 'radio',
+							// 'label' => array(
+								// 'left' => __( 'Left', 'responsive-column-widgets' ) . "<div class='widget_box_column_text_alignment widget_box_column_text_alignment_left'><img src='" . RESPONSIVECOLUMNWIDGETSURL . '/img/setting-column-text-align-left.jpg' . "' /></div>", 
+								// 'center' => __( 'Center', 'responsive-column-widgets' ) . "<div class='widget_box_column_text_alignment widget_box_column_text_alignment_center'><img src='" . RESPONSIVECOLUMNWIDGETSURL . '/img/setting-column-text-align-center.jpg' . "' /></div>",
+								// 'right' => __( 'Right', 'responsive-column-widgets' ) . "<div class='widget_box_column_text_alignment widget_box_column_text_alignment_right'><img src='" . RESPONSIVECOLUMNWIDGETSURL . '/img/setting-column-text-align-right.jpg' . "' /></div>",
+							// ),
+							// 'delimiter' => PHP_EOL,
+							// 'value' => $arrWidgetBoxOptions['widget_box_column_text_alignment'],
 							
-						),							
+						// ),							
 						array(
 							'id' => 'custom_style',
 							'title' => __( 'CSS Rule', 'responsive-column-widgets' ),
 							'description' => __( 'Define your custom CSS rules here.', 'responsive-column-widgets' ) . '<br />'
 								. 'e.g. ' . esc_html( '.responsive_column_widgets_box .widget { padding: 0 20px 0 20px; }' ),
 							'type' => 'textarea',
-							'cols' => 120,
+							'cols' => 70,
 							'rows' => 6,
 							'value' => $arrWidgetBoxOptions['custom_style'],
 						),
@@ -710,7 +710,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 								. 'columns="5 | 800: 4 | 600: 1"'
 								. '</p>',
 							'type' => 'textarea',
-							'cols' => 100,
+							'cols' => 70,
 							'rows' => 8,							
 							'value' => $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['general']['general_css_load_in_head'], array( PHP_EOL ) ),
 						),	
@@ -754,7 +754,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'description' => __( 'Specify which HTML tags are allowed to be posted in the New / Edit page to prevent them from being stripped out by the WordPress KSES filter, separated by commas. For security, many tags are not allowed by default.', 'responsive-column-widgets' ) . ' '
 								. 'e.g. "noscript, style"',
 							'type' => 'text',
-							'size' => 100,
+							'size' => 70,
 							'value' => $this->oOption->ConvertOptionArrayValueToString( $this->oOption->arrOptions['general']['allowedhtmltags'] ), 
 						),
 						array(	// since 1.1.4

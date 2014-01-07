@@ -398,6 +398,11 @@ class ResponsiveColumnWidgets_Styles_ {
 			.widget_box_widget div.widget {
 				background:none;
 			}			
+			
+			/* Twenty Fourteen Support */
+			.responsive_column_widgets_box.content-sidebar {
+				padding: 0;
+			}
 		";
 		
 		/*

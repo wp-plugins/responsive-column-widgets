@@ -78,9 +78,19 @@ class ResponsiveColumnWidgets_Core_ {
 		
 		// Add the shortcode.
 		add_shortcode( $this->strShortCode, array( $this, 'GetWidgetBoxOutput' ) );
-					
+		
+		/* Support Twenty Fourteen */
+		add_action( 'init', array( $this, 'supportTwentyFourteen' ) );
+		
 	}
 	
+		public function supportTwentyFourteen() {
+		
+			if ( function_exists( 'twentyfourteen_content_width' ) ) 
+				$this->strClassSelectorBox2 .= ' content-sidebar';			
+		
+		}
+		
 	/*
 	 * Registers saved sidebars
 	 * */
@@ -270,9 +280,10 @@ class ResponsiveColumnWidgets_Core_ {
 				$strBuffer .= '<div class="' 
 					. $oWidgetBox->GetClassAttribute() 	// returns the class attribute values calculated with the stored positions and parameters.
 					. ( isset( $arrFlagsWidgetBoxWidget[ $intIndex ] ) && $arrFlagsWidgetBoxWidget[ $intIndex ] ? ' widget_box_widget' : '' )	// add no margin and no padding class
+					// . " content-sidebar"	// for Twenty Fourteen
 					. '">'
 					.  force_balance_tags( $strWidgetBuffer )
-					. '</div>';	
+					. '</div>';	 
 					
 				// If the allowed number of widgets reaches the limit, escape the loop.
 				// For the max-rows, it depends on the screen max-widths, so it will be dealt with the style.
