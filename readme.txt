@@ -3,8 +3,8 @@ Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
 Tags: array, cache, column, columns, content, css, css3, filter, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
 Requires at least: 3.3
-Tested up to: 3.6
-Stable tag: 1.1.8.3
+Tested up to: 3.8
+Stable tag: 1.1.8.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Creates a custom responsive column widget box.
