@@ -205,7 +205,7 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 
 == Changelog ==
 
-= 1.1.8.4 =
+= 1.1.8.4 - 01/08/2013 =
 * Fixed: a compatibility issue with the Twenty Fourteen theme. 
 * Tweaked: the styles of the setting pages of the plugin for WordPress v3.8.
 
