@@ -1,0 +1,1340 @@
+# Copyright (C) 2013 Responsive Column Widgets
+# This file is distributed under the same license as the Responsive Column Widgets package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Responsive Column Widgets 1.1.6\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/responsive-column-widgets\n"
+"POT-Creation-Date: 2013-06-28 18:36:20+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2013-11-25 16:23+0100\n"
+"Last-Translator: Borisa Djuraskovic <borisad@webhostinghub.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: Poedit 1.5.7\n"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:56
+msgid "Get Pro to enable this feature!"
+msgstr "Nabavite Pro da biste omogućili ovu karakteristiku!"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:57
+msgid "Get Pro Now!"
+msgstr "Nabavite Pro sada"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:78
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1202
+msgid "Get Pro"
+msgstr "Nabavite Pro "
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:79
+msgid "Donate"
+msgstr "Donirajte"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:80
+msgid "Order custom plugin"
+msgstr "Naru;ite custom plugin"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:106
+msgid "New"
+msgstr "Nova"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:106
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1765
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1975
+msgid "Edit"
+msgstr "Edituj"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:107
+msgid "Manage"
+msgstr "Upravljanje"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:108
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:614
+msgid "General Options"
+msgstr "Opšte opcije"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:109
+msgid "Information"
+msgstr "Informacije"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:110
+msgid "Get Pro!"
+msgstr "Get Pro!"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:129
+msgid "No widgetd is added yet."
+msgstr "Nijeda widget nije dodat još uvek."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:140
+msgid "Add New Widget Box"
+msgstr "Dodaj novu Widget Box"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:140
+msgid "Edit Widget Box"
+msgstr "Edituj Widget Box"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:144
+msgid "Widget Box Label"
+msgstr "Widget Box oznaka "
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:145
+msgid "Set a unique name for the widget box."
+msgstr "Namesti jedinstveno ime za Widget Box"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:146
+msgid ""
+"The label neither cannot be empty nor use the same one that already exists."
+msgstr "Oznaka ne može da bude prazna niti da se koristi ona koja već postoji."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:156
+msgid "Widget Box Sidebar ID"
+msgstr "Widget Box Sidebar ID"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:157
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:160
+msgid "The sidebar ID associated with this widget box."
+msgstr "Sidebar ID povezan sa ovim Widget Box-om"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:159
+msgid "A new ID will be automatically generated."
+msgstr "Novi ID će biti automatski generisan"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:171
+msgid "Widget Box Description"
+msgstr "Opis Widget Box-a"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:172
+msgid "Additional notes for this box."
+msgstr "Dodatne beleške za ovaj kvadrat."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:179
+msgid "Widget Beginning Tag"
+msgstr "Tag početka widget-a"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:180
+msgid "Set the before_widget html opening tag."
+msgstr "Namestite pre_widget html početni tag"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:187
+msgid "Widget Ending Tag"
+msgstr "Tag završetka widgeta"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:188
+msgid "Set the after_widget html closing tag."
+msgstr "Podesiti after_widget html  zatvarajući tag."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:195
+msgid "Starting Tag for Box Title"
+msgstr "Tag počinjanja za naslov Box-a"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:196
+msgid "Set the before_title html opening tag."
+msgstr "Podesite before_title html otvarajući tag tag."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:203
+msgid "Ending Tag for Box Title"
+msgstr "Tag završetka za naslov Box-a"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:204
+msgid "Set the after_title html closing tag."
+msgstr "Set the after_title html closing tag."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:211
+msgid "Message for No Widget"
+msgstr "Poruka kada nema widgeta"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:212
+msgid ""
+"Set the message which appears when no widget is added; thus, nothing can be "
+"rendered."
+msgstr ""
+"Set the message which appears when no widget is added; thus, nothing can be "
+"rendered."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:223
+msgid "Widget Box Parameter Values"
+msgstr "Vrednosti parametra Widget Box-a"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:228
+msgid "Numbers of Columns"
+msgstr "Broj kolona"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:234
+msgid ""
+"Set the number of columns separated by commas. Each delimited element number "
+"corresponds to the order number of the rows."
+msgstr ""
+"Podesite broj kolona razdvojenih zarezima . Svaki razgraničene broj elementa "
+"odgovara redosledu broja redova ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:235
+msgid "Min"
+msgstr "Min"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:235
+msgid "Max"
+msgstr "Max"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:236
+msgid "( for each row )"
+msgstr "( za svaki red )"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:237
+msgid ""
+"To set the number of columns by screen max-width, use the colon(:) character "
+"after the width in pixel, and use the pipe (|) character to delimit each set "
+"of number of columns. If the pixel is omitted, it is considered no limit. If "
+"the pipe delimiter is not present, the plugin will add 600: 1 internally by "
+"default."
+msgstr ""
+"Da podesite broj kolona max širine ekrana , koristite dve tačka (:) karakter "
+"posle širine u pikselima i koristite cev (|) znak da odvajite svaki skup "
+"broja kolona . Ako je piksel izostavljen , smatra se da je bez limita . Ako "
+"delimetar cevi nije prisutan ,plugin će dodati 600 : 1 podrazumevano po "
+"defaultu."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:239
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:282
+msgid "Format"
+msgstr "Format"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:239
+msgid "column value | pixel: column value | pixel: column value | ..."
+msgstr "column value | pixel: column value | pixel: column value | ..."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:240
+msgid ""
+"The following example displays widgets in 5 column when the browser width is "
+"greater than 800, and four when the width is 601 to 800, and three when the "
+"width is 481 to 600, and one when the width is 1 to 480."
+msgstr ""
+"Sledeći primer prikazuje widget-eu 5 kolona kada je širina pretraživača veća "
+"od 800 , i četiri kada je širina 601 do 800 , i tri kada je širina  481 do "
+"600 , a jedan kada je širina je 1 do 480 "
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:245
+msgid "Max Number of Widgets"
+msgstr "Max broj Widget-a"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:246
+msgid "Set the max number of widgets. 0 for no limit."
+msgstr "Namestiti max broj widgeta. 0 je za bez limita."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:253
+msgid "Max Number of Rows"
+msgstr "Max broj redova"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:254
+msgid "Set the max number of rows. 0 for no limit."
+msgstr "Podesiti max broj redova. 0 je za bez limita."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:261
+msgid "Omitting Widgets"
+msgstr "Izostavljajući widget-i"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:263
+msgid "Set the numbers of omitting widgets separated by commas."
+msgstr "podesiti broj izostavljajućih widgeta odvajajući ih zarezima"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:264
+msgid "where the second, the fifth, and the eighth ones will be skipped."
+msgstr "gde će drugi, peti i osmi biti preskočeni"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:270
+msgid "Show-only Widgets"
+msgstr "Prikazati samo widgete"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:272
+msgid "Set the numbers of show-only widgets separated by commas."
+msgstr "Podesiti broj widgeta koji se prikazuju odvojenih zarezima"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:273
+msgid "where only the first and the third ones will be shown."
+msgstr "gde će prvi i treći biti prikizan."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:279
+msgid "Column Spans"
+msgstr "Rasponi kolona"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:281
+msgid "Set the column spans separated by comma and dash."
+msgstr "Podesiti raspone kolona odvojene zarezima i tačkama"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:283
+msgid ""
+"where the first widget takes 3 columns and the fourth widget takes two and "
+"the seventh takes four. Unspecified widget items will have one column span."
+msgstr ""
+"gde prvi widget uzima 3 kolone i četvrti widget uzima dve i sedmi uzima "
+"četiri . Neodređene widget stavke će imati jednu kolonu razmaka ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:284
+msgid ""
+"To set them by screen max-width, use the colon(:) character after the width "
+"in pixel, and use the pipe (|) character to delimit each set of column "
+"spans. If the pixel is omitted, it is considered no limit. These widths need "
+"to correspond to the above Number of Columns parameter."
+msgstr ""
+"Da biste ih postavili po max širini ekrana koristite dve tačke (:) karakter "
+"posle širine u pikselima , a koristite cev (|) znak  da biste odvojili  "
+"svaki skup kolona raspona . Ako je piksel izostavljen , smatra se da je bez "
+"limita . Ove širina treba da odgovara  gore broju kolona parametra"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:291
+msgid "Cache Duration"
+msgstr "Trajanje cache-a"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:296
+msgid "seconds"
+msgstr "sekunde"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:297
+msgid ""
+"This sets how long the cache for the widget box's output remains. Set 0 to "
+"disable this feature."
+msgstr ""
+"Ovo postavlja koliko dugo cache izlaz widget box  ostaje .Podesite 0 da "
+"isključite ovu funkciju ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:297
+msgid "Default"
+msgstr "Default"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:305
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:515
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:698
+msgid "Save Changes"
+msgstr "Sačuvati promene"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:305
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:515
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:770
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1171
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1973
+msgid "Add New Box"
+msgstr "Dodaj novu box"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:337
+msgid "Auto-Insert"
+msgstr "Auto-Insert"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:341
+msgid "Enable Auto-insert"
+msgstr "Omočućiti auto unošenje"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:342
+msgid ""
+"Insert the widget box automatically. If this is Off, the below settings in "
+"this section do not take effects."
+msgstr ""
+"Automatski ubacite widget box. Ako je ovo isključeno, postavke ispod u ovom "
+"odeljku ne uzimaju efekte ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:346
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:650
+msgid "On"
+msgstr "Uključiti"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:347
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:651
+msgid "Off"
+msgstr "Isključiti"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:354
+msgid "Areas ( hook )"
+msgstr "Oblasti ( kuka )"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:358
+msgid "Post / Page Content ( the_content )"
+msgstr "Post / Sadržaj stranice ( the_content )"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:359
+msgid "Footer ( wp_footer )"
+msgstr "Footer ( wp_footer )"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:360
+msgid "Comment Text ( comment_text )"
+msgstr "Tekst kometara( comment_text )"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:362
+msgid "Check where the auto-insertion should be performed."
+msgstr "Čekirati gde bi auto unošenje trebalo da se izvrši."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:368
+msgid "Filters"
+msgstr "Filteri"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:369
+msgid ""
+"Enter the WordPress <a href=\"%1$s\">filters</a> with which the auto-"
+"insertion is performed, separated by commas."
+msgstr ""
+"Uneti WordPress<a href=\"%1$s\">filters</a>  sa kojim se auto unošenje "
+"izvršava odvojeno zarezima."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:375
+msgid "Position"
+msgstr "Pozicija"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:379
+msgid "Above"
+msgstr "Iznad"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:380
+msgid "Below"
+msgstr "Ispod"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:381
+msgid "Both"
+msgstr "Oba"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:384
+msgid ""
+"This option determines whether the widet box should be placed before or "
+"after ( above or below ) the provided contents by the hooking filters. This "
+"does not take effects for action hooks such as wp_footer."
+msgstr ""
+"Ova opcija određuje da lividet da li bi widget box treba da bude postavljen "
+"pre ili posle ( iznad ili ispod ) pruženih sadržaja od strane provlačenja "
+"filterima . Ovo ne utiče na akcione kuke kao što wp_footer."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:390
+msgid "Actions"
+msgstr "Akcije"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:391
+msgid ""
+"Enter the WordPress <a href=\"%1$s\">actions</a> with which the auto-"
+"insertion is performed, separated by commas."
+msgstr ""
+"Unesite WordPress<a href=\"%1$s\">actions</a> sa  kojim se auto ubacivanje "
+"izvodi odvojeno zarezima"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:398
+msgid "Limit Auto-Insert to Checked Page Types"
+msgstr "Limit auto inošenja za čekirane tipove stranica"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:402
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:440
+msgid "Home / Front Page"
+msgstr "Početna/prednja stranicaq"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:403
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:441
+msgid "Archives"
+msgstr "Arhive"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:404
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:442
+msgid "404 Page"
+msgstr "404 stranica"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:405
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:443
+msgid "Search Results"
+msgstr "Rezultati pretrage"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:407
+msgid ""
+"Check the page types that the auto-insertion should be performed to restrict "
+"it to certain page types. Leave them all unchecked if you want the auto-"
+"insertion to perform in all types of pages."
+msgstr ""
+"Proverite tipove stranica za koje auto - unošenje treba da obavi da ga "
+"ograniči na određene tipove stranica . Ostavite ih sve neprovereneako želite "
+"da automatsko unošenje obavlja u svim tipovima stranicama ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:412
+msgid "Limit Auto-Insert to Checked Post Types"
+msgstr "Limit auto inošenja za čekirane tipove postova"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:413
+msgid ""
+"Check the post types that the auto-insertion should be performed to restrict "
+"it to certain post types. Leave them all unchecked if you want the auto-"
+"insertion to perform in all types of posts."
+msgstr ""
+"Proverite tipove poruka za koje auto - unošenje  treba obaviti da ga "
+"ograničite na određene tipove poruka . Ostavite ih sve nečekirane ako želite "
+"da se auto - unošenje obavlja u svim vrstama postovima"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:420
+msgid "Limit Auto-Insert to Checked Categories"
+msgstr "Limit auto inošenja za čekirane kategorije"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:421
+msgid ""
+"Check the categories that the auto-insertion should be performed. This only "
+"applies to posts. Leave them all unchecked to aplly the auto-insertion to "
+"all posts."
+msgstr ""
+"Proverite kategorije  koje auto - unošenje  treba da obavi . Ovo se odnosi "
+"samo na poruke . Ostavite ih sve nečekirane da bi se primenilo auto - "
+"unošenje svih postova."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:429
+msgid "Limit Auto-Insert to Certain Post / Page IDs"
+msgstr "Limit auto unošenja odredjenog posta/ID stranice"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:430
+msgid ""
+"Enter the post IDs where the auto-insertion should be performed, separated "
+"by commas. Set empty to apply the auto-insertion to all posts."
+msgstr ""
+"Unesite post legitimacije gde bi trebalo da se obavljaauto - umetanje , "
+"razdvojene zarezima . Postavite prazan da primeni automatskog umetanja svih "
+"postova ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:436
+msgid "Page Types to Disable Auto-Insert"
+msgstr "Tipovi stranica za onemogućavanje auto unošena"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:445
+msgid ""
+"Check the page types that the auto-insertion should be disabled. Leave them "
+"all unchecked if you want the auto-insertion to perform in all types of "
+"pages."
+msgstr ""
+"Čekirajte tipove stranica koje auto - umnošenje treba biti onemogućeno "
+"Ostavite ih sve nečekirano ako želite da se automatsko uošenjed bavlja u "
+"svim tipovima stranicama ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:450
+msgid "Post Types to Disable Auto-Insert"
+msgstr "Tipovi postova za onemogućavanje auto unošena"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:451
+msgid ""
+"Check the post types that the auto-insertion should be disabled. Leave them "
+"all unchecked if you want the auto-insertion to perform in all types of "
+"posts."
+msgstr ""
+"Proverite  tipove postova da auto - ubacivanje bude onemogućeno. Ostavite ih "
+"sve nečekirane ako želite automatsko ubacivanje da obavlja u svim vrstama "
+"poruka ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:458
+msgid "Categories to Disable Auto-Insert"
+msgstr "Kategorije u Onemogući auto ubacivanje"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:459
+msgid ""
+"Check the categories that the auto-insertion should be disabled. This only "
+"applies to posts."
+msgstr ""
+"Čekirati kategorije koje auto unos treba da bude onemogućen. Ovo se samo "
+"odnosi na postove"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:467
+msgid "Post / Page ID to Disable Auto-Insert"
+msgstr "Post /  ID stranice za onemogućavanje auto ubacivanja"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:468
+msgid ""
+"Enter the post IDs where the auto-insertion should be disabled, separated by "
+"commas. Set empty not to disable the auto-insertion in any post."
+msgstr ""
+"Uneti postID gde auto-ubacivanje treba da bude onemogućeno, odvojeno "
+"zarezoma. Podesiti na prazno da ne omogući auto ubacivanje bilo kakvog posta."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:479
+msgid "HTML"
+msgstr "HTML"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:483
+msgid "Remove ID Attributes"
+msgstr "Ukloniti ID atribute"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:486
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:688
+msgid "Yes"
+msgstr "Da"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:487
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:689
+msgid "No"
+msgstr "Ne"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:499
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1269
+msgid "Custom Style"
+msgstr "Custom stil"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:503
+msgid "CSS Rule"
+msgstr "CSS pravila"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:504
+msgid "Define your custom CSS rules here."
+msgstr "Definisati vaša custom CSS pravila ovde."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:528
+msgid "CSS"
+msgstr "CSS"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:532
+msgid "Timing to Load"
+msgstr "Tajming za učitavanje"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:533
+msgid ""
+"Select the timing to load the plugin's CSS base rules. If this is set the "
+"second item, the below Area to Load option does not take effect."
+msgstr ""
+"Izaberite tajming za učitavanje CSS osnovnih pravila plugina. Ako je ovo "
+"postavljeno kao druga stavka, ispod područja za učitavanje opcija nema "
+"efekta."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:536
+msgid "When the head tab is loaded. ( Default )"
+msgstr "Lada je glavni tab učitan.(Default)"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:537
+msgid "When the first widget box is loaded."
+msgstr "Kada je prva widget box dodata."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:543
+msgid "Areas to Load"
+msgstr "Področja za učitavanje"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:544
+msgid ""
+"Select the areas to load the plugin CSS rules besides the front end pages."
+msgstr ""
+"Izaberite oblasti za učitavanje CSS pravila plugina pored prednjeg dela "
+"stranice."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:547
+msgid "Regular Pages"
+msgstr "Regularne stranice"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:548
+msgid "Login Page"
+msgstr "Login stranica"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:549
+msgid "Administration Panel"
+msgstr "Panel administartora"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:560
+msgid "Class Selector Names"
+msgstr "Klasa selektora imena"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:563
+msgid ""
+"Set the custom class selector names for the class attributes which is "
+"applied to the widget boxes. This cannot be empty."
+msgstr ""
+"Postavite custom klasu selektor imena za atribute klase koji se primenjuje "
+"na widget box. Ovo ne može biti prazno ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:568
+msgid "Box"
+msgstr "Box"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:569
+msgid "Row"
+msgstr "Red"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:570
+msgid "Column"
+msgstr "Kolona"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:580
+msgid "Enqueue Styles in Head Tag"
+msgstr "posebni stilovi u glavnom tagu"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:581
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:584
+msgid ""
+"This is for those who use the shortcode or the PHP function, "
+"<code>ResponsiveColumnWidgets()</code>, directly into posts or the theme but "
+"do not want the style tag to be embedded in the body tag."
+msgstr ""
+"Ovo je za one koji koriste shortcode ili PHP funkciju , <code> "
+"ResponsiveColumnVidgets ( ) < / code > , direktno u poruke ili temu , ali ne "
+"žele da stil taga bude ugrađen u telo taga."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:582
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:585
+msgid ""
+"The plugin creates CSS rules based on the passed parameters. So you need to "
+"tell the plugin which parameters you used."
+msgstr ""
+"Plugi stvara CSS pravila bazirana an prosledjenim parametrima. Tako da biste "
+"trebakli da kažete pluginu koji parametar koristite."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:587
+msgid ""
+"Specify the parameters used in the shorcode or the PHP function per line."
+msgstr "Odrediti parametre korišćene u shortcode ili PHP funkciji po rečenici."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:588
+msgid ""
+"They need to be entered in the format of shortcode. If you use <code>array"
+"( 'label' => 'my_widget_box', 'columns' => '3, 4, 1' )</code> in the PHP "
+"function, change it to, <code>label=\"my_widget_box\" columns=\"3, 4, 1\"</"
+"code>."
+msgstr ""
+"Moraju biti unešeni u formatu shortcode.Ako koristite <code>array( 'label' "
+"=> 'my_widget_box', 'columns' => '3, 4, 1' )</code> u PHP funkciji, "
+"promenite u<code>label=\"my_widget_box\" columns=\"3, 4, 1\"</code>."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:589
+msgid "The one with a blank parameter is already registered by default."
+msgstr "Ona sa praznim parametrom je već registrovana kao default."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:602
+msgid "Minify CSS Code"
+msgstr "Umanjiti CSS kod"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:603
+msgid "Compress the size of CSS code that the plugin generates."
+msgstr "Kompresovati veličinu CSS koda koji plugin generiše."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:621
+msgid "Access Rights"
+msgstr "Prava pristupanje"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:622
+msgid "Set the access level to this setting pages."
+msgstr "Namestiti nivo pristupa za ove postavke sTranice."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:626
+msgid "Administrator"
+msgstr "Administrator"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:627
+msgid "Editor"
+msgstr "Editor"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:628
+msgid "Author"
+msgstr "Autor"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:629
+msgid "Contributor"
+msgstr "Saradnik"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:630
+msgid "Subscriber"
+msgstr "Pretplatnik"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:636
+msgid "Additional Allowed HTML Tags"
+msgstr "Dodatni dozvoljeni HTML tagovi"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:637
+msgid ""
+"Specify which HTML tags are allowed to be posted in the New / Edit page to "
+"prevent them from being stripped out by the WordPress KSES filter, separated "
+"by commas. For security, many tags are not allowed by default."
+msgstr ""
+"Navedite koji HTML tagovi su dozvoljeni da budu objavljena u Novim/ "
+"Editovanim stranicama da bi ih sprečili da budu oduzeta od strane WordPress "
+"KSES filtera , razdvojene zarezima . Zarad bezbednosti, mnoge oznake nisu "
+"dozvoljeni po defaultu ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:646
+msgid "Debug Mode"
+msgstr "Debug način"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:647
+msgid ""
+"This is mostly for developers. General users may occasionally need to turn "
+"this on when reporting the plugin behavior for a bug report."
+msgstr ""
+"Ovo je uglavnom za programere . Opšti korisnici će možda povremeno morati da "
+"uključe ovo , kada izveštavaju ponašanje plugina za izveštaj o grešci ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:659
+msgid "Responsive Column Widget Box Widget"
+msgstr "Responsive Column Widget Box Widget"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:660
+msgid ""
+"Enable / disable the plugin widget that encapsulates a sidebar in the "
+"Widgets page."
+msgstr ""
+"Omogući/Onemogući widget plugina koji sažima sidebar na stranici widgeta."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:663
+msgid "Enable"
+msgstr "Omogući "
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:664
+msgid "Disable"
+msgstr "Onemogući"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:672
+msgid "Execute Shortcodes in Widget Boxes"
+msgstr "Poništiti shortcodes u Widget box"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:674
+msgid "No (Default)"
+msgstr "Ne (Default)"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:675
+msgid "Execute shortcodes in text widgets."
+msgstr "Poništiti shortcodes u tekst widgetima."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:676
+msgid "Execute shortcodes in whole widget boxes."
+msgstr "Poništiti shortcodes u celim widget box."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:684
+msgid "Have You Rated the Plugin?"
+msgstr "Da li ste ocenili plugin?"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:685
+msgid "If you have <a href=\"%1$s\">rated</a> the plugin, set it Yes."
+msgstr "Ako jeste<a href=\"%1$s\">rated</a>  plugin, namestite na DA"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:710
+msgid "Option Management"
+msgstr "Opcije upravljanja"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:711
+msgid "Be carefult to perform these operations."
+msgstr "Pažljivo rukovodite ovim operacijama."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:716
+msgid "Attempt to Override Allocated Memory Size"
+msgstr "Pokušaj da se piše preko alocirana veličine memorije"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:717
+msgid ""
+"If the error, \"Allowed memory size of ... bytes exhausted\" occurs, try "
+"increasing the memory size allocated for PHP. Set 0 to use the server's "
+"setting."
+msgstr ""
+"Ako se greška , \"Allowed memory size of ... bytes exhausted\" javlja , "
+"pokušajte da povećate veličinu memorije dodeljenu za PHP. Podesite na 0 da "
+"biste koristili postavku servera ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:718
+msgid "The current memory limit set by the server:"
+msgstr "Sadašnji limit memorije podešen je od strane servera :"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:719
+msgid "The necessary functions are disabled by the server."
+msgstr "Potrebne funkcije su onemogućene od strane servera. "
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:727
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:736
+msgid "Initialize"
+msgstr "Inicijalizovati"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:732
+msgid "Initialize Options"
+msgstr "Opcije inicijalizacije"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:733
+msgid "Clean all saved data and intialize to the default."
+msgstr "Očistite sve sašuvane podatke i inbicijalizujte na default."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:740
+msgid "Clear Caches"
+msgstr "Očisti cacahe"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:741
+msgid "Delete widget boxes' caches."
+msgstr "Obrisati widget box caches"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:749
+msgid "Perform"
+msgstr "Izvesti"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:784
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1183
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1974
+msgid "Delete Checked"
+msgstr "Čekirano brisanje"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:795
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1976
+msgid "Export All"
+msgstr "Exsportuj sve"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:796
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1977
+msgid "Export Checked"
+msgstr "Eksport čekiran"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:807
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1979
+msgid "Import Widget Boxes"
+msgstr "Importuj Widget boxes"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:826
+msgid "No widget has been added to this widget box yet."
+msgstr "Nijedan widget nije dodat na stranicu  na widget područje."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:827
+msgid ""
+"You need to add widgets in the <a href='%s'>Widgets</a> page to the widget "
+"box."
+msgstr ""
+"Trebate da dodate widgete na <a href='%s'>Widgets</a> stranicu u widget box-"
+"u."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:866
+msgid "Registered Codes"
+msgstr "Registovani kodovi"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:963
+msgid "Screen Max Width (pixel)"
+msgstr "Maksimaln ŠIRINA EKRANA (u pikselima)"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:964
+msgid "Number of Columns"
+msgstr "Broj kolona"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1035
+msgid ""
+"Thanks for using Responsive Column Widgets. Your feedback is very important "
+"to us. Please <a href=\"%1$s\">rate</a> the plugin so that it can be "
+"improved further. Thank you!"
+msgstr ""
+"Hvala vam što koristite Responsive Column Widgets. Vaš feeeback nam je veoma "
+"važan. Molimo vas<a href=\"%1$s\">rate</a>  plugin tako da bismo ga "
+"poboljšavali u budućnosti. Hvala!"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1039
+msgid ""
+"This message can be disabled in the <a href=\"%1$s\">Geneneral Options</a> "
+"page."
+msgstr "Ova poruka je onemugićila<a href=\"%1$s\"> Opšte opcije</a> stranicu"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1199
+msgid "Please Review"
+msgstr "Pregledajte"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1200
+msgid ""
+"If you find the plugin useful, please <a href=\"http://wordpress.org/support/"
+"view/plugin-reviews/responsive-column-widgets\">rate</a> it so that others "
+"can know it."
+msgstr ""
+"Ako mislite da je plugin korisna, molim vas<a href=\"http://wordpress.org/"
+"support/view/plugin-reviews/responsive-column-widgets\">rate</a> da bi i "
+"drugi to znali. "
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1203
+msgid ""
+"If you like the plugin and want more useful features, please upgrade it to "
+"<a href=\"http://en.michaeluno.jp/responsive-column-widgets/responsive-"
+"column-widgets-pro\">Pro</a>."
+msgstr ""
+"Ako vam se dopada plugin, upgrade-ujte na<a href=\"http://en.michaeluno.jp/"
+"responsive-column-widgets/responsive-column-widgets-pro\">Pro</a>."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1205
+msgid "Exchanges"
+msgstr "Razmene"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1206
+msgid ""
+"You may receive a discount or a copy of the plugin by contributing one of "
+"the followings. A contribution does not have to be for this plugin. It can "
+"be for any product of miunosoft. Please just ask."
+msgstr ""
+"Možda ćete dobiti popust ili kopiju plugina doprinoseći jednom od sledećeg . "
+"Doprinos ne mora da bude za ovaj plugin . To može biti za bilo miunosoft "
+"proizvod . Samo pitajte ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1209
+msgid ""
+"<strong>Testing Development Version</strong> - If the development version is "
+"greater than the current stable version, tell the developer that the "
+"development version works fine or not in your environment. Then you will get "
+"a 20% off coupon for miunosoft products."
+msgstr ""
+"<strong>Testing Development Version</strong> - Ako verzija razvoja je veća "
+"od trenutne stabilne verzije , recite  programeru da li verzija razvoja radi "
+"dobro ili ne u vašem okruženju . Tada ćete dobiti kupon sa  20 % popusta za "
+"miunosoft proizvode ."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1211
+msgid ""
+"The development version number can be confirmed <a href=\"%1$s\">here</a>."
+msgstr ""
+"Broj isprogramirane bverzije možete potvrditi<a href=\"%1$s\"> ovde</a>."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1213
+msgid "It can be downloaded <a href=\"%1$s\">here</a>."
+msgstr "Možete downloadovati<a href=\"%1$s\"> odavde</a>."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1216
+msgid ""
+"<strong>Translation</strong> - submitting a localization file for an "
+"untranslated languge. With a plugin called <a href=\"http://wordpress.org/"
+"extend/plugins/codestyling-localization/stats/\">Codestyling Localization</"
+"a> no programming skill is required to create a language file."
+msgstr ""
+"<strong>Translation</strong> - podnesite lokaliyovani fajl za neprevedene "
+"jezike. Sa pluginom nazvanim <a href=\"http://wordpress.org/extend/plugins/"
+"codestyling-localization/stats/\">Codestyling Localization</a> nijedna "
+"programerska veština nije potrebna da biste stvorili fajl sa jezicima."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1217
+msgid ""
+"<strong>Testimonial</strong> - with your photo, comments, and a link to your "
+"SNS page will be on the plugin site."
+msgstr ""
+"<strong>Testimonial</strong> - sa vašom slikom, komentarima i linkom za vaš "
+"SNS stranica će biti na sajtu plugina."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1218
+msgid "<strong>Graphic Design</strong> - icons, banners etc. for the plugin."
+msgstr "<strong>Graphic Design</strong> - ikone, baneri itd za plugin."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1219
+msgid ""
+"<strong>Review Article</strong> - requires Google PageRank 3 or higher and "
+"the link to the product page."
+msgstr ""
+"<strong>Review Article</strong> - potrebna je Google PageRank 3 ili veća i "
+"link odgovarajuće stranice proizvoda."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1220
+msgid ""
+"<strong>Video Tutorial</strong> - a brief instruction video tutorial with "
+"your narration."
+msgstr ""
+"<strong>Video Tutorial</strong> - kratak video tutorijal sa vašom naracijom."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1221
+msgid "Something else - please ask for something else for the exchange."
+msgstr "Drugo nešto - molim vas da izaberete nešto drugo za razmenu."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1223
+msgid "Contanct Info"
+msgstr "Kontakt informacije"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1231
+msgid ""
+"Please consider upgrading to the Pro version if you like the plugin and want "
+"more useful features."
+msgstr ""
+"Molimo vas da razmislite o upgrade-ingu na Pro verziju ako vam se dopada "
+"plugin i želite još korisnih karakteristika."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1233
+msgid "Supported Features"
+msgstr "Podržane karakteristike"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1240
+msgid "Standard"
+msgstr "Standard"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1243
+msgid "Pro"
+msgstr "Pro"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1248
+msgid "Multiple Columns"
+msgstr "Razne kolone"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1255
+msgid "Edit and Save Parameter Values"
+msgstr "Edituj i sačuvaj vrednosti parametra"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1262
+msgid "Auto-insert"
+msgstr "Auto-ubacivanje"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1276
+msgid "Multiple Widget Boxes"
+msgstr "Razne Widget Boxes"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1283
+msgid "Export / Import Widget Boxes Options"
+msgstr "Opcije Export / Import Widget Boxes "
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1290
+msgid "Ad Removal"
+msgstr "Uklanjanje oglasa"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1297
+msgid "CSS Custom Class Attribute Names"
+msgstr "CSS Custom klasa atributi imena"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1304
+msgid "Premium Support"
+msgstr "Premium podrška"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1338
+msgid "Available"
+msgstr "Dostupno"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1338
+msgid "Unavailable"
+msgstr "Nije pdostupno."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1389
+msgid "The label cannot be empty."
+msgstr "Oznaka ne sme da bude prazna."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1398
+msgid "The same label already used."
+msgstr "Ista oznaka je već iskorišćena."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1427
+msgid "The widget box options have been saved."
+msgstr "Widget box opcije su sačuvane."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1572
+msgid "There was a broken item and it has been removed."
+msgstr "Postojala je loša stavka i zato je uklonjena."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1592
+msgid "The selected widget boxes have been deleted."
+msgstr "Selektovani widget box su obrisani."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1733
+msgid "Box Label"
+msgstr "Oznaka box-a"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1733
+msgid "Description"
+msgstr "Opis"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1736
+msgid "Sidebar ID"
+msgstr "Sidebar ID"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1739
+msgid "Shortcode"
+msgstr "Shortcode"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1739
+msgid "PHP Code"
+msgstr "PHP kod"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1739
+msgid "Example"
+msgstr "Primer"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1742
+msgid "Operation"
+msgstr "Operacija"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1972
+msgid ""
+"<a href=\"http://wordpress.org/extend/plugins/responsive-column-widgets/"
+"other_notes/\">Responsive Column Widgets</a> needs to be installed and "
+"activated."
+msgstr ""
+"<a href=\"http://wordpress.org/extend/plugins/responsive-column-widgets/"
+"other_notes/\">Responsive Column Widgets</a>treba da se instalira i aktivira."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1978
+msgid "Failed to validate the license key."
+msgstr "Nije uspelo overavanje ključa licence."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1980
+msgid "License Key"
+msgstr "Ključ licence"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1981
+msgid "License Status"
+msgstr "Status licence"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1982
+msgid "Not Verified"
+msgstr "Nije odobreno"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1983
+msgid "Nothing could be exporeted."
+msgstr "Ništa ne može da se eksportuje."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1984
+msgid "Pro Settings"
+msgstr "Pro postavke"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1985
+msgid ""
+"Set the license key provided by miunosoft written in the purchase receipt."
+msgstr ""
+"Podesiti ključ licence omogućen od strane miunosoft napiran na računu "
+"kupovine."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1986
+msgid "The current status of the license of this plugin."
+msgstr "Trenutni status licence ovog plugina."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1987
+msgid "The license key has been verified."
+msgstr "Ključ sa licencom je potrdjen."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1988
+msgid "The main plugin's version must be at least 1.0.4.8."
+msgstr "Glavna plugin verzija mora da bude makar 1.0.4.8."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1989
+msgid "The plugin, Responsive Column Widgets Pro, was deactivated."
+msgstr " Responsive Column Widgets Pro plugin je deaktivirana"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1990
+msgid ""
+"There was %d box(es) with borken options that were unable to be imported."
+msgstr ""
+"Ovde je bila %d box(es)   sa lošim opcijama zbog kojih nije mogla da se "
+"importuje."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1991
+msgid "Validate"
+msgstr "Potvrditi"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_.php:1992
+msgid "View"
+msgstr "Pregledaj"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:550
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2543
+msgid "Upload Image"
+msgstr "Uploaduj sliku"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:551
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1176
+msgid "Use This Image"
+msgstr "Koristi ovu sliku"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1009
+msgid "Options have been updated."
+msgstr "Opcije su updateovane."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1193
+msgid "The file is bigger than this PHP installation allows."
+msgstr "Ovaj fajl je veći nego što PHP instalacija dozvoljava."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1194
+msgid "The file is bigger than this form allows."
+msgstr "Ovaj fajl je veći nego što forma dozvoljava."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1195
+msgid "Only part of the file was uploaded."
+msgstr "Samo deo fajla je uploadovan."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1196
+msgid "No file was uploaded."
+msgstr "Nijedan fajl nije uploadovan."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1201
+msgid "Import Error: Wrong file type."
+msgstr "Važna greška:Pogrešan tip fajla."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1207
+msgid "Import Error: Wrong text format."
+msgstr "Važna greška:Pogršan format teksta."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1229
+msgid "The importing process has been failed."
+msgstr "Proces unošenja nije uspeo."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1240
+msgid "Options were imported."
+msgstr "Opcije su unešene."
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1536
+msgid "Settings"
+msgstr "Postavke"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:1563
+msgid "Powered by"
+msgstr "Omogućeno od strane"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2219
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2246
+msgid "Export Options"
+msgstr "Export opcije"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2266
+msgid "Import Options"
+msgstr "Import opcije"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2475
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2495
+msgid "Submit"
+msgstr "Podneti"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2544
+msgid "Delete Image"
+msgstr "Obrisati sliku"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2545
+msgid "Unset Image"
+msgstr "Nenameštena slika"
+
+#: classes/ResponsiveColumnWidgets_Admin_Page_Framework.php:2582
+msgid "No url has been set."
+msgstr "Nijedan url nije namešten."
+
+#: classes/ResponsiveColumnWidgets_Core_.php:134
+msgid "Example Shortcode"
+msgstr "Primer Shortcode"
+
+#: classes/ResponsiveColumnWidgets_Core_.php:136
+msgid "Example PHP Code"
+msgstr "Primer PHP koda"
+
+#: classes/ResponsiveColumnWidgets_ImageHandler.php:122
+msgid "The image data is empty."
+msgstr "Podaci sa slikama su prazni."
+
+#: classes/ResponsiveColumnWidgets_Option_.php:108
+msgid "The default widget box of Responsive Column Widgets."
+msgstr "Default widget box odgovarajuće kolone widgeta."
+
+#: classes/ResponsiveColumnWidgets_Requirements.php:110
+msgid "Deactivating the plugin."
+msgstr "Deaktivacija plugina."
+
+#: classes/ResponsiveColumnWidgets_Widget_.php:51
+msgid "A widget that encapsulates a sidebar."
+msgstr "Widget koji sažima sidebar."
+
+#: classes/ResponsiveColumnWidgets_Widget_.php:363
+msgid ""
+"A dependency conflict occurred. Please reselect a child widget in the "
+"Widgets page of the administration area."
+msgstr ""
+"Konflikt zavisnosti je nastao. Molim vas reselektujte dete widget na Widgets "
+"stranici administartivnog područja."
+
+#: classes/ResponsiveColumnWidgets_Widget_.php:428
+msgid "Select Sidebar"
+msgstr "Izaberite sidebar"
+
+#: responsive-column-widgets.php:146
+msgid ""
+"Responsive Column Widgets classes have not been instantiated. Try using this "
+"later than the plugins_loaded hook."
+msgstr ""
+"Odgovarajuće kolone widgeta klase nisu instalirane. Pokušajte da kasnije ovo "
+"iskoristite umesto plugins_loaded kuke."
+
+#. Plugin Name of the plugin/theme
+msgid "Responsive Column Widgets"
+msgstr "Odgovarajući widgeti kolona"
+
+#. Plugin URI of the plugin/theme
+msgid "http://en.michaeluno.jp/responsive-column-widgets"
+msgstr "http://en.michaeluno.jp/responsive-column-widgets"
+
+#. Description of the plugin/theme
+msgid ""
+"Creates a widget box which displays widgets in columns with a responsive "
+"design."
+msgstr ""
+"Stvara widget box koja prikazuje widgete u kolonama sa odgovarajućim "
+"dizajnom."
+
+#. Author of the plugin/theme
+msgid "Michael Uno (miunosoft)"
+msgstr "Michael Uno (miunosoft)"
+
+#. Author URI of the plugin/theme
+msgid "http://michaeluno.jp"
+msgstr "http://michaeluno.jp"
