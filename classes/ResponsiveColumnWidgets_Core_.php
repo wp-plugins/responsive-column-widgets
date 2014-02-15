@@ -62,7 +62,10 @@ class ResponsiveColumnWidgets_Core_ {
 		$this->oDecode = new ResponsiveColumnWidgets_Decoder;
 				
 		// Register this plugin sidebar; if already registered, it will do nothing
-		$this->RegisterSidebar();	// must be called after $this->oOption is set.
+		if ( isset( $this->oOption->arrOptions['general']['delay_register_sidebar'] ) && $this->oOption->arrOptions['general']['delay_register_sidebar'] )
+			add_action( 'widgets_init', array( $this, 'registerSidebar' ), 999 );
+		else 
+			$this->registerSidebar();	// must be called after $this->oOption is set.
 		
 		// Add the stylesheet	
 		if ( isset( $this->oOption->arrOptions['general']['general_css_timimng_to_load'] ) 
@@ -94,7 +97,7 @@ class ResponsiveColumnWidgets_Core_ {
 	/*
 	 * Registers saved sidebars
 	 * */
-	function RegisterSidebar() {
+	public function registerSidebar() {
 		
 		global $wp_registered_sidebars;
 

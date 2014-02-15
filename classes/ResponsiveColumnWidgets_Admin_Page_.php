@@ -43,6 +43,8 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		'call_id',
 		// 1.1.8.4
 		'widget_box_column_text_alignment',
+		// 1.1.9,
+		'delay_register_sidebar',
 	);
 	// since 1.1.1.2
 	protected $intIntervalToShowPleaseRate = 1209600;	// seconds * minutes * hours * days; 1209600 is 2 weeks.
@@ -808,6 +810,13 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 							'delimiter' => '&nbsp;&nbsp;&nbsp;',
 							'value' => $this->oOption->arrOptions['general']['has_reviewed'],
 						),	
+						array(  // since 1.1.9
+							'id' => 'delay_register_sidebar',
+							'title' => __( 'Delay Sidebar Registration', 'responsive-column-widgets' ),
+							'label' => __( 'Wait until theme sidebars are registered to create the plugin custom sidebar.', 'responsive-column-widgets' ),
+							'type' => 'checkbox',
+							'value' => $this->oOption->arrOptions['general']['delay_register_sidebar'],
+						),							
 						array(  // single button
 							'pre_html' => '<div class="text-info">' . ( isset( $this->oUserAds ) ? $this->oUserAds->GetTextAd() : '' ) . '</div>',						
 							'id' => 'submit_save_2',

@@ -32,11 +32,14 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 			return register_widget( 'ResponsiveColumnWidgets_Widget' );	// the class name
 
 	}	
-	public static function fixAsyncSaveBug() {	// since 1.1.7.3
-		
-		// This fixes a bug-like error with asynchronous widget updates,
-		// "Notice: Undefined index: responsive_column_widget_box-[...] in ...\wp-admin\includes\ajax-actions.php on line 1578"
-		// A callback for the 'sidebar_admin_setup' action hook.
+	
+	/**
+	 * Fixes a bug-like error with asynchronous widget updates, "Notice: Undefined index: responsive_column_widget_box-[...] in ...\wp-admin\includes\ajax-actions.php on line 1578"
+	 * 
+	 * A callback for the 'sidebar_admin_setup' action hook.
+	 * @since			1.1.7.3
+	 */
+	public static function fixAsyncSaveBug() {
 		
 		global $wp_registered_widget_controls;
 		if ( ! isset( $_POST['widget-id'], $_POST['id_base'] ) ) return;
@@ -56,10 +59,9 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 	public function __construct() {
 		
 		// Objects
-		// Do not store objects in object properties as it seems PHP stores callbacks including referenced objects in the properties with their total sizes, which causes this object to be huge in size.
 		// $this->oOption = & $GLOBALS['oResponsiveColumnWidgets_Options']; // reference the option object.
 		
-		// Proeprties
+		// Properties
 		$this->strClassSelectorFormOption = self::$strBaseID . '_form_option';
 		
 		// Add a common JavaScript script into the head tag of the widget.php admin page.
@@ -269,7 +271,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 			}
 			function ResponsiveColumnWidgets_SelectAvailable( selected ) {
 				
-				// The plugin JavaScript scripts disables the plugin widget's drop-down list items based on the 
+				// The plugin JavaScript scripts disable the plugin widget's drop-down list items based on the 
 				// sidebar dependencies. There might be a case that previously selected item gets disabled
 				// by it. In that case, this function is used to pick one available item from the list. If nothing is available,
 				// a blank value ( no item ) will be assigned to the selected item.			
@@ -316,12 +318,7 @@ class ResponsiveColumnWidgets_Widget_ extends WP_Widget {
 				} else {	// widget added
 					
 					ResponsiveColumnWidgets_DoAjaxRequestForWidgetRegistration( ui.item );
-					
-// setTimeout(
-  // function() { 
-    // ResponsiveColumnWidgets_PressSaveButton( ui.item );	
-  // }, 1500
-// );					
+									
 				}
 				
 			}

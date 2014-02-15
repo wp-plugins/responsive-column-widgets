@@ -35,7 +35,7 @@ class ResponsiveColumnWidgets_Events_ {
 			add_action( 'RCWP_action_simplepie_renew_cache', array( $this, 'RenewCaches' ) );
 	
 		// Redirects
-		if ( isset( $_GET['responsive_column_widgets_link'] ) && $_GET['responsive_column_widgets_link'] ) {
+		if ( isset( $_GET['responsive_column_widgets_link'] ) && $_GET['responsive_column_widgets_link'] && is_user_logged_in() ) {
 			
 			$oRedirect = new ResponsiveColumnWidgets_Redirects;
 			$oRedirect->Go( $_GET['responsive_column_widgets_link'] );
@@ -44,7 +44,7 @@ class ResponsiveColumnWidgets_Events_ {
 		}
 			
 		// Draw cached image.
-		if ( isset( $_GET['responsive_column_widgets_image'] ) && $_GET['responsive_column_widgets_image'] ) {
+		if ( isset( $_GET['responsive_column_widgets_image'] ) && $_GET['responsive_column_widgets_image'] && is_user_logged_in() ) {
 			
 			$oImageLoader = new ResponsiveColumnWidgets_ImageHandler( 'RCW' );
 			$oImageLoader->Draw( $_GET['responsive_column_widgets_image'] );

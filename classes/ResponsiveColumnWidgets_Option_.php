@@ -103,6 +103,7 @@ class ResponsiveColumnWidgets_Option_ {
 			'general_css_minify' => false, // since 1.1.5.2
 			'execute_shortcode_in_widgets' => 0,	// since 1.1.5.3, 0 through 2.
 			'clear_widget_box_caches' => 0,	// since 1.1.6
+			'delay_register_sidebar' => 0,	// 1.1.9+
 		),
 		// since 1.1.3
 		'hierarchy' => array( 	// stores registered sidebar IDs and their relationships with plugin's widget boxes.
