@@ -205,7 +205,7 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 
 == Changelog ==
 
-= 1.1.9 =
+= 1.1.9 - 02/21/2014 =
 * Added: the option to delay sidebar registration. 
 * Added: the Serbo-Croatian language file.
 
