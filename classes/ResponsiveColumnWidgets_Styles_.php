@@ -310,7 +310,8 @@ class ResponsiveColumnWidgets_Styles_ {
 	protected function getWidthForColSpan( $intMaxCol, $intColSpan ) {	// since 1.1.5
 
 		// If the both numbers are the same, it means it's as one element, one column.
-		if ( $intMaxCol == $intColSpan ) return 100 - 1.6;	// 98.4%. 1.6% is the left margin.
+		if ( $intMaxCol == $intColSpan ) return 100;	// 100$
+		// if ( $intMaxCol == $intColSpan ) return 100 - 1.6;	// 98.4%. 1.6% is the left margin.
 		
 		return ( ( $this->strColPercentages[ $intMaxCol ] + 1.6 ) * $intColSpan ) - 1.6;
 		
