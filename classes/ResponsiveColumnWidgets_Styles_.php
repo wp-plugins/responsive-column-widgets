@@ -100,14 +100,16 @@ class ResponsiveColumnWidgets_Styles_ {
 	protected function GetWidgetBoxStyle( $strSidebarID, $strCallID, $arrScreenMaxWidths, $bIsScoped=true ) {	// since 1.1.1
 				
 		$strScoped = $bIsScoped ? ' scoped' : '';
-		$strStyleRules = '';
-		
+		$strStyleRules = '';		
+		$_iPreveousMaxWidth = 0;
+
+		sort( $arrScreenMaxWidths, SORT_NUMERIC );		// will be parsed from the smallest max width to the largest.
 		foreach ( $arrScreenMaxWidths as $intScreenMaxWidth ) {
-									
-			// If the screen max-width is 0, meaning no-limit, skip, because it's already defined in the base rules.
-			// We need to set style rules for no-limit screen max widths as well later at some point when the width offset option is implemented.
-			// For now and for the back-ward compatibility, just skip them and leave them untouched.
-			if ( $intScreenMaxWidth == 0 ) continue;
+						
+			// If the screen max-width is 0, meaning no-limit,
+			if ( $intScreenMaxWidth == 0 ) {
+				continue;
+			}
 			
 			// Set the prefixes.
 			$strPrefixElementOf = $this->strClassSelectorColumn . '_' . $intScreenMaxWidth . '_element_of_';
@@ -115,8 +117,7 @@ class ResponsiveColumnWidgets_Styles_ {
 			$strPrefixRow = $this->strClassSelectorRow . '_' . $intScreenMaxWidth;
 				
 			// okay, add the rules.
-			$strStyleRules .= "@media only screen and (max-width: {$intScreenMaxWidth}px) {" . PHP_EOL;
-			
+			$strStyleRules .= "@media only screen and (min-width: " . ( $_iPreveousMaxWidth + 1 ) . "px) and (max-width: {$intScreenMaxWidth}px) {". PHP_EOL;	
 			foreach ( $this->strColPercentages as $intElement => $strWidthPercentage ) 	{
 				
 				$strWidthPercentage = "{$strWidthPercentage}%";
@@ -136,8 +137,20 @@ class ResponsiveColumnWidgets_Styles_ {
 			$strStyleRules .= " .{$strSidebarID} .{$strPrefixColumn}_hide { display: none; } " . PHP_EOL;	// the first column element
 			
 			$strStyleRules .= "}" . PHP_EOL;
-				
+							
+			$_iPreveousMaxWidth = $intScreenMaxWidth;
+			
 		}	
+		
+		// Add the margin-left fixer.
+		$_nLargestMaxWidth = max( $arrScreenMaxWidths ) + 1;
+		$_nMinWidth = $_nLargestMaxWidth + 1;
+		$strStyleRules .= "@media only screen and (min-width: {$_nMinWidth}px) {
+			.{$strSidebarID} .{$this->strClassSelectorColumn}_1 {
+				margin-left: 0px;
+			}
+		}" . PHP_EOL;
+		
 		
 		$strStyleRules = "<style type='text/css' class='style_{$strCallID}'{$strScoped}>"	// The name attribute is invalid in a scoped tag. use the class attribute to identify this call.
 			. ( $this->oOption->arrOptions['general']['general_css_minify'] ? $this->minifyCSS( $strStyleRules ) : $strStyleRules )
@@ -156,9 +169,13 @@ class ResponsiveColumnWidgets_Styles_ {
 			$strPrefixColumn = $this->strClassSelectorColumn . '_' . $intScreenMaxWidth;
 			
 			if ( $intScreenMaxWidth == $intThisScreenMaxWidth ) {
-				
+
 				// this needs to be inserted last to override other values.
-				$strOverriderOthers = " .{$strSidebarID} .{$strPrefixColumn}_1 { clear: left; margin-left: 0px; } " . PHP_EOL;	// the first column element
+				$strOverriderOthers = " .{$strSidebarID} .{$strPrefixColumn}_1 { 
+					clear: left; 
+					margin-left: 0px; 
+				} 
+				" . PHP_EOL;	// the first column element
 				continue;
 				
 			}
@@ -324,7 +341,8 @@ class ResponsiveColumnWidgets_Styles_ {
 				height: auto;
 			}
 			.{$this->strClassSelectorColumn}_1 {
-				margin-left: 0px !important;
+				/* margin-left: 0px !important; */
+				margin-left: 0px;
 				clear: left;
 			}
 			.{$this->strClassSelectorColumn}_hide {
