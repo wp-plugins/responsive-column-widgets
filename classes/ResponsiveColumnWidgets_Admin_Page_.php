@@ -62,8 +62,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$this->AddLinkToPluginDescription( $this->GetPluginDescriptionLinks() );				
 
 		// Objects
-		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug )
+		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->strPluginSlug ) {			
 			$this->oUserAds = new ResponsiveColumnWidgets_UserAds;
+		}
 		
 		$this->strGetPro = __( 'Get Pro to enable this feature!', 'responsive-column-widgets' );
 		$this->strGetProNow = __( 'Get Pro Now!', 'responsive-column-widgets' );
@@ -140,7 +141,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				// 'widgets'		=> __( 'Widgets', 'responsive-column-widgets' ),
 				'neworedit' 	=> '<span class="newtab">' . __( 'New', 'responsive-column-widgets' ) . '</span>&nbsp;<span class="slash">/</span>&nbsp;' . __( 'Edit', 'responsive-column-widgets' ),
 				'manage'		=> __( 'Manage', 'responsive-column-widgets' ),
-				'general'		=> __( 'General Options', 'responsive-column-widgets' ),
+				'general'		=> __( 'General', 'responsive-column-widgets' ),
 				'information'	=> __( 'Information', 'responsive-column-widgets' ),
 				'getpro'		=> __( 'Get Pro!', 'responsive-column-widgets' ),
 			)
@@ -1175,17 +1176,18 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 	}
 	function head_ResponsiveColumnWidgets_Admin_Page( $strHead ) {
-
+		
 		// $strButton = isset( $_GET['tab'] ) && $_GET['tab'] == 'manage' ? $this->GetAddNewBoxButton() : '';
-		return $this->oUserAds->GetTopBanner()
+		return '' // $this->oUserAds->GetTopBanner()
 			. $strHead 
 			. '<div class="responsive-column-widgets-admin-body">'
 			. '<table border="0" cellpadding="0" cellspacing="0" unselectable="on" width="100%">
 			<tbody>
 			<tr>
 			<td valign="top">'
-			. $this->oUserAds->GetTextAd();
-			// . $strButton;
+			// . $this->oUserAds->GetTextAd()
+			// . $strButton
+			;
 			
 	}
 	function foot_ResponsiveColumnWidgets_Admin_Page( $strFoot ) {
@@ -1212,18 +1214,18 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		
 		return $strFoot 
 			. '<div style="float:left; margin-top: 10px" >' 
-			. $this->oUserAds->GetTextAd() 
+			// . $this->oUserAds->GetTextAd() 
 			. '</div>'
 			. '</td>
 			<td valign="top" rowspan="2">' 
-			. $this->oUserAds->get160xNTopRight() 
-			. $this->oUserAds->get160xN( $numItems ) 
+		//	. $this->oUserAds->get160xNTopRight() 
+		//	. $this->oUserAds->get160xN( $numItems ) 
 			// . $this->oUserAds->GetSkyscraper( $numItems ) 
 			. '</td>
 			</tr>
 			<tr>
 				<td valign="bottom" align="center">'
-			. $this->oUserAds->GetBottomBanner() 
+			//. $this->oUserAds->GetBottomBanner() 
 			. '</td>
 			</tr>
 			</tbody>
@@ -2074,6 +2076,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 			#widget_box_container_bgcolor {
 				float: right;
 				margin-left: 20px;
+				margin-bottom: 20px;
 			}
 			#widget_box_container_bgcolor img {
 				border: 1px solid #D6D6D6;
@@ -2084,6 +2087,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				height: 134px;
 				background-image: url( '{$strWidgetBoxContainerPaddingsImageURL}' );
 				margin-left: 20px;
+				margin-bottom: 20px;
 			}
 			#widget_box_max_width_image {
 				float: right;
@@ -2091,6 +2095,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 				height: 134px;
 				background-image: url( '{$strWidgetBoxMaxWidthImageURL}' );
 				margin-left: 20px;
+				margin-bottom: 20px;
 			}
 			#section_custom_style_widget_box_column_text_alignment span {
 				width: 33.3%;

@@ -205,8 +205,13 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 
 == Changelog ==
 
-= 1.1.10 =
-* Fixed: a bug that column margin was not calculated correctly in different set max-widths. 
+= 1.1.11 - 04/22/2014 =
+* Tweaked: the styling of the plugin admin setting page.
+* Changed: the tab label `General Options` to `General` in the plugin admin setting page.
+* Changed: the default option `Delay Sidebar Registration` to be checked by default.
+
+= 1.1.10 - 04/19/2014 =
+* Fixed: a bug that column margins were not calculated correctly in different set max-widths. 
 
 = 1.1.9 - 02/21/2014 =
 * Added: the option to delay sidebar registration. 
