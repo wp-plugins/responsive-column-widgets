@@ -136,18 +136,14 @@ class ResponsiveColumnWidgets_Option_ {
 				$this->arrDefaultParams
 			);
 		}
-		
-		// $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] = $this->UniteArraysRecursive( 
-			// isset( $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] ) ? $this->arrOptions['boxes'][ $this->arrDefaultParams['sidebar'] ] : array(), 
-			// $this->arrDefaultParams 
-		// );
-	
+			
 		// store plugin data
 		$this->oInfo = new ResponsiveColumnWidgets_PluginInfo( $strFilePath );		
 					
 		// if the attempt to override the memory allocation option is set,
-		if ( ! empty( $this->arrOptions['general']['memory_allocation'] ) ) 		
+		if ( ! empty( $this->arrOptions['general']['memory_allocation'] ) ) {
 			$this->SetMemoryLimit( $this->arrOptions['general']['memory_allocation'] );
+		}		
 			
 	}
 	

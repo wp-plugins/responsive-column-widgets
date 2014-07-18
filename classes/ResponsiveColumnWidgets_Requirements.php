@@ -4,12 +4,12 @@
  * @copyright   Copyright (c) 2013, Michael Uno
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		1.0.7
- * @description	Checks the specified requirements and if it fails, it deactivates the plugin.
 */
-class ResponsiveColumnWidgets_Requirements {
 
-	// objects
-	protected $oPluginInfo;	// since 1.0.9 - stores the plugin info object 
+/**
+ * Checks the specified requirements and if it fails, it deactivates the plugin.
+ */
+class ResponsiveColumnWidgets_Requirements {
 
 	// Properties
 	protected $strAdminNotice = '';	// admin notice
@@ -46,14 +46,14 @@ class ResponsiveColumnWidgets_Requirements {
 		$this->arrParams['wordpress'] = $this->arrParams['wordpress'] + $this->arrDefaultParams['wordpress'];
 
 		$this->strPluginFilePath = $strPluginFilePath;
-		$this->arrScriptInfo = debug_backtrace();
 		$this->bDeactivate = $bDeactivate;
 		
 		// Objects
-		if ( ! class_exists( 'ResponsiveColumnWidgets_PluginInfo' ) )
+		if ( ! class_exists( 'ResponsiveColumnWidgets_PluginInfo' ) ) {
 			include_once( dirname( $strPluginFilePath ) . '/classes/ResponsiveColumnWidgets_PluginInfo.php'  );
-		$this->oPluginInfo = new ResponsiveColumnWidgets_PluginInfo( $strPluginFilePath );
-		$this->strAdminNotice = '<strong>' . $this->oPluginInfo->Name . '</strong><br />';
+		}
+
+		$this->strAdminNotice = '<strong>' . 'Responsive Column Widgets' . '</strong><br />';
 
 		if ( ! empty( $strHook ) ) 
 			add_action( $strHook, array( $this, 'CheckRequirements' ) );

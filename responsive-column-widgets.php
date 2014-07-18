@@ -3,7 +3,7 @@
 	Plugin Name: Responsive Column Widgets
 	Plugin URI: http://en.michaeluno.jp/responsive-column-widgets
 	Description: Creates a widget box which displays widgets in columns with a responsive design.
-	Version: 1.1.11
+	Version: 1.1.12b
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Requirements: This plugin requires WordPress >= 3.3 and PHP >= 5.2.4
@@ -101,12 +101,13 @@ register_activation_hook(
 	)
 );
 
-if ( ! class_exists( 'ResponsiveColumnWidgets_Cleaner' ) )
+if ( ! class_exists( 'ResponsiveColumnWidgets_Cleaner' ) ) {	
 	include_once( dirname( RESPONSIVECOLUMNWIDGETSFILE ) . '/classes/ResponsiveColumnWidgets_Cleaner.php' );
+}
 register_deactivation_hook( RESPONSIVECOLUMNWIDGETSFILE, 'ResponsiveColumnWidgets_Cleaner::CleanTransients' );
 
-/*
- *  To start up
+/**
+ *  The bootstrap function.
  */
 function ResponsiveColumnWidgets_Startup() {
 			
@@ -142,7 +143,11 @@ function ResponsiveColumnWidgets_Startup() {
 /*
  * Front-end functions for general plugin users.
  * */
-function ResponsiveColumnWidgets( $arrParams=array(), $arrOutput=array() ) {
+ 
+/**
+ * Renders the widget box.
+ */
+function ResponsiveColumnWidgets( $aParams=array(), $aOutput=array() ) {
 	
 	global $oResponsiveColumnWidgets;
 
@@ -151,20 +156,22 @@ function ResponsiveColumnWidgets( $arrParams=array(), $arrOutput=array() ) {
 		return;
 	}
 	
-	// Render the widget box.
-	$oResponsiveColumnWidgets->RenderWidgetBox( $arrParams, $arrOutput, false );	// the third parameter indicates that additional styles will use the scoped attribute.
+	$oResponsiveColumnWidgets->RenderWidgetBox( $aParams, $aOutput, false );	// the third parameter indicates that additional styles will use the scoped attribute.
 	
 }
-function ResponsiveColumnWidgets_EnqueueStyle( $arrParams ) {	// since 1.1.2.1
+/**
+ * Schedules to load the given widget box's ( sidebar ID ) style in the head tag.
+ * This is used to avoid the style tag to be embedded inside the body tag with the scoped attribute
+ * for the use of shortcode, the PHP code ( the above ResponsiveColumnWidgets() function ), and user-defined custom hooks.
+ * This must be done prior to the head tag.
+ * 
+ * @since	1.1.2.1
+ */
+function ResponsiveColumnWidgets_EnqueueStyle( $aParams ) {
 	
-	global $arrResponsiveColumnWidgets_Flags;
-	
-	// Schedules to load the given widget box's ( sidebar ID ) style in the head tag.
-	// This is used to avoid the style tag to be embedded inside the body tag with the scoped attribute
-	// for the use of shortcode, the PHP code ( the above ResponsiveColumnWidgets() function ), and user-defined custom hooks.
-	// This must be done prior to the head tag.
-	
-	if ( is_array( $arrParams ) )
-		$arrResponsiveColumnWidgets_Flags['arrEnqueueStyleParams'][] = $arrParams;
+	global $arrResponsiveColumnWidgets_Flags;	
+	if ( is_array( $aParams ) ) {
+		$arrResponsiveColumnWidgets_Flags['arrEnqueueStyleParams'][] = $aParams;
+	}
 	
 }
