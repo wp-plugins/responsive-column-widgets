@@ -3,7 +3,7 @@ Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
 Tags: array, cache, column, columns, content, css, css3, filter, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
 Requires at least: 3.3
-Tested up to: 3.9
+Tested up to: 4.0
 Stable tag: 1.1.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -205,8 +205,10 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 
 == Changelog ==
 
-= 1.1.12 =
-* Fixed: a PHP warning `Warning: strpos() empty delimiter...`. 
+= 1.1.12 - 10/13/2014 =
+- Changed some option names.
+- Fixed a PHP warning undefined constant WPLANG.
+- Fixed a PHP warning `Warning: strpos() empty delimiter...`. 
 
 = 1.1.11 - 04/22/2014 =
 * Tweaked: the styling of the plugin admin setting page.
