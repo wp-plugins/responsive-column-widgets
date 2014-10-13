@@ -111,9 +111,9 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 	function GetPluginDescriptionLinks() {
 		
 		return array(
-			'<a href="http://en.michaeluno.jp/responsive-column-widgets/responsive-column-widgets-pro/?lang=' . ( WPLANG ? WPLANG : 'en' ) . '">' . __( 'Get Pro', 'responsive-column-widgets' ) . '</a>',
-			'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J4UJHETVAZX34">' . __( 'Donate', 'responsive-column-widgets' ) . '</a>',
-			'<a href="http://en.michaeluno.jp/contact/custom-order/?lang=' . ( WPLANG ? WPLANG : 'en' ) . '">' . __( 'Order custom plugin', 'responsive-column-widgets' ) . '</a>',
+			'<a href="http://en.michaeluno.jp/responsive-column-widgets/responsive-column-widgets-pro/?lang=' . esc_attr( defined( 'WPLANG' ) && WPLANG ? WPLANG : 'en' ) . '">' . __( 'Get Pro', 'responsive-column-widgets' ) . '</a>',
+			'<a href="http://en.michaeluno.jp/donate">' . __( 'Donate', 'responsive-column-widgets' ) . '</a>',
+			'<a href="http://en.michaeluno.jp/contact/custom-order/?lang=' . esc_attr( defined( 'WPLANG') && WPLANG ? WPLANG : 'en' ) . '">' . __( 'Order custom plugin', 'responsive-column-widgets' ) . '</a>',
 		);
 	
 	}
@@ -1479,10 +1479,10 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
 		$strLink='http://en.michaeluno.jp/responsive-column-widgets/responsive-column-widgets-pro';
 		$strImgBuyNow = RESPONSIVECOLUMNWIDGETSURL . '/img/buynowbutton.gif';
 	
-		$strOut = '<div style="padding:' . $strPadding . ';">';
+		$strOut  = '<div style="padding:' . $strPadding . ';">';
 		$strOut .= '<div style="float:' . $strFloat . ';">';
-		$strOut .= '<a href="' . $strLink . '?lang=' . ( WPLANG ? WPLANG : 'en' ) . '" title="' . $this->strGetProNow . '">';
-		$strOut .= '<img src="' . $strImgBuyNow . '" />';
+		$strOut .= '<a href="' . $strLink . '?lang=' . esc_attr(  defined( 'WPLANG' ) && WPLANG ? WPLANG : 'en' ) . '" title="' . esc_attr( $this->strGetProNow ) . '">';
+		$strOut .= '<img src="' . esc_url( $strImgBuyNow ) . '" />';
 		$strOut .= '</a>';
 		$strOut .= '</div>';
 		$strOut .= '</div>';
