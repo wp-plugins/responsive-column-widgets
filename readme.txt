@@ -1,12 +1,12 @@
 ﻿=== Responsive Column Widgets ===
-Contributors: Michael Uno, miunosoft
-Donate link: http://en.michaeluno.jp/donate
-Tags: array, cache, column, columns, content, css, css3, filter, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
-Requires at least: 3.3
-Tested up to: 4.0
-Stable tag: 1.1.12
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Contributors:       Michael Uno, miunosoft
+Donate link:        http://en.michaeluno.jp/donate
+Tags:               array, cache, column, columns, content, css, css3, filter, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
+Requires at least:  3.3
+Tested up to:       4.1
+Stable tag:         1.2.0
+License:            GPLv2 or later
+License URI:        http://www.gnu.org/licenses/gpl-2.0.html
 Creates a custom responsive column widget box.
 
 == Description ==
@@ -168,8 +168,8 @@ http://en.michaeluno.jp/responsive-column-widgets/tutorials/
 
 == Frequently Asked Questions ==
 
-= Can't figure out how to show widgets in columns! ARGH! Are you there? =
-Take a deep breath. Believe me, it's really simple. Most likely, you have not added any widget yet. Go to *Appearance > Widgets* and add widgets to the plugin's custom sidebar box. Then use the shortcode in a post. That's it. If you still cannot figure it out, take the screenshots of the *wp-admin/widgets.php* page and the page of the post you added the shortcode. And request a [support](http://wordpress.org/support/plugin/responsive-column-widgets) with the screenshots.
+= How do I get started? =
+Go to *Appearance > Widgets* and add widgets to the plugin's custom sidebar box. Then use the shortcode in a post. That's it. If you still cannot figure it out, take the screenshots of the *wp-admin/widgets.php* page and the page of the post you added the shortcode. And request a [support](http://wordpress.org/support/plugin/responsive-column-widgets) with the screenshots.
 
 = How do I customize the style? =
 You can add your rules to the classes named **.responsive_column_widget_box .widget**. Go to the widget box's edit page and enter your custom rules in the Custom CSS section or define it in your theme's *style.css*.
@@ -181,7 +181,7 @@ e.g.
     background-color: #EEE;
 }`
 
-= I have trouble reading things. Are there video instructions? = 
+= Are there video instructions? = 
 Yes. Hope [this](http://en.michaeluno.jp/responsive-column-widgets/tutorials/) helps. 
 
 = Is it possible to create multiple widget boxes? =
@@ -204,6 +204,11 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 7. ***Sidebar Encapsulation***
 
 == Changelog ==
+
+= 1.2.0 - 01/14/2014 =
+- Fixed an issue that columns were not properly displayed in Internet Explorer 8.
+- Tweaked the layout of the plugin setting page.
+- Optimized the performance.
 
 = 1.1.12 - 10/13/2014 =
 - Changed some option names.
