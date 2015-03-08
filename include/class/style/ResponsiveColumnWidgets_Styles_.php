@@ -18,18 +18,18 @@ class ResponsiveColumnWidgets_Styles_ {
     
     // Default Properties
     protected $strColPercentages = array(
-        1 =>    100,
-        2 =>    49.2,
-        3 =>    32.2,
-        4 =>    23.8,
-        5 =>    18.72,
-        6 =>    15.33,
-        7 =>    12.91,
-        8 =>    11.1,
-        9 =>    9.68,
-        10 =>    8.56,
-        11 =>    7.63,
-        12 =>    6.86,
+        1   => 100,
+        2   => 49.2,
+        3   => 32.2,
+        4   => 23.8,
+        5   => 18.72,
+        6   => 15.33,
+        7   => 12.91,
+        8   => 11.1,
+        9   => 9.68,
+        10  => 8.56,
+        11  => 7.63,
+        12  => 6.86,
     );        
     
     /**
@@ -149,10 +149,13 @@ class ResponsiveColumnWidgets_Styles_ {
         
     }    
     
+    /**
+     * 
+     */
     protected function GetWidgetBoxStyle( $strSidebarID, $strCallID, $arrScreenMaxWidths, $bIsScoped=true ) {    // since 1.1.1
                 
-        $strScoped = $bIsScoped ? ' scoped' : '';
-        $strStyleRules = '';        
+        $strScoped          = $bIsScoped ? ' scoped' : '';
+        $strStyleRules      = '';        
         $_iPreveousMaxWidth = 0;
 
         sort( $arrScreenMaxWidths, SORT_NUMERIC );        // will be parsed from the smallest max width to the largest.
@@ -165,18 +168,27 @@ class ResponsiveColumnWidgets_Styles_ {
             
             // Set the prefixes.
             $strPrefixElementOf = $this->strClassSelectorColumn . '_' . $intScreenMaxWidth . '_element_of_';
-            $strPrefixColumn = $this->strClassSelectorColumn . '_' . $intScreenMaxWidth;
-            $strPrefixRow = $this->strClassSelectorRow . '_' . $intScreenMaxWidth;
+            $strPrefixColumn    = $this->strClassSelectorColumn . '_' . $intScreenMaxWidth;
+            $strPrefixRow       = $this->strClassSelectorRow . '_' . $intScreenMaxWidth;
                 
             // Add the rules.
             $strStyleRules .= "@media only screen and (min-width: " . ( $_iPreveousMaxWidth + 1 ) . "px) and (max-width: {$intScreenMaxWidth}px) {". PHP_EOL;    
+            
+            /* [1.2.1+] This firstly 1.6% left-margin applies to all the column in this screen width. 
+             * Then the first columns below re-set 0 left-margin. 
+             * This way, the first column item in different screen widths will now have the same left-margin.
+             * */
+            $strStyleRules .= ".{$strSidebarID} .{$this->strClassSelectorColumn} {                
+                margin-left: 1.6%;
+            }" . PHP_EOL;
+            
             foreach ( $this->strColPercentages as $intElement => $strWidthPercentage )     {
                 
                 $strWidthPercentage = "{$strWidthPercentage}%";
-                $strClearLeft = $intElement == 1 ? " clear: left;" : "";
-                $strMargin = $intElement == 1 ? " margin: 1% 0 1% 0;" : "";
-                $strFloat = " display: block; float:left;";
-                $strStyleRules .= " .{$strSidebarID} .{$strPrefixElementOf}{$intElement} { width:{$strWidthPercentage};{$strClearLeft}{$strMargin}{$strFloat} } " . PHP_EOL;
+                $strClearLeft       = $intElement == 1 ? " clear: left;" : "";
+                $strMargin          = $intElement == 1 ? " margin: 1% 0 1% 0;" : "";
+                $strFloat           = " display: block; float:left;";
+                $strStyleRules     .= " .{$strSidebarID} .{$strPrefixElementOf}{$intElement} { width:{$strWidthPercentage};{$strClearLeft}{$strMargin}{$strFloat} } " . PHP_EOL;
             
             }
             
@@ -195,10 +207,10 @@ class ResponsiveColumnWidgets_Styles_ {
         }    
         
         // Add the margin-left fixer.
-        $_nLargestMaxWidth = max( $arrScreenMaxWidths ) + 1;
-        $_nMinWidth = $_nLargestMaxWidth + 1;
-        $strStyleRules .= "@media only screen and (min-width: {$_nMinWidth}px) {
-            .{$strSidebarID} .{$this->strClassSelectorColumn}_1 {
+        $_nLargestMaxWidth  = max( $arrScreenMaxWidths ) + 1;
+        $_nMinWidth         = $_nLargestMaxWidth + 1;
+        $strStyleRules     .= "@media only screen and (min-width: {$_nMinWidth}px) {
+            .{$strSidebarID} .{$this->strClassSelectorColumn}.{$this->strClassSelectorColumn}_1 {
                 margin-left: 0px;
             }
         }" . PHP_EOL;
@@ -379,7 +391,9 @@ class ResponsiveColumnWidgets_Styles_ {
     protected function getWidthForColSpan( $intMaxCol, $intColSpan ) { 
 
         // If the both numbers are the same, it means it's as one element, one column.
-        if ( $intMaxCol == $intColSpan ) { return 100; }
+        if ( $intMaxCol == $intColSpan ) { 
+            return 100; 
+        }
                 
         return ( ( $this->strColPercentages[ $intMaxCol ] + 1.6 ) * $intColSpan ) - 1.6;
         

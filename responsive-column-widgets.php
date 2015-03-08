@@ -8,7 +8,7 @@
     Requirements:       This plugin requires WordPress >= 3.3 and PHP >= 5.2.4
     Text Domain:        responsive-column-widgets
     Domain Path:        /lang
-    Version:            1.2.0
+    Version:            1.2.1
 */
 
 /**
@@ -18,15 +18,15 @@
  */
 class ResponsiveColumnWidgets_Registry_Base {
 
-	const Version        = '1.2.0';    // <--- DON'T FORGET TO CHANGE THIS AS WELL!!
-	const Name           = 'Admin Page Framework';
-	const Description    = 'Facilitates WordPress plugin and theme development.';
+	const VERSION        = '1.2.1';    // <--- DON'T FORGET TO CHANGE THIS AS WELL!!
+	const NAME           = 'Admin Page Framework';
+	const DESCRIPTION    = 'Facilitates WordPress plugin and theme development.';
 	const URI            = 'http://en.michaeluno.jp/';
-	const Author         = 'miunosoft (Michael Uno)';
-	const AuthorURI      = 'http://en.michaeluno.jp/';
-	const Copyright      = 'Copyright (c) 2015, Michael Uno';
-	const License        = 'GPL v2 or later';
-	const Contributors   = '';
+	const AUTHOR         = 'miunosoft (Michael Uno)';
+	const AUTHOR_URI     = 'http://en.michaeluno.jp/';
+	const COPYRIGHT      = 'Copyright (c) 2015, Michael Uno';
+	const LICENSE        = 'GPL v2 or later';
+	const CONTRIBUTORS   = '';
 	
 }
 /**
@@ -53,15 +53,15 @@ final class ResponsiveColumnWidgets_Registry extends ResponsiveColumnWidgets_Reg
      * @remark      This is also accessed from uninstall.php so do not remove.
      * @remark      Up to 8 characters as transient name allows 45 characters or less ( 40 for site transients ) so that md5 (32 characters) can be added
      */
-	const TransientPrefix           = 'RCW_';
+	const TRANSIENT_PREFIX          = 'RCW_';
     
     /**
      * The text domain slug and its path.
      * 
      * These will be accessed from the bootstrap script.
      */
-	const TextDomain                = 'responsive-column-widgets';
-	const TextDomainPath            = '/language';    
+	const TEXT_DOMAIN               = 'responsive-column-widgets';
+	const TEXT_DOMAIN_PATH          = '/language';    
     	    
 	// These properties will be defined in the setUp() method.
 	static public $sFilePath = '';
@@ -125,7 +125,7 @@ final class ResponsiveColumnWidgets_Registry extends ResponsiveColumnWidgets_Reg
     );
     
     /**
-     * Used shortcodes.
+     * Used shortcode slugs.
      */
     static public $aShortcodes = array(
         'main'  => 'responsive_column_widgets',
@@ -145,7 +145,7 @@ final class ResponsiveColumnWidgets_Registry extends ResponsiveColumnWidgets_Reg
 	 * Returns the URL with the given relative path to the plugin path.
 	 * 
 	 * Example:  ResponsiveColumnWidgets_Registry::getPluginURL( 'asset/css/meta_box.css' );
-     * @since       3.5.0
+     * @since       112.0
 	 */
 	public static function getPluginURL( $sRelativePath='' ) {
 		return plugins_url( $sRelativePath, self::$sFilePath );
@@ -154,7 +154,7 @@ final class ResponsiveColumnWidgets_Registry extends ResponsiveColumnWidgets_Reg
     /**
      * Returns the information of this class.
      * 
-     * @since       3.5.0
+     * @since       1.2.0
      */
     static public function getInfo() {
         $_oReflection = new ReflectionClass( __CLASS__ );

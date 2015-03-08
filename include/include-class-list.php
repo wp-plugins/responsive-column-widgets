@@ -32,12 +32,7 @@ $_aClassFiles = array(
 	"ResponsiveColumnWidgets_Core_"	=>	ResponsiveColumnWidgets_Registry::$sDirPath . "/include/class/widget_box/ResponsiveColumnWidgets_Core_.php", 
 	"ResponsiveColumnWidgets_WidgetBox"	=>	ResponsiveColumnWidgets_Registry::$sDirPath . "/include/class/widget_box/ResponsiveColumnWidgets_WidgetBox.php", 
 	"ResponsiveColumnWidgets_WidgetBox_"	=>	ResponsiveColumnWidgets_Registry::$sDirPath . "/include/class/widget_box/ResponsiveColumnWidgets_WidgetBox_.php", 
-	"selector"	=>	ResponsiveColumnWidgets_Registry::$sDirPath . "/include/class/admin/ResponsiveColumnWidgets_Admin_Page_.php", 
-	"selectors"	=>	ResponsiveColumnWidgets_Registry::$sDirPath . "/include/class/admin/ResponsiveColumnWidgets_Admin_Page_.php", 
-	"attributes"	=>	ResponsiveColumnWidgets_Registry::$sDirPath . "/include/class/admin/ResponsiveColumnWidgets_Admin_Page_.php", 
-	"Attribute"	=>	ResponsiveColumnWidgets_Registry::$sDirPath . "/include/class/admin/ResponsiveColumnWidgets_Admin_Page_.php", 
 	"ResponsiveColumnWidgets_SimplePie__"	=>	ResponsiveColumnWidgets_Registry::$sDirPath . "/include/class/utility/ResponsiveColumnWidgets_SimplePie_.php", 
 	"ResponsiveColumnWidgets_Cache"	=>	ResponsiveColumnWidgets_Registry::$sDirPath . "/include/class/utility/ResponsiveColumnWidgets_SimplePie_.php", 
 	"ResponsiveColumnWidgets_Feed_Cache_Transient"	=>	ResponsiveColumnWidgets_Registry::$sDirPath . "/include/class/utility/ResponsiveColumnWidgets_SimplePie_.php", 
-	"selector."	=>	ResponsiveColumnWidgets_Registry::$sDirPath . "/include/class/widget/ResponsiveColumnWidgets_Widget_.php", 
 );

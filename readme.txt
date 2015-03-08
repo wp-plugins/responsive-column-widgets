@@ -3,7 +3,7 @@ Contributors:       Michael Uno, miunosoft
 Donate link:        http://en.michaeluno.jp/donate
 Tags:               array, cache, column, columns, content, css, css3, filter, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
 Requires at least:  3.3
-Tested up to:       4.1
+Tested up to:       4.1.1
 Stable tag:         1.2.0
 License:            GPLv2 or later
 License URI:        http://www.gnu.org/licenses/gpl-2.0.html
@@ -205,7 +205,10 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 
 == Changelog ==
 
-= 1.2.0 - 01/14/2014 =
+= 1.2.1 - 03/09/2015 =
+- Fixed a bug with a zero left-margin inherited from different screen widths.
+
+= 1.2.0 - 01/14/2015 =
 - Fixed an issue that columns were not properly displayed in Internet Explorer 8.
 - Tweaked the layout of the plugin setting page.
 - Optimized the performance.

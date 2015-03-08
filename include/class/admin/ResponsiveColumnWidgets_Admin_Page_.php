@@ -663,7 +663,7 @@ class ResponsiveColumnWidgets_Admin_Page_ extends ResponsiveColumnWidgets_Admin_
                             'description' => __( 'Select the timing to load the plugin\'s CSS base rules. If this is set the second item, the below Area to Load option does not take effect.', 'responsive-column-widgets' ),    //'
                             'type' => 'radio',
                             'label' => array( 
-                                __( 'When the head tab is loaded. ( Default )', 'responsive-column-widgets' ),
+                                __( 'When the <code>head</code> tag is loaded. ( Default )', 'responsive-column-widgets' ),
                                 __( 'When the first widget box is loaded.', 'responsive-column-widgets' ),
                             ),
                             'value' => $this->oOption->arrOptions['general']['general_css_timimng_to_load'],

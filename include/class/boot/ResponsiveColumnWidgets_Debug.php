@@ -81,7 +81,7 @@ class ResponsiveColumnWidgets_Debug {
         $_sElapsed              = strlen( $_sElapsed ) > 1 ? '+' . substr( $_sElapsed, -1, 2 ) : ' ' . $_sElapsed;
         $_sHeading              = date( "Y/m/d H:i:s", $_nNow ) . '.' . $_nMicroseconds . ' ' 
             . $_sElapsed . '.' . $_sElapsedFloat . ' ' . $_iPageLoadID . ' '  
-            . ResponsiveColumnWidgets_Registry::Version . ' '
+            . ResponsiveColumnWidgets_Registry::VERSION . ' '
             . "{$_sCallerClasss}::{$_sCallerFunction} " 
             . current_filter() . ' '
             . self::getCurrentURL() . ' '            
