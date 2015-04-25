@@ -4,7 +4,7 @@
     Plugin URI: http://wordpress.org/extend/plugins/admin-page-framework/
     Author:  Michael Uno
     Author URI: http://michaeluno.jp
-    Version: 1.0.4.2
+    Version: 1.0.4.2.mod01
     Requirements: WordPress 3.2 or above, PHP 5.2.4 or above.
     Description: Provides simpler means of building administration pages for plugin and theme developers. 
     Usage: 1. Extend the class 2. Override the SetUp() method. 3. Use the hook functions.
@@ -28,6 +28,10 @@
     
 */
 
+/**
+ * 
+ * @since       1.0.4.2.mod01       Added the do_settings_fields and do_settings_sections method to be compatible with WordPress 4.2 or higher.
+ */
 class ResponsiveColumnWidgets_Admin_Page_Framework {
     
     /*
@@ -590,11 +594,11 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
             );
             $this->arrFields[ $arrField['id'] ] = $arrField + array(  
                 'field_title'    => $arrField['title'], 
-                'page_slug'     => $strPageSlug,
-                'field_ID'         => $arrField['id'],
+                'page_slug'      => $strPageSlug,
+                'field_ID'       => $arrField['id'],
                 'section_ID'     => $strSectionID,
             );        
-            
+                      
             add_settings_field( 
                 $arrField['id'],
                 '<a name="' . $arrField['id'] . '"></a><span title="' . strip_tags( isset( $arrField['tip'] ) ? $arrField['tip'] : $arrField['description'] ) . '">' . $arrField['title'] . '</span>',
@@ -912,7 +916,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
                     
                     // Render the form elements by Settings API
                     settings_fields( $this->strClassName );
-                    do_settings_sections( $strPageSlug ); 
+                    $this->do_settings_sections( $strPageSlug ); 
                     
                     $strContent = ob_get_contents(); // assign buffer contents to variable
                     ob_end_clean(); // end buffer and remove buffer contents
@@ -948,6 +952,65 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
         $this->DeleteFieldErrors( $strPageSlug );
         
     }
+        /**
+         * @remark      compatibility for WordPress 4.2 or above.
+         * @since       1.0.4.2.mod01
+         */
+        private function do_settings_sections( $page ) {
+            global $wp_settings_sections, $wp_settings_fields;
+
+            if ( ! isset( $wp_settings_sections[$page] ) ) {
+                return;
+            }
+
+            foreach ( (array) $wp_settings_sections[$page] as $section ) {
+                if ( $section['title'] )
+                    echo "<h3>{$section['title']}</h3>\n";
+
+                if ( $section['callback'] ) {
+                    call_user_func( $section['callback'], $section );
+                }
+
+                if ( ! isset( $wp_settings_fields ) || !isset( $wp_settings_fields[$page] ) || !isset( $wp_settings_fields[$page][$section['id']] ) ) {
+                    continue;
+                }
+                echo '<table class="form-table">';
+                $this->do_settings_fields( $page, $section['id'] );
+                echo '</table>';
+            }
+        }    
+            /**
+             * @since       1.0.4.2.mod01
+             */            
+            private function do_settings_fields($page, $section) {
+                global $wp_settings_fields;
+
+                if ( ! isset( $wp_settings_fields[$page][$section] ) ) {
+                    return;
+                }
+
+                foreach ( ( array ) $wp_settings_fields[$page][$section] as $field ) {
+                    $class = '';
+                    if ( ! empty( $field['args']['class'] ) && isset( $field['args']['class']['tr'] ) ) {
+                        $class = ' class="' . esc_attr( $field['args']['class']['tr'] ) . '"';
+                    }
+
+                    echo "<tr{$class}>";
+                    // echo "<tr>";
+
+                    if ( ! empty( $field['args']['label_for'] ) ) {
+                        echo '<th scope="row"><label for="' . esc_attr( $field['args']['label_for'] ) . '">' . $field['title'] . '</label></th>';
+                    } else {
+                        echo '<th scope="row">' . $field['title'] . '</th>';
+                    }
+
+                    echo '<td>';
+                    call_user_func($field['callback'], $field['args']);
+                    echo '</td>';
+                    echo '</tr>';
+                }
+            }        
+        
     protected function DeleteFieldErrors( $strPageSlug ) {    // since 1.0.3
 
         // Deletes the field error transient

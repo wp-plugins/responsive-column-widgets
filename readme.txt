@@ -3,7 +3,7 @@ Contributors:       Michael Uno, miunosoft
 Donate link:        http://en.michaeluno.jp/donate
 Tags:               array, cache, column, columns, content, css, css3, filter, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
 Requires at least:  3.3
-Tested up to:       4.1.1
+Tested up to:       4.2
 Stable tag:         1.2.1
 License:            GPLv2 or later
 License URI:        http://www.gnu.org/licenses/gpl-2.0.html
@@ -129,36 +129,47 @@ Now we need to hook into the ***RCW_filter_widget_output_array*** filter so that
 
 In the callback function for the filter, we check if the parameter *call_id* holds the correct value. You should change the value to suite your needs, which should be unique and not conflict with others.
 
-`add_filter( 'RCW_filter_widget_output_array', 'RCW_CustomArrayOutput', 10, 2 );
-function RCW_CustomArrayOutput( $arrOutput, $arrParams ) {
+`
+add_filter( 'RCW_filter_widget_output_array', 'RCW_CustomArrayOutput', 10, 2 );
+function RCW_CustomArrayOutput( $aOutput, $aParams ) {
 	
-	if ( ! isset( $arrParams['call_id'] ) )
-		return $arrOutput;
+	if ( ! isset( $aParams['call_id'] ) ) {
+		return $aOutput;
+    }
 	
-	if ( $arrParams['call_id'] == 'days' ) 
+	if ( 'days' === $aParams['call_id'] ) {
 		return array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
-	
-	return $arrOutput;
-}`
+    }
+    
+	return $aOutput;
+}
+`
 
 This will display the days in 7 columns. The plugin will generate the CSS rules based on the parameter values. And the rules will be inserted inside the body tag. 
 
 If you like to insert the style in the head tag, use the *ResponsiveColumnWidgets_EnqueueStyle* function. Tell the function that which parameters are going to be used.
 
-`add_filter( 'wp_loaded', 'RCW_CustomArrayAddStyle' );
+`
+add_filter( 'wp_loaded', 'RCW_CustomArrayAddStyle' );
 function RCW_CustomArrayAddStyle() {
 	if ( function_exists( 'ResponsiveColumnWidgets_EnqueueStyle' ) ) {
 		ResponsiveColumnWidgets_EnqueueStyle( array( 'columns' => "7" ) );
 	}
-}`
+}
+`
 
 Note that <code>'call_id' => 'days'</code> can be omitted. The other parameters should not be omitted.
 
 For cases that the shortcode is not used, you can use the *ResponsiveColumnWidets()* function.
 
-`$arrYourArray = array( 'a', 'b', 'c', 'd' );
-if ( function_exists( 'ResponsiveColumnWidets' ) )
-	ResponsiveColumnWidets( array( 'columns' => 4  ), $arrYourArray );
+`
+$aYourArray = array( 'a', 'b', 'c', 'd' );
+if ( function_exists( 'ResponsiveColumnWidets' ) ) {
+	ResponsiveColumnWidets( 
+        array( 'columns' => 4  ), 
+        $aYourArray 
+    );
+}
 `
 
 This will output <code>a, b, c, d</code> in four columns.
@@ -204,6 +215,9 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 7. ***Sidebar Encapsulation***
 
 == Changelog ==
+
+= 1.2.2 - 04/25/2015 = 
+- Fixed a compatibility issue with WordPress 4.2 in plugin setting pages.
 
 = 1.2.1 - 03/09/2015 =
 - Fixed a bug with a zero left-margin inherited from different screen widths.

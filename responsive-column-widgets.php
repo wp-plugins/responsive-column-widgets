@@ -1,15 +1,15 @@
 <?php
-/*
-    Plugin Name:        Responsive Column Widgets
-    Plugin URI:         http://en.michaeluno.jp/responsive-column-widgets
-    Description:        Creates a widget box which displays widgets in columns with a responsive design.
-    Author:             Michael Uno (miunosoft)
-    Author URI:         http://michaeluno.jp
-    Requirements:       This plugin requires WordPress >= 3.3 and PHP >= 5.2.4
-    Text Domain:        responsive-column-widgets
-    Domain Path:        /lang
-    Version:            1.2.1
-*/
+/**
+ *  Plugin Name:    Responsive Column Widgets
+ *  Plugin URI:     http://en.michaeluno.jp/responsive-column-widgets
+ *  Description:    Creates a widget box which displays widgets in columns with a responsive design.
+ *  Author:         Michael Uno (miunosoft)
+ *  Author URI:     http://michaeluno.jp
+ *  Requirements:   This plugin requires WordPress >= 3.3 and PHP >= 5.2.4
+ *  Text Domain:    responsive-column-widgets
+ *  Domain Path:    /lang
+ *  Version:        1.2.2
+ */
 
 /**
  * The base registry information.
@@ -18,9 +18,9 @@
  */
 class ResponsiveColumnWidgets_Registry_Base {
 
-	const VERSION        = '1.2.1';    // <--- DON'T FORGET TO CHANGE THIS AS WELL!!
-	const NAME           = 'Admin Page Framework';
-	const DESCRIPTION    = 'Facilitates WordPress plugin and theme development.';
+	const VERSION        = '1.2.2';    // <--- DON'T FORGET TO CHANGE THIS AS WELL!!
+	const NAME           = 'Responsive Column Widgets';
+	const DESCRIPTION    = 'Creates a widget box which displays widgets in columns with a responsive design..';
 	const URI            = 'http://en.michaeluno.jp/';
 	const AUTHOR         = 'miunosoft (Michael Uno)';
 	const AUTHOR_URI     = 'http://en.michaeluno.jp/';
