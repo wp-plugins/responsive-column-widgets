@@ -3,7 +3,7 @@ Contributors:       Michael Uno, miunosoft
 Donate link:        http://en.michaeluno.jp/donate
 Tags:               array, cache, column, columns, content, css, css3, filter, flexible width, grid, grid layout, grid system, html5, layout, magazine layout, miunosoft, page, pages, post, posts, plugin, plugins, row, rows, responsive, responsive design, sidebar, sidebars, shortcode, style, theme, widget, widgets
 Requires at least:  3.3
-Tested up to:       4.2
+Tested up to:       4.2.1
 Stable tag:         1.2.2
 License:            GPLv2 or later
 License URI:        http://www.gnu.org/licenses/gpl-2.0.html
@@ -215,6 +215,9 @@ Sure. Please post it in the [forum](http://wordpress.org/support/plugin/responsi
 7. ***Sidebar Encapsulation***
 
 == Changelog ==
+
+= 1.2.3 - 05/06/2015 =
+- Fixed a compatibility issue with WordPress 4.2 that category terms were not listed in the widget box definition page.
 
 = 1.2.2 - 04/25/2015 = 
 - Fixed a compatibility issue with WordPress 4.2 in plugin setting pages.

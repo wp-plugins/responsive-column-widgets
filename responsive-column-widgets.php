@@ -8,7 +8,7 @@
  *  Requirements:   This plugin requires WordPress >= 3.3 and PHP >= 5.2.4
  *  Text Domain:    responsive-column-widgets
  *  Domain Path:    /lang
- *  Version:        1.2.2
+ *  Version:        1.2.3
  */
 
 /**
@@ -18,7 +18,7 @@
  */
 class ResponsiveColumnWidgets_Registry_Base {
 
-	const VERSION        = '1.2.2';    // <--- DON'T FORGET TO CHANGE THIS AS WELL!!
+	const VERSION        = '1.2.3';    // <--- DON'T FORGET TO CHANGE THIS AS WELL!!
 	const NAME           = 'Responsive Column Widgets';
 	const DESCRIPTION    = 'Creates a widget box which displays widgets in columns with a responsive design..';
 	const URI            = 'http://en.michaeluno.jp/';
@@ -168,7 +168,9 @@ final class ResponsiveColumnWidgets_Registry extends ResponsiveColumnWidgets_Reg
 ResponsiveColumnWidgets_Registry::setUp( __FILE__ );
  
 // Bail if accessed directly. Not exit here as uninstall.php will access this file to get registry information.
-if ( ! defined( 'ABSPATH' ) ) { return; }
+if ( ! defined( 'ABSPATH' ) ) { 
+    return; 
+}
 
 include( dirname( __FILE__ ) . '/include/class/boot/ResponsiveColumnWidgets_Bootstrap.php' );
 new ResponsiveColumnWidgets_Bootstrap( __FILE__ );

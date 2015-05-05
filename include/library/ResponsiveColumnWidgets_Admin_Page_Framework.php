@@ -1,13 +1,13 @@
 <?php 
 /*
-    Name: Admin Page Framework
-    Plugin URI: http://wordpress.org/extend/plugins/admin-page-framework/
-    Author:  Michael Uno
-    Author URI: http://michaeluno.jp
-    Version: 1.0.4.2.mod01
-    Requirements: WordPress 3.2 or above, PHP 5.2.4 or above.
-    Description: Provides simpler means of building administration pages for plugin and theme developers. 
-    Usage: 1. Extend the class 2. Override the SetUp() method. 3. Use the hook functions.
+    Name:           Admin Page Framework
+    Plugin URI:     http://wordpress.org/extend/plugins/admin-page-framework/
+    Author:         Michael Uno
+    Author URI:     http://michaeluno.jp
+    Version:        1.0.4.2.mod02
+    Requirements:   WordPress 3.2 or above, PHP 5.2.4 or above.
+    Description:    Provides simpler means of building administration pages for plugin and theme developers. 
+    Usage:          1. Extend the class 2. Override the SetUp() method. 3. Use the hook functions.
     Main Class:
         - Admin_Page_Framework
     Sub Classes:
@@ -31,88 +31,94 @@
 /**
  * 
  * @since       1.0.4.2.mod01       Added the do_settings_fields and do_settings_sections method to be compatible with WordPress 4.2 or higher.
+ * @since       1.0.4.2.mod02       Fixed a compatibility issue with WordPress 4.2 regarding the `taxonomy` field type which became not possible to list terms due to an argument name conflict.
  */
 class ResponsiveColumnWidgets_Admin_Page_Framework {
+         
+    /**
+     * Action prefixes    
+     */
+    protected $prefix_do_before         = 'do_before_';         // action hook triggered before rendering a page. c.f. do_before_ + page slug
+    protected $prefix_do                = 'do_';                // action hook triggered after rendering page contents.
+    protected $prefix_do_after          = 'do_after_';          // action hook triggered after finishing rendering a page.
+    protected $do_global_before         = 'do_before_';         // global action hook triggered before rendering a page. c.f. do_before_ + class name
+    protected $do_global                = 'do_';                // global action hook triggered after rendering page contents.
+    protected $do_global_after          = 'do_after_';          // global action hook triggered after finishing rendering a page.            
+    protected $prefix_start             = 'start_';             // action hook triggered at the end of the constructer.
+    protected $prefix_do_form           = 'do_form_';           // action hook triggered after the opening form tag, since 1.0.2.
     
-    /*
-     * Default Properties
-     * */
-     
-    // Action prefixes    
-    protected $prefix_do_before            = 'do_before_';            // action hook triggered before rendering a page. c.f. do_before_ + page slug
-    protected $prefix_do                 = 'do_';                // action hook triggered after rendering page contents.
-    protected $prefix_do_after            = 'do_after_';            // action hook triggered after finishing rendering a page.
-    protected $do_global_before            = 'do_before_';            // global action hook triggered before rendering a page. c.f. do_before_ + class name
-    protected $do_global                 = 'do_';                // global action hook triggered after rendering page contents.
-    protected $do_global_after            = 'do_after_';            // global action hook triggered after finishing rendering a page.            
-    protected $prefix_start                = 'start_';                // action hook triggered at the end of the constructer.
-    protected $prefix_do_form            = 'do_form_';            // action hook triggered after the opening form tag, since 1.0.2.
-    
-    // Filter prefixes - not private to be extensible
-    protected $filter_global_head         = 'head_';                // glboal filter for head part of the page.
-    protected $filter_global_content     = 'content_';            // glboal filter for body part of the page.
-    protected $filter_global_foot         = 'foot_';                // glboal filter for foot part of the page.
-    protected $prefix_content             = 'content_';            // filter for the body part of the page
-    protected $prefix_head                 = 'head_';                // filter for head part of the page.
-    protected $prefix_foot                 = 'foot_';                // filter for foot part of the page.
-    protected $prefix_validation         = 'validation_';        // filter for Settings API validation callback.
-    protected $prefix_section             = 'section_';            // filter for form sections.
-    protected $prefix_field             = 'field_';                // filter for form fields.
-    protected $prefix_style                = 'style_';
+    /**
+     * Filter prefixes 
+     * @remark      not private to be extensible
+     */
+    protected $filter_global_head       = 'head_';              // global filter for head part of the page.
+    protected $filter_global_content    = 'content_';           // global filter for body part of the page.
+    protected $filter_global_foot       = 'foot_';              // global filter for foot part of the page.
+    protected $prefix_content           = 'content_';           // filter for the body part of the page
+    protected $prefix_head              = 'head_';              // filter for head part of the page.
+    protected $prefix_foot              = 'foot_';              // filter for foot part of the page.
+    protected $prefix_validation        = 'validation_';        // filter for Settings API validation callback.
+    protected $prefix_section           = 'section_';           // filter for form sections.
+    protected $prefix_field             = 'field_';             // filter for form fields.
+    protected $prefix_style             = 'style_';
     protected $prefix_script            = 'script_';
     protected $prefix_import            = 'import_';            // filter for an importing array, since 1.0.2
     protected $prefix_export            = 'export_';            // filter for an exporting array, since 1.0.2
     
-    // Flags
-    protected $bShowPageHeadingTabs = False;
-    protected $bAddedCSSStyleAdjuster = False;    // indicates whether the custom stylesheet has been added into the header or not.
-    protected $bIsImported = False;                // used to determine if the import file was uploaded and processed
-    protected $bHasRegisteredSetting = False;     // indicates whether the register_setting() has been used.
-    protected $bLoadedSettingsErrors = false;    // indicates whether the settings errors have been loaded ( echoed ) or not. This is used to prevent multiple settings errors to be displayed. since 1.0.3.
-    protected $bUseOwnSettingsErrors = true;    // indicates whether the framework uses own settings errors and disables the Settings API's notification messages.
+    /**
+     * Flags
+     */
+    protected $bShowPageHeadingTabs   = False;
+    protected $bAddedCSSStyleAdjuster = False;   // indicates whether the custom stylesheet has been added into the header or not.
+    protected $bIsImported            = False;   // used to determine if the import file was uploaded and processed
+    protected $bHasRegisteredSetting  = False;   // indicates whether the register_setting() has been used.
+    protected $bLoadedSettingsErrors  = false;   // indicates whether the settings errors have been loaded ( echoed ) or not. This is used to prevent multiple settings errors to be displayed. since 1.0.3.
+    protected $bUseOwnSettingsErrors  = true;    // indicates whether the framework uses own settings errors and disables the Settings API's notification messages.
     
-    // Containter arrays
-    public $arrPageTitles = array();        // stores the added page titles with key of the page slug. Must be public as referenced by oLink.
-    protected $arrSections = array();        // stores registered form(settings) sections.
-    protected $arrFields = array();            // stores registered form(settings) fields.
-    protected $arrTabs = array();            // a two-dimensional array with the keys of sub-page slug in the first dimension and with the key of tab slug in the second dimension.
-    protected $arrHiddenTabs = array();        // since 1.0.2.1 - a two-dimensional array similar to the above $arrTabs but stores the tab which should be hidden ( still accessible with the direct url. )
-    protected $arrIcons = array();            // stores the page screen 32x32 icons. For the main root page, which is invisible, 16x16 icon url will be stored.
+    /**
+     * Container arrays
+     */
+    public    $arrPageTitles    = array();        // stores the added page titles with key of the page slug. Must be public as referenced by oLink.
+    protected $arrSections      = array();        // stores registered form(settings) sections.
+    protected $arrFields        = array();        // stores registered form(settings) fields.
+    protected $arrTabs          = array();        // a two-dimensional array with the keys of sub-page slug in the first dimension and with the key of tab slug in the second dimension.
+    protected $arrHiddenTabs    = array();        // since 1.0.2.1 - a two-dimensional array similar to the above $arrTabs but stores the tab which should be hidden ( still accessible with the direct url. )
+    protected $arrIcons         = array();        // stores the page screen 32x32 icons. For the main root page, which is invisible, 16x16 icon url will be stored.
     
     // Objects
     public $oUtil;            // since 1.0.4. Stores the utility object instance. Make it public to be used frm the extended class.
     public $oRedirect;        // since 1.0.4. Stores the redirect object instance.
     public $oLink;            // since 1.0.4. Stores the link object instance.
-    public $oDebug;            // since 1.0.4. Stores the debug object instance.
+    public $oDebug;           // since 1.0.4. Stores the debug object instance.
     
     // For referencing
     protected $arrRootMenuSlugs = array(
         // all keys must be lower case to support case insensitive lookups.
-        'dashboard' =>             'index.php',
-        'posts' =>                 'edit.php',
-        'media' =>                 'upload.php',
-        'links' =>                 'link-manager.php',
-        'pages' =>                 'edit.php?post_type=page',
-        'comments' =>             'edit-comments.php',
-        'appearance' =>         'themes.php',
-        'plugins' =>             'plugins.php',
-        'users' =>                 'users.php',
-        'tools' =>                 'tools.php',
-        'settings' =>             'options-general.php',
-        'network admin' =>         "network_admin_menu",
+        'dashboard' => 'index.php',
+        'posts' => 'edit.php',
+        'media' => 'upload.php',
+        'links' => 'link-manager.php',
+        'pages' => 'edit.php?post_type=page',
+        'comments' => 'edit-comments.php',
+        'appearance' => 'themes.php',
+        'plugins' => 'plugins.php',
+        'users' => 'users.php',
+        'tools' => 'tools.php',
+        'settings' => 'options-general.php',
+        'network admin' => "network_admin_menu",
     );
     
     // Default values
-    protected $strFormEncType = 'application/x-www-form-urlencoded';
-    protected $strCapability = 'manage_options';    // can be changed with SetCapability().
-    protected $strPageTitle = null;        // the extended class name will be assigned.
-    protected $strPathIcon16x16 = null; // set by the constructor and the SetMenuIcon() method.
-    protected $numPosition    = null;        // this will be rarely used so put it aside until a good reason gets addressed to flexibly change it.
-    protected $strPageSlug = '';        // the extended class name will be assigned by default in the constructor but will be overwritten by the SetRootMenu() method.    
-    protected $strOptionKey = null;        // determines which key to use to store options in the database.
-    protected $numRootPages = 0;        // stores the number of created root pages 
-    protected $numSubPages = 0;            // stores the number of created sub pages 
-    protected $strThickBoxTitle = '';    // stores the media upload thick box's window title.
+    protected $strFormEncType           = 'application/x-www-form-urlencoded';
+    protected $strCapability            = 'manage_options';    // can be changed with SetCapability().
+    protected $strPageTitle             = null;        // the extended class name will be assigned.
+    protected $strPathIcon16x16         = null; // set by the constructor and the SetMenuIcon() method.
+    protected $numPosition              = null;        // this will be rarely used so put it aside until a good reason gets addressed to flexibly change it.
+    protected $strPageSlug              = '';        // the extended class name will be assigned by default in the constructor but will be overwritten by the SetRootMenu() method.    
+    protected $strOptionKey             = null;        // determines which key to use to store options in the database.
+    protected $numRootPages             = 0;        // stores the number of created root pages 
+    protected $numSubPages              = 0;            // stores the number of created sub pages 
+    protected $strThickBoxTitle         = '';    // stores the media upload thick box's window title.
     protected $strThickBoxButtonUseThis = '';    // stores the media upload thick box's button label to insert the image.
     protected $strStyle =     // the default css rules
         '.updated, .settings-error { clear: both; } 
@@ -130,33 +136,33 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
         .category-check-list-label {
             margin-left: 0.5em;
         }';    
-    protected $strScript = '';            // the default JavaScript 
+    protected $strScript            = '';            // the default JavaScript 
     protected $strCallerPath;    // stores the caller path which can be manually set by the user. If not set, the framework will try to set it. since 1.0.2.2
-    protected $strInPageTabTag = 'h3';    // stores the in-page tabs' tag. Default: h3. This can be set with SetInPageTabTag(). Added in 1.0.3.
+    protected $strInPageTabTag      = 'h3';    // stores the in-page tabs' tag. Default: h3. This can be set with SetInPageTabTag(). Added in 1.0.3.
     
-    // for debugs
-    // protected $numCalled = 0;
-    // protected $arrCallbacks = array();
-    
+    /**
+     * Sets up properties and hooks.
+     * 
+     * $strOptionKey :    Specifies the option key name to store in the option database table. 
+     *                     If this is set, all the options will be stored in an array to the key of this passed string.
+     * $strCallerPath :    used to retrieve the plugin ( if it's a plugin ) to retrieve the plugin data to auto-insert credit info into the footer.
+     * */    
     function __construct( $strOptionKey=null, $strCallerPath=null ){
-        
-        /*
-         * $strOptionKey :    Specifies the option key name to store in the option database table. 
-         *                     If this is set, all the options will be stored in an array to the key of this passed string.
-         * $strCallerPath :    used to retrieve the plugin ( if it's a plugin ) to retrieve the plugin data to auto-insert credit info into the footer.
-         * */
-        
-        // Objects
-        $this->oUtil = new ResponsiveColumnWidgets_Admin_Page_Framework_Utilities;
-        $this->oRedirect = new ResponsiveColumnWidgets_Admin_Page_Framework_Redirect( $this );
-        $this->oLink = new ResponsiveColumnWidgets_Admin_Page_Framework_Link( $this, $strCallerPath );
-        $this->oDebug = new ResponsiveColumnWidgets_Admin_Page_Framework_Debug;
+      
+        $this->oUtil        = new ResponsiveColumnWidgets_Admin_Page_Framework_Utilities;
+        $this->oRedirect    = new ResponsiveColumnWidgets_Admin_Page_Framework_Redirect( $this );
+        $this->oLink        = new ResponsiveColumnWidgets_Admin_Page_Framework_Link( $this, $strCallerPath );
+        $this->oDebug       = new ResponsiveColumnWidgets_Admin_Page_Framework_Debug;
         
         // Do not set the extended class name for this. It uses a page slug name if not set.
         $this->strClassName     = get_class( $this );
-        $this->strOptionKey     = ( empty( $strOptionKey ) ) ? null : $strOptionKey;    
-        $this->strPageTitle     = ( !empty( $strOptionKey ) ) ? $strOptionKey : $this->strClassName;
-        $this->strPageSlug         = $this->strClassName;    // will be invisible anyway
+        $this->strOptionKey     = ( empty( $strOptionKey ) ) 
+            ? null 
+            : $strOptionKey;    
+        $this->strPageTitle     = ( !empty( $strOptionKey ) ) 
+            ? $strOptionKey 
+            : $this->strClassName;
+        $this->strPageSlug      = $this->strClassName;    // will be invisible anyway
         $this->strCallerPath    = $strCallerPath;    
         
         // Schedule removing the root sub-menu because it will be just a duplicate item to the root label.
@@ -175,17 +181,17 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
         // For the media uploader.
         add_filter( 'gettext', array( $this, 'ReplaceThickBoxText' ) , 1, 2 );    
                 
-        // Create global filter hooks
-        add_filter( $this->filter_global_head      . $this->strClassName , array( $this, $this->filter_global_head . $this->strClassName ) );
+        // Global filter hooks
+        add_filter( $this->filter_global_head    . $this->strClassName , array( $this, $this->filter_global_head . $this->strClassName ) );
         add_filter( $this->filter_global_content . $this->strClassName , array( $this, $this->filter_global_content . $this->strClassName ) );
         add_filter( $this->filter_global_foot    . $this->strClassName , array( $this, $this->filter_global_foot . $this->strClassName ) );        
         add_action( $this->do_global             . $this->strClassName , array( $this, $this->do_global . $this->strClassName ) );
-        add_action( $this->do_global_before         . $this->strClassName , array( $this, $this->do_global_before . $this->strClassName ) );
-        add_action( $this->do_global_after         . $this->strClassName , array( $this, $this->do_global_after . $this->strClassName ) );
-        add_action( $this->prefix_do_form         . $this->strClassName , array( $this, $this->prefix_do_form . $this->strClassName ) );    // since 1.0.2
+        add_action( $this->do_global_before      . $this->strClassName , array( $this, $this->do_global_before . $this->strClassName ) );
+        add_action( $this->do_global_after       . $this->strClassName , array( $this, $this->do_global_after . $this->strClassName ) );
+        add_action( $this->prefix_do_form        . $this->strClassName , array( $this, $this->prefix_do_form . $this->strClassName ) );    // since 1.0.2
         
         // For earlier loading than $this->Setup
-        add_action( $this->prefix_start    . $this->strClassName , array( $this, $this->prefix_start . $this->strClassName ) );
+        add_action( $this->prefix_start   . $this->strClassName , array( $this, $this->prefix_start . $this->strClassName ) );
         do_action( $this->prefix_start    . $this->strClassName );        
     
     }    
@@ -194,9 +200,7 @@ class ResponsiveColumnWidgets_Admin_Page_Framework {
         Extensible Methods - should be customized in the extended class.
     */
     protected function SetUp() {
-        
         $this->CreateRootMenu( $this->strPageTitle );
-        
     }
     
     /*
@@ -2246,19 +2250,19 @@ class ResponsiveColumnWidgets_Admin_Page_Framework_Input_Filed_Types {    // sin
     protected function GetCategoryChecklistField() {    // since 1.0.4
         
         $strFieldName = &$this->strFieldName;
-        $vValue = &$this->vValue;
-        $arrField = &$this->arrField;
+        $vValue       = &$this->vValue;
+        $arrField     = &$this->arrField;
         
-        $strOutput = "<div class='wp-tab-panel category-check-list' style='max-width:{$arrField['max_width']}px; max-height:{$arrField['max_height']}px;'>";
-        $strOutput .= "<ul class='list:category categorychecklist form-no-clear'>";
-        $strOutput .= wp_list_categories( 
+        $strOutput    = "<div class='wp-tab-panel category-check-list' style='max-width:{$arrField['max_width']}px; max-height:{$arrField['max_height']}px;'>";
+        $strOutput   .= "<ul class='list:category categorychecklist form-no-clear'>";
+        $strOutput   .= wp_list_categories( 
             array(
-                'walker' => new ResponsiveColumnWidgets_Admin_Page_Framework_Walker_Category_Checklist,
-                'name'     => $strFieldName,       // name of the input
-                'selected' => array_keys( ( array ) $vValue, True ),         //array( 6, 10, 7, 15 ),           // checked items (category IDs)    
-                'title_li'    => '',    // disable the Categories heading string 
-                'hide_empty' => 0,    
-                'echo'    => false,
+                'walker'           => new ResponsiveColumnWidgets_Admin_Page_Framework_Walker_Category_Checklist,
+                '_name_prefix'     => $strFieldName,       // name of the input
+                'selected'         => array_keys( ( array ) $vValue, True ),         //array( 6, 10, 7, 15 ),           // checked items (category IDs)
+                'title_li'         => '',    // disable the Categories heading string 
+                'hide_empty'       => 0,    
+                'echo'             => false,
             ) 
         );
         $strOutput .= '</ul>';
@@ -2690,21 +2694,21 @@ class ResponsiveColumnWidgets_Admin_Page_Framework_Walker_Category_Checklist ext
         */
         
         $arrArgs = $arrArgs + array(
-            'name'         => null,
-            'disabled'    => null,
-            'selected'    => array(),
+            '_name_prefix'  => null,
+            'disabled'      => null,
+            'selected'      => array(),
         );
         
         $intID = $oCategory->term_id;
         $strTaxonomy = empty( $arrArgs['taxonomy'] ) ? 'category' : $arrArgs['taxonomy'];
-        $strChecked = in_array( $intID, ( array ) $arrArgs['selected'] )  ? 'Checked' : '';
-        $strDisabled = $arrArgs['disabled'] ? 'disabled="Disabled"' : '';
+        $strChecked = in_array( $intID, ( array ) $arrArgs['selected'] )  ? 'checked' : '';
+        $strDisabled = $arrArgs['disabled'] ? 'disabled="disabled"' : '';
         $strClass = 'category-list';
         $strID = "{$strTaxonomy}-{$intID}";
         $strOutput .= "\n"
             . "<li id='{$strID}' $strClass>" 
-            . "<input value='0' type='hidden' name='{$arrArgs['name']}[{$intID}]' />"
-            . "<input id='{$strID}' value='1' type='checkbox' name='{$arrArgs['name']}[{$intID}]' {$strChecked} {$strDisabled} />"
+            . "<input value='0' type='hidden' name='{$arrArgs['_name_prefix']}[{$intID}]' />"
+            . "<input id='{$strID}' value='1' type='checkbox' name='{$arrArgs['_name_prefix']}[{$intID}]' {$strChecked} {$strDisabled} />"
             . "<label id='{$strID}' class='category-check-list-label'>"
             . esc_html( apply_filters( 'the_category', $oCategory->name ) ) 
             . "</label>";    // no need to close </li> since it is done in end_el().
